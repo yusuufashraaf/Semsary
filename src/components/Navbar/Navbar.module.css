@@ -1,0 +1,108 @@
+nav {
+  border-bottom: 1px solid #fff;
+  font-size: 1rem;
+}
+
+.navbarBrand {
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+.navLink {
+  color: #fff;
+  border-radius: 4px;
+  text-decoration: none;
+  padding: 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+.navLink:hover,
+.navLink:focus {
+  background-color: #fff;
+  color: #000;
+  outline: none;
+}
+
+.searchBar {
+  width: 100%;
+  max-width: 400px;
+  margin-right: 20px;
+  background-color: #472426;
+  border-radius: 20px;
+  border: 0;
+  outline: none;
+  padding: 9px 16px;
+  color: #ccc;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
+}
+.searchBar::placeholder {
+  color: #ccc;
+  opacity: 1;
+}
+.searchBar:focus {
+  width: 100%;
+  box-shadow: none;
+}
+
+.inputGroup {
+  width: 100%;
+  max-width: 300px;
+  margin-right: 0;
+}
+
+.signInBtn,
+.wishlistBtn,
+.notificationBtn {
+  background-color: #472426;
+  border: none;
+  color: #fff;
+  border-radius: 20px;
+  padding: 6px 10px;
+  transition: background-color 0.3s, color 0.3s;
+  white-space: nowrap;
+}
+.signInBtn:hover,
+.wishlistBtn:hover,
+.notificationBtn:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.avatar:hover {
+  transform: scale(1.05);
+}
+
+.navbar-toggler:focus,
+.input-group .form-control:focus {
+  box-shadow: none;
+  border-color: #aaa;
+}
+
+.btn-outline-light:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #fff;
+}
+
+.navbar-collapse.show {
+  animation: slideDown 0.3s ease-in-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
