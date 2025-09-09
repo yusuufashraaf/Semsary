@@ -1,11 +1,6 @@
 import { Link } from "react-router-dom";
 import styles from "./PopularCategories.module.css";
-
-type CategoryCardProps = {
-  name: string;
-  image: string;
-  link: string;
-};
+import { CategoryCardProps } from "src/types";
 
 export default function CategoryCard({ name, image, link }: CategoryCardProps) {
   return (

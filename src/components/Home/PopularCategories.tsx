@@ -1,8 +1,9 @@
 import styles from "./PopularCategories.module.css";
 import CategoryCard from "./CategoryCard";
+import { CategoryCardProps } from "src/types";
 
 export default function PopularCategories() {
-  const categories = [
+  const categories: CategoryCardProps[] = [
     {
       name: "Houses",
       image:
