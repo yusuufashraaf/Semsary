@@ -5,40 +5,35 @@ import Login from "@pages/Login/Login";
 import Register from "@pages/Register/Register";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-
-
 const router = createBrowserRouter([
-    {
+  {
     path: "/",
-    element: (
-        <MainLayout />
-    ),
+    element: <MainLayout />,
     errorElement: <Error />,
-    children:[
-                {
-                    index: true,
-                    element:  <Home />
-                },
-             
-                {
-                    path:'login',
-                    element: <Login />
-                },
-                {
-                    path:'register',
-                    element: <Register />
-                },
-           
+    children: [
+      {
+        index: true,
+        element: <Home />,
+      },
 
-    ]
-
-    }
-])
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "register",
+        element: <Register />,
+      },
+      {
+        path: "home",
+        element: <Home />,
+      },
+    ],
+  },
+]);
 
 function AppRouter() {
-
-return <RouterProvider router={router} />;
-  
+  return <RouterProvider router={router} />;
 }
 
-export default AppRouter
+export default AppRouter;
