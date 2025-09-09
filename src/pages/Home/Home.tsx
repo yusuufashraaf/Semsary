@@ -1,10 +1,11 @@
+import HeroImage from "@components/Home/HeroImage";
 
-function Home() {
+const Home = () => {
   return (
-    <div>
-      <p>home page</p>
+    <div className="homepage-container">
+      <HeroImage />
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
