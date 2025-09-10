@@ -1,0 +1,287 @@
+/* UserAccount.css */
+.user-account {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+}
+
+.account-sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #2d4b7a 0%, #1e3a5f 100%);
+  color: white;
+  padding: 25px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand h2 {
+  color: white;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.main-nav ul, .account-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.main-nav li, .account-nav li {
+  margin-bottom: 8px;
+}
+
+.main-nav a, .account-nav li {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.main-nav a:hover, .account-nav li:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.main-nav a i, .account-nav li i {
+  width: 20px;
+  margin-right: 12px;
+  font-size: 16px;
+}
+
+.account-nav h4 {
+  margin: 25px 0 15px 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 0 15px;
+}
+
+.account-nav li.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  font-weight: 500;
+}
+
+.search-box {
+  position: relative;
+  margin: 20px 0;
+}
+
+.search-box i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.search-box input {
+  width: 100%;
+  padding: 12px 15px 12px 45px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.search-box input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.account-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.tab-content h2 {
+  color: #2d4b7a;
+  margin-bottom: 25px;
+  font-weight: 600;
+}
+
+.personal-form {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #2d4b7a;
+}
+
+.form-group input, .form-group textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus, .form-group textarea:focus {
+  outline: none;
+  border-color: #4b7aca;
+}
+
+.update-btn {
+  background: #4b7aca;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.update-btn:hover {
+  background: #3b68b4;
+}
+
+.kyc-status {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.verification-badge {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.verification-badge i {
+  font-size: 32px;
+  color: #28a745;
+  margin-right: 15px;
+}
+
+.verification-badge h3 {
+  margin: 0;
+  font-weight: 600;
+  color: #2d4b7a;
+  flex: 1;
+}
+
+.status {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.status.verified {
+  background: #e8f5e9;
+  color: #28a745;
+}
+
+.security-options, .account-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.security-item, .action-item {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.security-item h3, .action-item h3 {
+  color: #2d4b7a;
+  margin-bottom: 10px;
+}
+
+.security-item p, .action-item p {
+  color: #67758d;
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.security-btn, .download-btn {
+  background: #4b7aca;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.security-btn:hover, .download-btn:hover {
+  background: #3b68b4;
+}
+
+.delete-btn, .deactivate-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.delete-btn:hover, .deactivate-btn:hover {
+  background: #c82333;
+}
+
+/* Responsive design */
+@media (max-width: 900px) {
+  .user-account {
+    flex-direction: column;
+  }
+  
+  .account-sidebar {
+    width: 100%;
+    padding: 15px;
+  }
+  
+  .account-content {
+    padding: 20px;
+  }
+  
+  .security-options, .account-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .account-content {
+    padding: 15px;
+  }
+  
+  .personal-form, .kyc-status, .security-item, .action-item {
+    padding: 15px;
+  }
+  
+  .verification-badge {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+  
+  .verification-badge i {
+    margin-right: 0;
+  }
+}
