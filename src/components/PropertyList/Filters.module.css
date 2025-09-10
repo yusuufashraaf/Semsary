@@ -1,0 +1,144 @@
+/* Root Variables (for colors, spacing, etc.) */
+:root {
+  --primary-color: #c79194;
+  --secondary-bg: #472426;
+  --danger-color: red;
+  --font-size-base: 0.95rem;
+  --border-radius: 6px;
+}
+
+/* Filters Sidebar Container */
+.filtersSidebar {
+  width: 280px;
+  background: transparent;
+  padding: 20px;
+  height: 100vh;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+  border: 1px solid var(--primary-color);
+}
+
+.show {
+  transform: translateX(0);
+}
+
+/* Header Section (Title + Clear Button) */
+.filtersHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filtersTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.clearFiltersBtn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.clearFiltersBtn:hover {
+  color: var(--danger-color);
+}
+
+/* Filter Groups */
+.filterGroup {
+  margin-bottom: 20px;
+}
+
+.filterLabel {
+  display: block;
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--primary-color);
+}
+
+/* Custom Select Inputs */
+.customSelectWrapper {
+  position: relative;
+}
+
+.customSelect {
+  width: 100%;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--border-radius);
+  appearance: none;
+  font-size: var(--font-size-base);
+  color: var(--primary-color);
+  background: var(--secondary-bg);
+}
+
+.selectArrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  pointer-events: none;
+  color: var(--primary-color);
+}
+
+/* Slider */
+.currency {
+  color: var(--primary-color);
+}
+
+.slider {
+  color: var(--primary-color) !important;
+}
+
+/* Checkbox Groups */
+.checkboxGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.checkboxItem {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkboxItem input {
+  display: none;
+}
+
+.checkboxCustom {
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--primary-color);
+  border-radius: 4px;
+  margin-right: 8px;
+  display: inline-block;
+  position: relative;
+  background: var(--secondary-bg);
+  transition: background 0.2s ease, border 0.2s ease;
+}
+
+.checkboxItem input:checked + .checkboxCustom {
+  background: var(--primary-color);
+}
+
+.checkboxItem input:checked + .checkboxCustom::after {
+  content: "✓";
+  position: absolute;
+  left: 3px;
+  font-size: 12px;
+  color: #ffffff;
+}
+
+.checkboxLabel {
+  font-size: 0.9rem;
+  color: var(--primary-color);
+}
