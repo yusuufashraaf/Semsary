@@ -1,0 +1,49 @@
+/* ViewToggle Styles */
+:root {
+  --toggle-bg: #472426;
+  --toggle-color: #fff;
+  --toggle-border: #c79194;
+  --toggle-hover-bg: #c79194;
+  --toggle-hover-color: #472426;
+}
+
+/* Container for the view toggle */
+.viewToggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Toggle buttons for grid/list */
+.toggleBtn {
+  background: none;
+  border: 1px solid var(--toggle-border);
+  color: var(--toggle-color);
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Hover state for toggle buttons */
+.toggleBtn:hover {
+  background-color: var(--toggle-hover-bg);
+  color: var(--toggle-hover-color);
+}
+
+/* Active state for selected toggle button */
+.toggleBtn.active {
+  background-color: var(--toggle-bg);
+  color: var(--toggle-color);
+}
+
+/* Text showing results count */
+.showResult {
+  color: var(--toggle-border);
+}
