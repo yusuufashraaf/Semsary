@@ -1,0 +1,67 @@
+/* Root Variables */
+:root {
+  --primary-color: #c79194;
+  --secondary-color: #472426;
+  --danger-color: #dc3545;
+  --backdrop-color: #211212;
+}
+
+/* Modal Backdrop */
+.modalBackdrop {
+  background-color: var(--backdrop-color);
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Modal */
+.modal-content {
+  background-color: var(--primary-color) !important;
+  border: 1px solid var(--primary-color) !important;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Modal Body */
+.modal-body {
+  background-color: var(--secondary-color) !important;
+  display: flex;
+  justify-content: center;
+  padding: 1rem !important;
+}
+
+/* Modal Footer */
+.modal-footer {
+  background-color: var(--secondary-color) !important;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem !important;
+}
+
+/* Buttons */
+
+/* Close Button */
+.closeButton {
+  background: none;
+  border: 1px solid var(--secondary-color);
+  color: var(--primary-color);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+/* Apply Button */
+.applyButton {
+  background-color: var(--secondary-color);
+  border: 1px solid var(--danger-color);
+  color: var(--primary-color);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+}

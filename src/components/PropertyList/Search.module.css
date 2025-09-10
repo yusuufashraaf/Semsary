@@ -1,0 +1,55 @@
+/* Container around the search bar */
+.searchContainer {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+/* Wrapper for input and icons */
+.searchInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Magnifying glass icon inside input */
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  color: #c79194;
+  pointer-events: none;
+}
+
+/* Text input field styling */
+.searchInput {
+  width: 100%;
+  padding: 10px 40px 10px 36px;
+  border-radius: 6px;
+  outline: none;
+  border: 0;
+  font-size: 0.95rem;
+  color: #c79194;
+  background: #472426;
+}
+
+/* Placeholder text style */
+.searchInput::placeholder {
+  color: #c79194;
+  opacity: 1;
+}
+
+/* Clear (✕) button on the right */
+.clearSearchBtn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c79194;
+  transition: color 0.2s ease;
+}
