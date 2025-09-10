@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import styles from "./Search.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
@@ -10,20 +9,7 @@ interface SearchBarProps {
 }
 
 export default function Search({ searchTerm, setSearchTerm }: SearchBarProps) {
-  // Local state to hold input value before sending to parent (for debouncing)
-  const [localValue, setLocalValue] = useState(searchTerm);
-
-  // useEffect for debouncing input updates to parent
-  useEffect(() => {
-    // Delay updating parent state by 300ms after user stops typing
-    const handler = setTimeout(() => {
-      // Trim spaces and normalize multiple spaces
-      setSearchTerm(localValue.trim().replace(/\s+/g, " "));
-    }, 300);
-
-    // Cleanup previous timeout on each change
-    return () => clearTimeout(handler);
-  }, [localValue, setSearchTerm]);
+  // Local state removed: input updates parent immediately now
 
   return (
     <div className={styles.searchContainer}>
@@ -44,26 +30,22 @@ export default function Search({ searchTerm, setSearchTerm }: SearchBarProps) {
           className={styles.searchInput}
           placeholder="Search by city or address"
           aria-label="Search by city or address"
-          value={localValue} // controlled input
-          onChange={(e) => setLocalValue(e.target.value)} // update local state
+          value={searchTerm} // directly controlled by parent
+          onChange={(e) => setSearchTerm(e.target.value)} // update parent immediately
           onKeyDown={(e) => {
             // Clear input on Escape key
             if (e.key === "Escape") {
-              setLocalValue("");
               setSearchTerm("");
             }
           }}
         />
 
         {/* Clear button, shown only if input has value */}
-        {localValue && (
+        {searchTerm && (
           <button
             type="button"
             className={styles.clearSearchBtn}
-            onClick={() => {
-              setLocalValue(""); // clear local state
-              setSearchTerm(""); // clear parent state
-            }}
+            onClick={() => setSearchTerm("")} // clear parent state
             aria-label="Clear search"
           >
             ✕
