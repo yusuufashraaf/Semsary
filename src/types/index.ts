@@ -13,3 +13,7 @@ export type CategoryCardProps = {
   image: string;
   link: string;
 };
+export type TLoading ="idle" | "pending" | "succeeded" | "failed";
+
+
+
