@@ -28,14 +28,14 @@ const responseInterceptor = async (error: AxiosError) => {
 
 
   // Check if the error is a 401, if we haven't retried yet, AND if the failed request was NOT the refresh endpoint itself.
-  if (error.response?.status === 401 && !originalRequest._retry && originalRequest.url !== "/users/fresh") {
+  if (error.response?.status === 401 && !originalRequest._retry && originalRequest.url !== "/refresh") {
 
     
     originalRequest._retry = true; // Mark that we are attempting a retry
     
     try {
       console.log("Access token expired. Attempting to refresh...");
-      const refreshResponse = await api.post("/users/refresh");
+      const refreshResponse = await api.post("/refresh");
       
       // In your Thunk, you used response.data, but here you might need to access the property directly
       const newAccessToken = refreshResponse.data.accessToken; 

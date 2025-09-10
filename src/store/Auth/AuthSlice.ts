@@ -2,6 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import { TLoading } from "src/types";
 import ActSignUp from "./Act/ActSignUp";
 import ActSignIn from "./Act/ActSignIn";
+import ActLogout from "./Act/ActLogout";
+import ActCheckAuth from "./Act/ActCheckAuth";
 
 interface IAuthState{
     user:{
@@ -13,13 +15,15 @@ interface IAuthState{
     loading:TLoading
     error:string|null
     jwt:string|null
+    isInitialized:boolean
 }
 
 const initialState:IAuthState={
     user:null,
     loading:"idle",
     error:null,
-    jwt:null
+    jwt:null,
+    isInitialized:false
 };
 const AuthSlice =createSlice({
     name:"Auth",
@@ -28,6 +32,9 @@ const AuthSlice =createSlice({
          resetUI:(state)=>{
             state.loading="idle";
             state.error=null;
+        },
+        Logout:(state)=>{
+            state.jwt=null;
         }
     },
     extraReducers:(builder)=>{
@@ -51,7 +58,9 @@ const AuthSlice =createSlice({
         });
         builder.addCase(ActSignIn.fulfilled,(state,action)=>{
             state.loading = "succeeded";
-            state.jwt = action.payload.accessToken;
+            console.log(action.payload.access_token);
+            
+            state.jwt = action.payload.access_token;
         });
         builder.addCase(ActSignIn.rejected,(state,action)=>{
             state.loading = "failed";
@@ -59,8 +68,41 @@ const AuthSlice =createSlice({
                 state.error = action.payload;
             }
         });
+        builder.addCase(ActLogout.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActLogout.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            Logout();
+            state.error = null;
+        });
+        builder.addCase(ActLogout.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+           builder
+
+            .addCase(ActCheckAuth.pending, (state) => {
+                state.loading = 'pending';
+            })
+            .addCase(ActCheckAuth.fulfilled, (state, action) => {
+                state.loading = 'succeeded';              
+                state.jwt = action.payload.access_token;
+                state.isInitialized = true;
+                
+            })
+            .addCase(ActCheckAuth.rejected, (state) => {
+                state.loading = 'failed';
+                state.isInitialized = true; 
+
+            });
+
+
     }
 })
 
 export default AuthSlice.reducer;
-export const {resetUI} = AuthSlice.actions
+export const {resetUI,Logout} = AuthSlice.actions

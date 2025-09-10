@@ -1,20 +1,19 @@
-import { signInType } from '@validations/signInSchema';
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@services/axios-global";
 import { isAxiosError } from "axios";
 
-const ActSignIn =createAsyncThunk('Auth/SignIn',
-    async(formData:signInType,thunkApi)=>{
+const ActLogout =createAsyncThunk('Auth/Logout',
+    async(_,thunkApi)=>{
 
         
         const {rejectWithValue,fulfillWithValue}= thunkApi;
         try {
-            const response = await api.post('/login',formData);
+            const response = await api.post('/logout');
             
             return fulfillWithValue(response.data)
 
         } catch (error) {
-            console.error("SignIn error:", error);
+            console.error("Logout error:", error);
             if (isAxiosError(error)) {
                 return rejectWithValue(error.response?.data.message || error.message);
             } else {
@@ -22,4 +21,4 @@ const ActSignIn =createAsyncThunk('Auth/SignIn',
             }
         }
 })
-export default ActSignIn
+export default ActLogout
