@@ -1,18 +1,20 @@
-import { Col, Row } from 'react-bootstrap';
+import { Col, Row, Spinner } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { SubmitHandler,useForm } from 'react-hook-form';
 import { signUpSchema, signUpType } from '@validations/signUpSchema';
 import { zodResolver } from "@hookform/resolvers/zod";
 import Input from '@components/forms/input/Input';
-
-// import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@store/hook';
+import ActSignUp from '@store/Auth/Act/ActSignUp';
+import { useNavigate } from 'react-router-dom';
 
 
 
 export default function Register() {
-
-  // const navigate = useNavigate();
+  const dispatch =useAppDispatch();
+  const {loading,error}=useAppSelector(state=> state.Authslice)
+  const navigate = useNavigate();
 
       const {
         register,
@@ -25,8 +27,12 @@ export default function Register() {
       });
 
     
-const submitForm:SubmitHandler<signUpType> =(data) =>{
-  console.log(data);
+const submitForm:SubmitHandler<signUpType> =(data:signUpType) =>{
+    dispatch(ActSignUp(data))
+    .unwrap()
+    .then(()=>{
+      navigate("/login?message=account_created");
+    });
   
 }
 
@@ -39,22 +45,28 @@ const submitForm:SubmitHandler<signUpType> =(data) =>{
 
               <Input 
               label='First Name'
-              name ="firstName"
+              name ="first_name"
               register={register}
-              error ={errors.firstName?.message}
+              error ={errors.first_name?.message}
               />
 
               <Input 
               label='Last Name'
-              name ="lastName"
+              name ="last_name"
               register={register}
-              error ={errors.lastName?.message}
+              error ={errors.last_name?.message}
               />
               <Input 
               label='Email Address'
               name ="email"
               register={register}
               error ={errors.email?.message }
+              />
+              <Input 
+              label='Phone Number'
+              name ="phone_number"
+              register={register}
+              error ={errors.phone_number?.message }
               />
               <Input 
               label='Password'
@@ -65,21 +77,29 @@ const submitForm:SubmitHandler<signUpType> =(data) =>{
               />
               <Input 
               label='Confirm Password'
-              name ="confirmPassword"
+              name ="password_confirmation"
               type='password'
               register={register}
-              error ={errors.confirmPassword?.message}
+              error ={errors.password_confirmation?.message}
               />
-
-               <Button 
+              <Button 
                 variant="info" 
                 type="submit" 
                 className='text-light' 
-            
               >
-              Submit
+              {loading === "pending" ? (
+                <>
+                  <Spinner animation="border" size="sm" />
+                  Loading...
+                </>
+              ) : (
+                'Submit'
+              )}
                 
               </Button>
+              {error && (
+              <p style={{ color: "#DC3545", marginTop: "10px" }}>{error}</p>
+            )}
           </Form>
       </Col>
        

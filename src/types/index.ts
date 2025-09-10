@@ -109,3 +109,6 @@ export type PaginationProps = {
 export type ScrollTopButtonProps = {
   scrollToTop: () => void;
 };
+
+export type TLoading ="idle" | "pending" | "succeeded" | "failed";
+
