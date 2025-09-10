@@ -10,7 +10,6 @@ const ActSignUp =createAsyncThunk('Auth/SignUp',
         const {rejectWithValue,fulfillWithValue}= thunkApi;
         try {
             const response = await api.post('/register',formData);
-            console.log(response);
             
             return fulfillWithValue(response.data)
 
