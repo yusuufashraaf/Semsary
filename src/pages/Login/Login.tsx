@@ -9,7 +9,6 @@ import { Alert, Button, Col, Form, Row, Spinner } from "react-bootstrap"
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-
 function Login() {
   const [searchParams,setSearchParams]=useSearchParams();
     const dispatch =useAppDispatch();
@@ -46,7 +45,7 @@ function Login() {
   <>
      <Row>
 
-      <Col md={{span:"6", offset:"3"}}>
+      <Col md={{span:"4", offset:"4"}}>
           {searchParams.get('message') === "account_created" &&
           (
             <Alert variant="success">
@@ -72,7 +71,8 @@ function Login() {
               <Button 
                 variant="info" 
                 type="submit" 
-                className='text-light' 
+                className='text-light mt-2' 
+                style={{width:"100%"}}
               >
               
               {loading === "pending" ? (

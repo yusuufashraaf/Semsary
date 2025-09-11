@@ -1,0 +1,37 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.7" />
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main background circle -->
+  <circle cx="60" cy="60" r="56" fill="url(#bgGradient)" filter="url(#shadow)"/>
+  
+  <!-- User icon -->
+  <g fill="url(#iconGradient)" opacity="0.95">
+    <!-- User head -->
+    <circle cx="60" cy="42" r="12" />
+    
+    <!-- User body -->
+    <path d="M60 58 C48 58, 40 66, 40 76 L40 82 C40 84, 42 86, 44 86 L76 86 C78 86, 80 84, 80 82 L80 76 C80 66, 72 58, 60 58 Z" />
+  </g>
+  
+  <!-- Lock accent -->
+  <g fill="none" stroke="url(#iconGradient)" stroke-width="2.5" opacity="0.8">
+    <rect x="72" y="70" width="16" height="12" rx="2" />
+    <path d="M76 70 V66 C76 63, 78 61, 80 61 C82 61, 84 63, 84 66 V70" />
+  </g>
+  
+  <!-- Subtle shine effect -->
+  <ellipse cx="45" cy="35" rx="8" ry="12" fill="url(#iconGradient)" opacity="0.2" />
+</svg>
