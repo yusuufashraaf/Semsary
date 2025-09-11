@@ -1,22 +1,18 @@
 import { Button, Form, Spinner } from "react-bootstrap"
 import Input from "../input/Input"
-import { useAppSelector } from "@store/hook";
+import { useAppDispatch, useAppSelector } from "@store/hook";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import ActSendOTP from "@store/Auth/Act/ActSendOTP";
+import { otpSchema, OtpType } from "@validations/otpSchema";
 
-
-const otpSchema = z.object({
-  emailOTP: z.string().min(6, "OTP must be 6 characters").max(6, "OTP must be 6 characters")
-});
-
-type OtpType = z.infer<typeof otpSchema>;
 
 interface IEmailVerificationProps {
-  handleNext: (data: OtpType) => void;
+  setCurrentStep: React.Dispatch<React.SetStateAction<number >>;
 }
 
-const EmailVerification = ({ handleNext }: IEmailVerificationProps) => {
+const EmailVerification = ({ setCurrentStep }: IEmailVerificationProps) => {
+  const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector(state => state.Authslice);
   const formData = useAppSelector(state => state.form); // Get form data from store
 
@@ -28,6 +24,13 @@ const EmailVerification = ({ handleNext }: IEmailVerificationProps) => {
     mode: "onBlur",
     resolver: zodResolver(otpSchema),
   });
+
+    const handleNext = (data: OtpType) => {
+     dispatch(ActSendOTP(data)).unwrap().then(()=>{
+      setCurrentStep((prev) => prev + 1);
+    })
+  };
+
 
   return (
     <Form onSubmit={handleSubmit(handleNext)}>

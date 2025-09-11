@@ -1,16 +1,19 @@
 import { Button, Form, Spinner } from "react-bootstrap"
 import Input from "../input/Input"
-import { useAppSelector } from "@store/hook";
+import { useAppDispatch, useAppSelector } from "@store/hook";
 import { useForm } from "react-hook-form";
 import { signUpSchema, signUpType } from "@validations/signUpSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
+import { updateFormData } from "@store/FormConfirm/FormSlice";
+import ActSignUp from "@store/Auth/Act/ActSignUp";
 
-interface IAccountSetupProps{
-    handleNext:(data:signUpType)=>void;
+interface IAccountSetupProps {
+  setCurrentStep: React.Dispatch<React.SetStateAction<number >>;
 }
 
-const AccountSetup = ({handleNext}:IAccountSetupProps) => {
+const AccountSetup = ({setCurrentStep}:IAccountSetupProps) => {
+    const dispatch = useAppDispatch();
         const persistedData=useAppSelector(state=> state.form)
 
       const {loading,error}=useAppSelector(state=> state.Authslice)
@@ -24,6 +27,13 @@ const AccountSetup = ({handleNext}:IAccountSetupProps) => {
             resolver:zodResolver(signUpSchema),
             defaultValues: persistedData
           });
+
+      const handleNext = (data: signUpType) => {
+        dispatch(ActSignUp(data)).unwrap().then(()=>{
+          dispatch(updateFormData(data));
+          setCurrentStep((prev) => prev + 1);
+        })
+      };
 
         useEffect(() => {
 
