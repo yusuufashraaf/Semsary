@@ -111,4 +111,5 @@ export type ScrollTopButtonProps = {
 };
 
 export type TLoading ="idle" | "pending" | "succeeded" | "failed";
+export type Step = "Account Setup" | "Email Verification" | "Phone Verification" | "Image With ID";
 
