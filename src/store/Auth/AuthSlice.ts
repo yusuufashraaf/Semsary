@@ -4,13 +4,19 @@ import ActSignUp from "./Act/ActSignUp";
 import ActSignIn from "./Act/ActSignIn";
 import ActLogout from "./Act/ActLogout";
 import ActCheckAuth from "./Act/ActCheckAuth";
+import ActSendOTP from "./Act/ActSendOTP";
+
 
 interface IAuthState{
     user:{
         id:number,
         email:string,
-        firstName:string,
-        lastName:string
+        first_name:string,
+        last_name:string,
+        phone_number:string,
+        role: string,
+        status:string,
+        created_at:string
     } | null,
     loading:TLoading
     error:string|null
@@ -42,9 +48,11 @@ const AuthSlice =createSlice({
             state.loading = "pending";
             state.error = null;
         });
-        builder.addCase(ActSignUp.fulfilled,(state)=>{
+        builder.addCase(ActSignUp.fulfilled,(state,action)=>{
             state.loading = "succeeded";
-
+   
+            state.user = action.payload.user;
+            
         });
         builder.addCase(ActSignUp.rejected,(state,action)=>{
             state.loading = "failed";
@@ -99,6 +107,21 @@ const AuthSlice =createSlice({
                 state.isInitialized = true; 
 
             });
+
+        builder.addCase(ActSendOTP.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActSendOTP.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActSendOTP.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
 
 
     }
