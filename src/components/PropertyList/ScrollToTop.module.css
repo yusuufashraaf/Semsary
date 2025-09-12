@@ -1,0 +1,43 @@
+/* Root variables for colors */
+:root {
+  --primary-bg: #472426;
+  --primary-border: #c79194;
+  --primary-color: #c79194;
+  --hover-bg: #c79194;
+  --hover-color: #472426;
+}
+
+/* Scroll to Top Button - Base */
+.scrollTopBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: var(--primary-bg);
+  border: 1px solid var(--primary-border);
+  color: var(--primary-color);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease,
+    opacity 0.3s ease;
+  opacity: 0; /* Hidden by default */
+  pointer-events: none; /* Not clickable when hidden */
+}
+
+/* Scroll to Top Button - Visible */
+.scrollTopBtnVisible {
+  opacity: 1; /* Show button */
+  pointer-events: auto; /* Enable click */
+}
+
+/* Scroll to Top Button - Hover */
+.scrollTopBtn:hover {
+  background-color: var(--hover-bg);
+  color: var(--hover-color);
+  transform: translateY(-3px);
+}

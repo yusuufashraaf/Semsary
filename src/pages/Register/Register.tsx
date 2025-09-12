@@ -1,91 +1,49 @@
 import { Col, Row } from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import { SubmitHandler,useForm } from 'react-hook-form';
-import { signUpSchema, signUpType } from '@validations/signUpSchema';
-import { zodResolver } from "@hookform/resolvers/zod";
-import Input from '@components/forms/input/Input';
-
-// import { useNavigate } from 'react-router-dom';
+import Stepper from '@components/forms/stepper/Stepper';
+import { Step } from 'src/types';
+import { useLayoutEffect, useState } from 'react';
+import AccountSetup from '@components/forms/accountsetup/AccountSetup';
+import EmailVerification from '@components/forms/emailVerification/EmailVerification';
+import PhoneVerification from '@components/forms/phoneVerification/PhoneVerification';
+import ImageWithID from '@components/forms/imageWithId/ImageWithID';
 
 
 
 export default function Register() {
-
-  // const navigate = useNavigate();
-
-      const {
-        register,
-        handleSubmit,
-        formState: { errors },
-
-      } = useForm<signUpType>({
-        mode:"onBlur",
-        resolver:zodResolver(signUpSchema)
-      });
-
+  const [currentStep, setCurrentStep] = useState<number>(4);
+  const steps: Step[] = ["Account Setup", "Email Verification", "Phone Verification", "Image With ID"];
+useLayoutEffect(()=>{
+  if(currentStep==5){
+    console.log("yeeeees");
     
-const submitForm:SubmitHandler<signUpType> =(data) =>{
-  console.log(data);
-  
-}
+  }
 
+},[currentStep])
+
+
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 1:
+        return <AccountSetup setCurrentStep={setCurrentStep}  />;
+      case 2:
+        return <EmailVerification setCurrentStep={setCurrentStep} />;
+      case 3:
+        return <PhoneVerification setCurrentStep={setCurrentStep} />;
+      case 4:
+        return <ImageWithID setCurrentStep={setCurrentStep} />;
+      default:
+        return <AccountSetup setCurrentStep={setCurrentStep} />;
+    }
+  };
 
   return (
     <>
-     <Row>
-      <Col md={{span:"6", offset:"3"}}>
-         <Form onSubmit={handleSubmit(submitForm)}>
-
-              <Input 
-              label='First Name'
-              name ="firstName"
-              register={register}
-              error ={errors.firstName?.message}
-              />
-
-              <Input 
-              label='Last Name'
-              name ="lastName"
-              register={register}
-              error ={errors.lastName?.message}
-              />
-              <Input 
-              label='Email Address'
-              name ="email"
-              register={register}
-              error ={errors.email?.message }
-              />
-              <Input 
-              label='Password'
-              name ="password"
-              type='password'
-              register={register}
-              error ={errors.password?.message}
-              />
-              <Input 
-              label='Confirm Password'
-              name ="confirmPassword"
-              type='password'
-              register={register}
-              error ={errors.confirmPassword?.message}
-              />
-
-               <Button 
-                variant="info" 
-                type="submit" 
-                className='text-light' 
-            
-              >
-              Submit
-                
-              </Button>
-          </Form>
-      </Col>
-       
+      <Row>
+        <Col md={{ span: "4", offset: "4" }}>
+          <Stepper currentStep={currentStep} steps={steps} />
+          {renderCurrentStep()}
+        </Col>
       </Row>
     </>
-     
-
-  )
+  );
 }
