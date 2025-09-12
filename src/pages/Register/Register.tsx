@@ -1,20 +1,25 @@
 import { Col, Row } from 'react-bootstrap';
 import Stepper from '@components/forms/stepper/Stepper';
 import { Step } from 'src/types';
-import { useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import AccountSetup from '@components/forms/accountsetup/AccountSetup';
-// import { signUpType } from '@validations/signUpSchema';
-
 import EmailVerification from '@components/forms/emailVerification/EmailVerification';
 import PhoneVerification from '@components/forms/phoneVerification/PhoneVerification';
-// import ImageWithID from '@components/forms/imageWithId/ImageWithID';
+import ImageWithID from '@components/forms/imageWithId/ImageWithID';
 
-// Create a union type for all possible form data
 
 
 export default function Register() {
-  const [currentStep, setCurrentStep] = useState<number>(1);
+  const [currentStep, setCurrentStep] = useState<number>(4);
   const steps: Step[] = ["Account Setup", "Email Verification", "Phone Verification", "Image With ID"];
+useLayoutEffect(()=>{
+  if(currentStep==5){
+    console.log("yeeeees");
+    
+  }
+
+},[currentStep])
+
 
   const renderCurrentStep = () => {
     switch (currentStep) {
@@ -24,8 +29,8 @@ export default function Register() {
         return <EmailVerification setCurrentStep={setCurrentStep} />;
       case 3:
         return <PhoneVerification setCurrentStep={setCurrentStep} />;
-      // case 4:
-      //   return <ImageWithID handleNext={handleNext} />;
+      case 4:
+        return <ImageWithID setCurrentStep={setCurrentStep} />;
       default:
         return <AccountSetup setCurrentStep={setCurrentStep} />;
     }
