@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ActSendOTP from "@store/Auth/Act/ActSendOTP";
 import { otpSchema, OtpType } from "@validations/otpSchema";
+import ActReSendOTP from "@store/Auth/Act/ActReSendOTP";
+import { useEffect, useState } from "react";
 
 
 interface IEmailVerificationProps {
@@ -12,25 +14,48 @@ interface IEmailVerificationProps {
 }
 
 const EmailVerification = ({ setCurrentStep }: IEmailVerificationProps) => {
+  const [timer, setTimer] = useState(0);
+  const [resendLoading, setResendLoading] = useState(false);
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector(state => state.Authslice);
   const formData = useAppSelector(state => state.form); // Get form data from store
+
+   useEffect(() => {
+    let interval:number;
+    if (timer > 0) {
+      interval = window.setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timer]);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    watch
   } = useForm<OtpType>({
     mode: "onBlur",
     resolver: zodResolver(otpSchema),
   });
-
+const otpValue = watch("emailOTP"); 
     const handleNext = (data: OtpType) => {
      dispatch(ActSendOTP(data)).unwrap().then(()=>{
       setCurrentStep((prev) => prev + 1);
     })
   };
 
+
+ const handleClickOnResend = () => {
+    setResendLoading(true);
+    dispatch(ActReSendOTP())
+      .unwrap()
+      .then(() => {
+        setTimer(60); 
+      })
+      .finally(() => setResendLoading(false));
+  };
 
   return (
     <Form onSubmit={handleSubmit(handleNext)}>
@@ -50,13 +75,15 @@ const EmailVerification = ({ setCurrentStep }: IEmailVerificationProps) => {
         <Button 
           variant="outline-secondary" 
           onClick={() => {
-            //TODO resend Logic here
-            //  implement resend logic here
-            handleNext({ emailOTP: "" });
+            handleClickOnResend();
           }}
-          disabled={loading === "pending"}
+          disabled={loading === "pending" || timer > 0}
         >
-          Resend Code
+         {resendLoading
+            ? <Spinner animation="border" size="sm" />
+            : timer > 0
+              ? `Resend Code (${timer})`
+              : "Resend Code"}
         </Button>
         
         <Button 
@@ -65,7 +92,7 @@ const EmailVerification = ({ setCurrentStep }: IEmailVerificationProps) => {
           className='text-light'
           disabled={loading === "pending"}
         >
-          {loading === "pending" ? (
+          {loading === "pending" && otpValue  ? (
             <>
               <Spinner animation="border" size="sm" />
               Verifying...

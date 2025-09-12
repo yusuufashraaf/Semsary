@@ -1,26 +1,23 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@services/axios-global";
 import { RootState } from "@store/index";
-import { OtpType } from "@validations/otpSchema";
 import { isAxiosError } from "axios";
 
-const ActSendOTP =createAsyncThunk('Auth/sendOTP',
-    async(data:OtpType,thunkApi)=>{
+const ActReSendOTP =createAsyncThunk('Auth/reSendOTP',
+    async(_,thunkApi)=>{
     
         
         const {rejectWithValue,fulfillWithValue,getState}= thunkApi;
         const state = getState() as RootState;
-     
+        
         const user_id = state.Authslice.user?.id;
 
         try {
-            const response = await api.post('/verify-email',{ user_id,
-        otp: data.emailOTP,});
-            
+            const response = await api.post('/resend-email-otp',{user_id});
             return fulfillWithValue(response.data)
 
         } catch (error) {
-            console.error("verify-email error:", error);
+            console.error("resend-email error:", error);
             if (isAxiosError(error)) {
                 return rejectWithValue(error.response?.data.message || error.message);
             } else {
@@ -28,4 +25,4 @@ const ActSendOTP =createAsyncThunk('Auth/sendOTP',
             }
         }
 })
-export default ActSendOTP
+export default ActReSendOTP
