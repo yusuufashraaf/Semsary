@@ -8,6 +8,8 @@ import ActSendOTP from "./Act/ActSendOTP";
 import ActReSendOTP from "./Act/ActReSendOTP";
 import ActUploadId from "./Act/ActUploadId";
 import ActVerifyWhatsOTP from "./Act/ActVerifyWhatsOTP";
+import ActforgetPass from "./Act/ActforgetPass";
+import ActResetPass from "./Act/ActResetPass";
 
 
 interface IAuthState{
@@ -167,6 +169,36 @@ const AuthSlice =createSlice({
                 state.error = action.payload;
             }
         });
+
+        builder.addCase(ActforgetPass.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActforgetPass.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActforgetPass.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+        builder.addCase(ActResetPass.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActResetPass.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActResetPass.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+        
 
 
     }
