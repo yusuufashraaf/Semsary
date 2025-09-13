@@ -1,0 +1,48 @@
+/* Card Container */
+.card {
+  background: rgba(255, 255, 255, 0.03); /* subtle translucent background */
+  padding: 1.25rem;
+  border-radius: var(--radius-md, 14px);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  margin-bottom: 1rem;
+}
+
+/* Section Headings */
+.heading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.subHeading {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+/* Description Text */
+.description {
+  margin-bottom: 1rem;
+  color: var(--text-muted, #d1d5db);
+  line-height: 1.5;
+}
+
+/* Property Stats */
+.stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+/* Icons */
+.icon {
+  margin-right: 6px;
+  color: var(--primary, #007bff);
+  vertical-align: middle;
+}
+
+/* Empty State (No Amenities) */
+.noAmenities {
+  font-size: 0.95rem;
+  color: var(--text-secondary, #777);
+}
