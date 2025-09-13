@@ -84,7 +84,9 @@ export default function PropertyList({ listings }: PropertyListProps) {
   const uniqueBedrooms = useMemo(
     () =>
       Array.from(
-        new Set(backendListings.map((p) => p.beds.toString()).filter(Boolean))
+        new Set(
+          backendListings.map((p) => p.bedrooms.toString()).filter(Boolean)
+        )
       ).sort(),
     [backendListings]
   ) as string[];
@@ -155,7 +157,7 @@ export default function PropertyList({ listings }: PropertyListProps) {
         ? property.type === filters.propertyType
         : true;
       const matchesBedrooms =
-        !filters.bedrooms || property.beds === Number(filters.bedrooms);
+        !filters.bedrooms || property.bedrooms === Number(filters.bedrooms);
       const matchesStatus = filters.status
         ? property.status === filters.status
         : true;
@@ -258,7 +260,7 @@ export default function PropertyList({ listings }: PropertyListProps) {
 
     const currentParams = Object.fromEntries(searchParams.entries());
     if (JSON.stringify(currentParams) !== JSON.stringify(params)) {
-      setSearchParams(params, { replace: true }); // ✅ replace instead of push
+      setSearchParams(params, { replace: true });
     }
   }, [
     debouncedSearch,
