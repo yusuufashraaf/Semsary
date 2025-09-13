@@ -1,0 +1,40 @@
+/* Root variables */
+:root {
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+  --font-size-md: 1.2rem;
+  --border-radius-md: 10px;
+}
+
+/* Container wrapper */
+.container {
+  margin-top: var(--spacing-lg);
+}
+
+/* Amenities grid layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+/* Grid item card */
+.item {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.6rem;
+  border-radius: var(--border-radius-md);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+/* Icon wrapper */
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
