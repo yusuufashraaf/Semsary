@@ -1,0 +1,49 @@
+/* HostCard Styles */
+
+/* Card container */
+.card {
+  background: var(--card);
+  padding: 1.25rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  margin-bottom: 1rem;
+}
+
+/* Section title */
+.title {
+  margin-bottom: 1rem;
+}
+
+/* Flex container for host avatar + info */
+.hostInfo {
+  display: flex;
+  align-items: center;
+}
+
+/* Host avatar circle */
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    #ff6b86
+  ); /* Themed gradient */
+  font-weight: 700;
+  color: white;
+  margin-right: 0.75rem;
+}
+
+/* Host name */
+.name {
+  margin: 0;
+}
+
+/* Host join date */
+.joinDate {
+  color: var(--muted);
+}
