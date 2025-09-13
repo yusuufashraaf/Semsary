@@ -7,8 +7,7 @@ import { signInSchema, signInType } from "@validations/signInSchema";
 import { useEffect } from "react";
 import { Alert, Button, Col, Form, Row, Spinner } from "react-bootstrap"
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useNavigate, useSearchParams } from "react-router-dom";
-
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 function Login() {
   const [searchParams,setSearchParams]=useSearchParams();
@@ -46,7 +45,7 @@ function Login() {
   <>
      <Row>
 
-      <Col md={{span:"6", offset:"3"}}>
+      <Col md={{span:"4", offset:"4"}}>
           {searchParams.get('message') === "account_created" &&
           (
             <Alert variant="success">
@@ -69,10 +68,15 @@ function Login() {
               error ={errors.password?.message}
               type='password'
               />
+
+              <div className="d-flex justify-content-end mt-2">
+              <Link to="/forgot-password">Forgot Password?</Link>
+              </div>
               <Button 
                 variant="info" 
                 type="submit" 
-                className='text-light' 
+                className='text-light mt-3' 
+                style={{width:"100%"}}
               >
               
               {loading === "pending" ? (

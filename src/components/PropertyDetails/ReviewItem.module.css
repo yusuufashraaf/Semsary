@@ -1,0 +1,114 @@
+/* Review section wrapper */
+.reviewsSection {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1.25rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 1rem;
+}
+
+/* Section title */
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+/* Message when no reviews exist */
+.noReviews {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* Single review card container */
+.reviewCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.8rem;
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+}
+
+/* User avatar (first letter of reviewer name) */
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, var(--primary), #ff6b86);
+  font-weight: 700;
+  color: white;
+  font-size: 1rem;
+}
+
+/* Review text container */
+.reviewContent {
+  flex: 1;
+}
+
+/* Reviewer name */
+.reviewer {
+  font-weight: 600;
+}
+
+/* Review date */
+.date {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-bottom: 0.25rem;
+}
+
+/* Pagination container */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  border: none; /* Reset unwanted border */
+}
+
+/* Pagination buttons */
+.pageBtn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: white;
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(6px);
+}
+
+/* Hover effect for active buttons */
+.pageBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Disabled button styles */
+.pageBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Current page info */
+.pageInfo {
+  color: #ddd;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Reviewer name + stars row */
+.headerRow {
+  display: flex;
+  justify-content: space-between; /* reviewer left, stars right */
+  align-items: center;
+  margin-bottom: 0.25rem;
+}

@@ -1,0 +1,40 @@
+/* Breadcrumb Styles */
+
+/* Wrapper for the breadcrumb navigation */
+.breadcrumb {
+  background: var(--card);
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  display: inline-block;
+  margin-bottom: 1.25rem;
+}
+
+/* Flex container for breadcrumb items */
+.container {
+  display: flex;
+  align-items: center;
+}
+
+/* Separator between breadcrumb links */
+.separator {
+  margin: 0 8px;
+  color: var(--muted);
+}
+
+/* Links inside breadcrumb */
+.breadcrumb a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+/* Hover effect for links */
+.breadcrumb a:hover {
+  color: var(--primary);
+}
+
+/* Current/active breadcrumb item */
+.current {
+  color: var(--muted);
+}

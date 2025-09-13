@@ -1,0 +1,116 @@
+/* Root design tokens */
+:root {
+  --primary: #ff385c;
+  --secondary: #00a699;
+  --bg1: #0f0f23;
+  --bg2: #16213e;
+  --card: rgba(255, 255, 255, 0.03);
+  --muted: #9ca3af;
+
+  /* Layout scales */
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+
+  /* Border radius */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+
+  /* Divider */
+  --divider: rgba(255, 255, 255, 0.03);
+}
+
+/* Booking card container */
+.bookingCard {
+  background: var(--card);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--divider);
+  position: sticky;
+  top: 24px;
+}
+
+/* Price display */
+.bookingPrice {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.6rem;
+}
+
+.smallMuted {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* Form labels & inputs */
+.formLabel {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.formInput {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  color: black;
+  appearance: none;
+}
+
+.formInput option {
+  color: black;
+  background-color: white;
+}
+
+.guestSelect {
+  margin-top: 12px;
+}
+
+/* Reserve / Buy button */
+.reserveBtn {
+  display: block;
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, var(--primary), #ff6b86);
+  border: none;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.6rem;
+}
+
+.reserveBtn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Price breakdown section */
+.priceBreakdown {
+  border-top: 1px solid var(--divider);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+.breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.divider {
+  border-color: var(--divider);
+  margin-top: 12px;
+}

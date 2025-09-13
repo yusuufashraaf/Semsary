@@ -11,6 +11,7 @@ type InputProps<TFieldValue extends FieldValues>={
     formText?: string;
     success?:string;
     disabled?:boolean;
+    placeholder?:string;
 }
 
 const Input= <TFieldValue extends FieldValues>({
@@ -22,7 +23,8 @@ const Input= <TFieldValue extends FieldValues>({
   onBlur,
   formText,
   success,
-  disabled
+  disabled,
+  placeholder
 }: InputProps<TFieldValue>) => {
 
   const onBlurHandler = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -44,6 +46,7 @@ const Input= <TFieldValue extends FieldValues>({
            {...register(name)} 
           onBlur={onBlurHandler}
           disabled={disabled}
+          placeholder={placeholder || ""}
           />
           <Form.Control.Feedback type="invalid">
             {error}
