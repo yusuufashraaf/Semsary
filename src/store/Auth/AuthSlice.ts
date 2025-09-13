@@ -4,13 +4,24 @@ import ActSignUp from "./Act/ActSignUp";
 import ActSignIn from "./Act/ActSignIn";
 import ActLogout from "./Act/ActLogout";
 import ActCheckAuth from "./Act/ActCheckAuth";
+import ActSendOTP from "./Act/ActSendOTP";
+import ActReSendOTP from "./Act/ActReSendOTP";
+import ActUploadId from "./Act/ActUploadId";
+import ActVerifyWhatsOTP from "./Act/ActVerifyWhatsOTP";
+import ActforgetPass from "./Act/ActforgetPass";
+import ActResetPass from "./Act/ActResetPass";
+
 
 interface IAuthState{
     user:{
         id:number,
         email:string,
-        firstName:string,
-        lastName:string
+        first_name:string,
+        last_name:string,
+        phone_number:string,
+        role: string,
+        status:string,
+        created_at:string
     } | null,
     loading:TLoading
     error:string|null
@@ -42,9 +53,11 @@ const AuthSlice =createSlice({
             state.loading = "pending";
             state.error = null;
         });
-        builder.addCase(ActSignUp.fulfilled,(state)=>{
+        builder.addCase(ActSignUp.fulfilled,(state,action)=>{
             state.loading = "succeeded";
-
+   
+            state.user = action.payload.user;
+            
         });
         builder.addCase(ActSignUp.rejected,(state,action)=>{
             state.loading = "failed";
@@ -99,6 +112,93 @@ const AuthSlice =createSlice({
                 state.isInitialized = true; 
 
             });
+
+        builder.addCase(ActSendOTP.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActSendOTP.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActSendOTP.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+        builder.addCase(ActReSendOTP.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActReSendOTP.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActReSendOTP.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+        builder.addCase(ActVerifyWhatsOTP.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActVerifyWhatsOTP.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActVerifyWhatsOTP.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+        builder.addCase(ActUploadId.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActUploadId.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActUploadId.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+
+        builder.addCase(ActforgetPass.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActforgetPass.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActforgetPass.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+        builder.addCase(ActResetPass.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActResetPass.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActResetPass.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+        
 
 
     }

@@ -1,111 +1,49 @@
-import { Col, Row, Spinner } from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import { SubmitHandler,useForm } from 'react-hook-form';
-import { signUpSchema, signUpType } from '@validations/signUpSchema';
-import { zodResolver } from "@hookform/resolvers/zod";
-import Input from '@components/forms/input/Input';
-import { useAppDispatch, useAppSelector } from '@store/hook';
-import ActSignUp from '@store/Auth/Act/ActSignUp';
-import { useNavigate } from 'react-router-dom';
+import { Col, Row } from 'react-bootstrap';
+import Stepper from '@components/forms/stepper/Stepper';
+import { Step } from 'src/types';
+import { useLayoutEffect, useState } from 'react';
+import AccountSetup from '@components/forms/accountsetup/AccountSetup';
+import EmailVerification from '@components/forms/emailVerification/EmailVerification';
+import PhoneVerification from '@components/forms/phoneVerification/PhoneVerification';
+import ImageWithID from '@components/forms/imageWithId/ImageWithID';
 
 
 
 export default function Register() {
-  const dispatch =useAppDispatch();
-  const {loading,error}=useAppSelector(state=> state.Authslice)
-  const navigate = useNavigate();
-
-      const {
-        register,
-        handleSubmit,
-        formState: { errors },
-
-      } = useForm<signUpType>({
-        mode:"onBlur",
-        resolver:zodResolver(signUpSchema)
-      });
-
+  const [currentStep, setCurrentStep] = useState<number>(1);
+  const steps: Step[] = ["Account Setup", "Email Verification", "Phone Verification", "Image With ID"];
+useLayoutEffect(()=>{
+  if(currentStep==5){
+    console.log("yeeeees");
     
-const submitForm:SubmitHandler<signUpType> =(data:signUpType) =>{
-    dispatch(ActSignUp(data))
-    .unwrap()
-    .then(()=>{
-      navigate("/login?message=account_created");
-    });
-  
-}
+  }
 
+},[currentStep])
+
+
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 1:
+        return <AccountSetup setCurrentStep={setCurrentStep}  />;
+      case 2:
+        return <EmailVerification setCurrentStep={setCurrentStep} />;
+      case 3:
+        return <PhoneVerification setCurrentStep={setCurrentStep} />;
+      case 4:
+        return <ImageWithID setCurrentStep={setCurrentStep} />;
+      default:
+        return <AccountSetup setCurrentStep={setCurrentStep} />;
+    }
+  };
 
   return (
     <>
-     <Row>
-      <Col md={{span:"6", offset:"3"}}>
-         <Form onSubmit={handleSubmit(submitForm)}>
-
-              <Input 
-              label='First Name'
-              name ="first_name"
-              register={register}
-              error ={errors.first_name?.message}
-              />
-
-              <Input 
-              label='Last Name'
-              name ="last_name"
-              register={register}
-              error ={errors.last_name?.message}
-              />
-              <Input 
-              label='Email Address'
-              name ="email"
-              register={register}
-              error ={errors.email?.message }
-              />
-              <Input 
-              label='Phone Number'
-              name ="phone_number"
-              register={register}
-              error ={errors.phone_number?.message }
-              />
-              <Input 
-              label='Password'
-              name ="password"
-              type='password'
-              register={register}
-              error ={errors.password?.message}
-              />
-              <Input 
-              label='Confirm Password'
-              name ="password_confirmation"
-              type='password'
-              register={register}
-              error ={errors.password_confirmation?.message}
-              />
-              <Button 
-                variant="info" 
-                type="submit" 
-                className='text-light' 
-              >
-              {loading === "pending" ? (
-                <>
-                  <Spinner animation="border" size="sm" />
-                  Loading...
-                </>
-              ) : (
-                'Submit'
-              )}
-                
-              </Button>
-              {error && (
-              <p style={{ color: "#DC3545", marginTop: "10px" }}>{error}</p>
-            )}
-          </Form>
-      </Col>
-       
+      <Row>
+        <Col md={{ span: "4", offset: "4" }}>
+          <Stepper currentStep={currentStep} steps={steps} />
+          {renderCurrentStep()}
+        </Col>
       </Row>
     </>
-     
-
-  )
+  );
 }

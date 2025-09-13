@@ -9,9 +9,17 @@ export const setStore = (s: AppStore) => {
 };
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8001/api',
+  baseURL: 'http://127.0.0.1:8000/api',
   withCredentials: true,
 });
+
+const publicApiEndpoints = [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/verify-reset-token',
+];
 
 // Request Interceptor
 const requestInterceptor = (config:InternalAxiosRequestConfig) => {
@@ -31,8 +39,18 @@ const responseInterceptor = async (error: AxiosError) => {
   if (error.response?.status === 401 && !originalRequest._retry && originalRequest.url !== "/refresh") {
 
     
-    originalRequest._retry = true; // Mark that we are attempting a retry
     
+    
+    const isPublicEndpoint = publicApiEndpoints.some(endpoint => 
+      originalRequest.url?.includes(endpoint)
+    );
+    
+    if (isPublicEndpoint) {
+      console.log(`Request to public endpoint ${originalRequest.url} failed with 401. Rejecting without refresh.`);
+      return Promise.reject(error);
+    }
+    originalRequest._retry = true; // Mark that we are attempting a retry
+
     try {
       console.log("Access token expired. Attempting to refresh...");
       const refreshResponse = await api.post("/refresh");
