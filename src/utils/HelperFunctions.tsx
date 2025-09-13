@@ -1,12 +1,15 @@
 import { Listing } from "src/types";
 
 // Helper function
-export const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat("en-EG", {
+export const formatCurrency = (amount: number | string) => {
+  const value = typeof amount === "string" ? parseFloat(amount) : amount;
+  if (isNaN(value)) return ""; // handle invalid strings
+  return new Intl.NumberFormat("en-EG", {
     style: "currency",
     currency: "EGP",
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(value);
+};
 
 // Helper function to filter a single property
 export const filterProperty = (
@@ -30,7 +33,7 @@ export const filterProperty = (
     ? property.type === filters.propertyType
     : true;
   const matchesBedrooms =
-    !filters.bedrooms || property.beds === Number(filters.bedrooms);
+    !filters.bedrooms || property.bedrooms === Number(filters.bedrooms);
   const matchesStatus = filters.status
     ? property.status === filters.status
     : true;
