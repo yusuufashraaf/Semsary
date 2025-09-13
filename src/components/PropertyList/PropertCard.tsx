@@ -57,7 +57,7 @@ export default function PropertyCard({
           }`}
           onClick={(e) => {
             e.preventDefault();
-            toggleSavedProperty(property.id);
+            toggleSavedProperty(Number(property.id));
           }}
         >
           <FontAwesomeIcon icon={faHeart} />
@@ -69,16 +69,16 @@ export default function PropertyCard({
         <h4 className={styles.propertyTitle}>{property.title}</h4>
         <div className={styles.propertyDetails}>
           <span>
-            {property.beds === 0
+            {property.bedrooms === 0
               ? "Studio"
-              : `${property.beds} bed${property.beds !== 1 ? "s" : ""}`}
+              : `${property.bedrooms} bed${property.bedrooms !== 1 ? "s" : ""}`}
           </span>
           <span>• </span>
           <span>
-            {property.baths} bath{property.baths !== 1 ? "s" : ""}
+            {property.bathrooms} bath{property.bathrooms !== 1 ? "s" : ""}
           </span>
           <span>• </span>
-          <span>{property.sqft.toLocaleString()} sqft</span>
+          <span>{property.sqft!.toLocaleString()} sqft</span>
         </div>
         {viewMode === "list" && (
           <p className={styles.propertyDescription}>{property.description}</p>

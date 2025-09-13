@@ -2,12 +2,12 @@ import { Listing } from "src/types";
 
 export let properties: Listing[] = [
   {
-    id: 1,
+    id: "1",
     image:
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=200&fit=crop",
     title: "Charming 3-Bedroom Home in Willow Creek",
-    beds: 3,
-    baths: 2,
+    bedrooms: 3,
+    bathrooms: 2,
     sqft: 1800,
     price: 450000,
     status: "available",
@@ -20,12 +20,12 @@ export let properties: Listing[] = [
       "Beautiful family home with modern updates and spacious backyard.",
   },
   {
-    id: 2,
+    id: "2",
     image:
       "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop",
     title: "Modern Apartment with City View",
-    beds: 1,
-    baths: 1,
+    bedrooms: 1,
+    bathrooms: 1,
     sqft: 750,
     price: 325000,
     status: "available",
@@ -37,12 +37,12 @@ export let properties: Listing[] = [
     description: "Stunning city views from this modern downtown apartment.",
   },
   {
-    id: 3,
+    id: "3",
     image:
       "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=300&h=200&fit=crop",
     title: "Spacious Family House in Green Meadows",
-    beds: 4,
-    baths: 3,
+    bedrooms: 4,
+    bathrooms: 3,
     sqft: 2500,
     price: 675000,
     status: "pending",
@@ -54,12 +54,12 @@ export let properties: Listing[] = [
     description: "Perfect family home with pool and large garden.",
   },
   {
-    id: 4,
+    id: "4",
     image:
       "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=300&h=200&fit=crop",
     title: "Cozy Condo in Downtown District",
-    beds: 2,
-    baths: 2,
+    bedrooms: 2,
+    bathrooms: 2,
     sqft: 1200,
     price: 425000,
     status: "available",
@@ -71,12 +71,12 @@ export let properties: Listing[] = [
     description: "Luxury condo with premium amenities and concierge service.",
   },
   {
-    id: 5,
+    id: "5",
     image:
       "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=300&h=200&fit=crop",
     title: "Luxury Estate with Pool and Garden",
-    beds: 5,
-    baths: 4,
+    bedrooms: 5,
+    bathrooms: 4,
     sqft: 4000,
     price: 1200000,
     status: "sold",
@@ -88,12 +88,12 @@ export let properties: Listing[] = [
     description: "Magnificent estate with luxury finishes throughout.",
   },
   {
-    id: 6,
+    id: "6",
     image:
       "https://images.unsplash.com/photo-1600047509358-9dc75507daeb?w=300&h=200&fit=crop",
     title: "Renovated Townhouse in Historic Area",
-    beds: 3,
-    baths: 2,
+    bedrooms: 3,
+    bathrooms: 2,
     sqft: 1600,
     price: 525000,
     status: "available",
@@ -105,12 +105,12 @@ export let properties: Listing[] = [
     description: "Beautifully renovated historic townhouse with character.",
   },
   {
-    id: 7,
+    id: "7",
     image:
       "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=300&h=200&fit=crop",
     title: "Studio Apartment in Arts District",
-    beds: 0,
-    baths: 1,
+    bedrooms: 0,
+    bathrooms: 1,
     sqft: 500,
     price: 275000,
     status: "available",
@@ -122,12 +122,12 @@ export let properties: Listing[] = [
     description: "Trendy studio in the heart of the arts district.",
   },
   {
-    id: 8,
+    id: "8",
     image:
       "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=300&h=200&fit=crop",
     title: "Contemporary 2BR in Willow Creek",
-    beds: 2,
-    baths: 1,
+    bedrooms: 2,
+    bathrooms: 1,
     sqft: 1000,
     price: 385000,
     status: "pending",
