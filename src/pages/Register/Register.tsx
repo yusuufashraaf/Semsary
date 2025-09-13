@@ -10,7 +10,7 @@ import ImageWithID from '@components/forms/imageWithId/ImageWithID';
 
 
 export default function Register() {
-  const [currentStep, setCurrentStep] = useState<number>(4);
+  const [currentStep, setCurrentStep] = useState<number>(1);
   const steps: Step[] = ["Account Setup", "Email Verification", "Phone Verification", "Image With ID"];
 useLayoutEffect(()=>{
   if(currentStep==5){
