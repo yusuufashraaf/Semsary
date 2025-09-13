@@ -5,34 +5,34 @@ import { Listing } from "src/types";
 export default function FeatureListing() {
   const featuredListings: Listing[] = [
     {
-      id: 1,
+      id: "1",
       image:
         "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
       title: "Spacious Family Home",
-      beds: 4,
-      baths: 3,
-      sqft: "2,500 sq ft",
-      price: "450,000 L.E",
+      bedrooms: 4,
+      bathrooms: 3,
+      sqft: 2500,
+      price: 450000,
     },
     {
-      id: 2,
+      id: "2",
       image:
         "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=300&fit=crop",
       title: "Cozy Apartment with City Views",
-      beds: 2,
-      baths: 2,
-      sqft: "1,200 sq ft",
-      price: "325,000 L.E",
+      bedrooms: 2,
+      bathrooms: 2,
+      sqft: 1200,
+      price: 32000,
     },
     {
-      id: 3,
+      id: "3",
       image:
         "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
       title: "Luxury Villa with Pool",
-      beds: 5,
-      baths: 4,
-      sqft: "4,000 sq ft",
-      price: "875,000 L.E",
+      bedrooms: 5,
+      bathrooms: 4,
+      sqft: 4000,
+      price: 875000,
     },
   ];
 

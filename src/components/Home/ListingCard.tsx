@@ -6,8 +6,8 @@ export default function ListingCard({
   id,
   image,
   title,
-  beds,
-  baths,
+  bedrooms,
+  bathrooms,
   sqft,
   price,
 }: Listing) {
@@ -23,8 +23,8 @@ export default function ListingCard({
       <div className="card-body">
         <h5 className={styles.propertyTitle}>{title}</h5>
         <div className={styles.propertyDetails}>
-          <span>{beds} beds</span>
-          <span>• {baths} baths</span>
+          <span>{bedrooms} beds</span>
+          <span>• {bathrooms} baths</span>
           <span>• {sqft}</span>
         </div>
       </div>
