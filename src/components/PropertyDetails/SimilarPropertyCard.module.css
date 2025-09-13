@@ -1,0 +1,58 @@
+/* SimilarPropertyCard Styles */
+
+/* Card container */
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.02);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Hover effect for card */
+.card:hover {
+  transform: scale(1.02);
+}
+
+/* Property image */
+.card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+/* Content wrapper */
+.details {
+  padding: 12px;
+}
+
+/* Row for location (left) and rating (right) */
+.locationRating {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Property location text */
+.location {
+  color: var(--muted);
+}
+
+/* Rating section (star + number) */
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #fbbf24;
+}
+
+/* Property title */
+.title {
+  margin-top: 8px;
+}
+
+/* Price text */
+.price {
+  font-weight: 700;
+  margin: 0; /* Reset unwanted margin */
+}
