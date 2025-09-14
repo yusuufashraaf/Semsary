@@ -7,38 +7,47 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { updateFormData } from "@store/FormConfirm/FormSlice";
 import ActSignUp from "@store/Auth/Act/ActSignUp";
+import { resetUI } from "@store/Auth/AuthSlice";
 
+
+type StepStatus = 'pending' | 'completed' | 'skipped';
 interface IAccountSetupProps {
   setCurrentStep: React.Dispatch<React.SetStateAction<number >>;
+  setStepStatus: (status: StepStatus) => void;
 }
 
-const AccountSetup = ({setCurrentStep}:IAccountSetupProps) => {
-    const dispatch = useAppDispatch();
-        const persistedData=useAppSelector(state=> state.form)
+const AccountSetup = ({setCurrentStep,setStepStatus}:IAccountSetupProps) => {
+  const dispatch = useAppDispatch();
+  const persistedData=useAppSelector(state=> state.form)
 
-      const {loading,error}=useAppSelector(state=> state.Authslice)
-          const {
-            register,
-            handleSubmit,
-            formState: { errors },
-            reset
-          } = useForm<signUpType>({
-            mode:"onBlur",
-            resolver:zodResolver(signUpSchema),
-            defaultValues: persistedData
-          });
+    const {loading,error}=useAppSelector(state=> state.Authslice)
+        const {
+          register,
+          handleSubmit,
+          formState: { errors },
+          reset
+        } = useForm<signUpType>({
+          mode:"onBlur",
+          resolver:zodResolver(signUpSchema),
+          defaultValues: persistedData
+        });
 
-      const handleNext = (data: signUpType) => {
-        dispatch(ActSignUp(data)).unwrap().then(()=>{
-          dispatch(updateFormData(data));
-          setCurrentStep((prev) => prev + 1);
-        })
-      };
+    const handleNext = (data: signUpType) => {
+      dispatch(ActSignUp(data)).unwrap().then(()=>{
 
-        useEffect(() => {
+        dispatch(updateFormData(data));
+        setStepStatus('completed');
+        setCurrentStep((prev) => prev + 1);
+      })
+    };
 
-        reset(persistedData);
-        }, [persistedData, reset]);
+      useEffect(() => {
+
+      reset(persistedData);
+      return ()=>{
+          dispatch(resetUI());
+      }
+      }, [persistedData, reset,dispatch]);
   return (
   <Form onSubmit={handleSubmit(handleNext)}>
 
@@ -86,7 +95,7 @@ const AccountSetup = ({setCurrentStep}:IAccountSetupProps) => {
                 <Button 
                   variant="info" 
                   type="submit" 
-                  className='text-light' // No need for flex classes on the button itself
+                  className='text-light' 
                 >
                   {loading === "pending" ? (
                     <>
