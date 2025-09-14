@@ -6,11 +6,14 @@ import AccountSetup from '@components/forms/accountsetup/AccountSetup';
 import EmailVerification from '@components/forms/emailVerification/EmailVerification';
 import PhoneVerification from '@components/forms/phoneVerification/PhoneVerification';
 import ImageWithID from '@components/forms/imageWithId/ImageWithID';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { useAppSelector } from '@store/hook';
 
 
 type StepStatus = 'pending' | 'completed' | 'skipped';
 export default function Register() {
+  const {jwt}=useAppSelector(state=> state.Authslice)
+  
   const [currentStep, setCurrentStep] = useState<number>(1);
   const steps: Step[] = ["Account Setup", "Email Verification", "Phone Verification", "Image With ID"];
   const navigate = useNavigate();
@@ -28,6 +31,11 @@ export default function Register() {
   }
 
 },[currentStep,navigate])
+
+// To protect
+    if (jwt) {
+    return <Navigate to="/" />;
+  }
 
   const handleStepStatusChange = (stepIndex: number, status: StepStatus) => {
     setStepStatuses(prev => ({
