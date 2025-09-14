@@ -7,12 +7,12 @@ import { signInSchema, signInType } from "@validations/signInSchema";
 import { useEffect } from "react";
 import { Alert, Button, Col, Form, Row, Spinner } from "react-bootstrap"
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 
 function Login() {
   const [searchParams,setSearchParams]=useSearchParams();
     const dispatch =useAppDispatch();
-    const {loading,error}=useAppSelector(state=> state.Authslice)
+    const {loading,error,jwt}=useAppSelector(state=> state.Authslice)
     const navigate = useNavigate();
 
   useEffect(()=>{
@@ -22,24 +22,28 @@ function Login() {
   },[dispatch])
 
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
+  const {
+      register,
+      handleSubmit,
+      formState: { errors },
 
-      } = useForm<signInType>({
-        mode:"onBlur",
-        resolver:zodResolver(signInSchema)
-      });
-      const submitForm:SubmitHandler<signInType> =(data) =>{  
-          if (searchParams.get("message")) {
-            setSearchParams("");
-          }
-          dispatch(ActSignIn(data)).unwrap().then(()=>{
-            navigate('/')
-          })
-          
-      }
+    } = useForm<signInType>({
+      mode:"onBlur",
+      resolver:zodResolver(signInSchema)
+    });
+    const submitForm:SubmitHandler<signInType> =(data) =>{  
+        if (searchParams.get("message")) {
+          setSearchParams("");
+        }
+        dispatch(ActSignIn(data)).unwrap().then(()=>{
+          navigate('/')
+        })
+        
+    }
+      if (jwt) {
+      return <Navigate to="/" />;
+    }
+
 
   return (
   <>
