@@ -10,19 +10,12 @@ import ActUploadId from "./Act/ActUploadId";
 import ActVerifyWhatsOTP from "./Act/ActVerifyWhatsOTP";
 import ActforgetPass from "./Act/ActforgetPass";
 import ActResetPass from "./Act/ActResetPass";
+import { TUser } from "src/types/users/users.types";
+import ActGetUsersData from "./Act/ActGetUsersData";
 
 
 interface IAuthState{
-    user:{
-        id:number,
-        email:string,
-        first_name:string,
-        last_name:string,
-        phone_number:string,
-        role: string,
-        status:string,
-        created_at:string
-    } | null,
+    user:TUser | null,
     loading:TLoading
     error:string|null
     jwt:string|null
@@ -46,6 +39,9 @@ const AuthSlice =createSlice({
         },
         Logout:(state)=>{
             state.jwt=null;
+        },
+        setAccessToken :(state,action)=>{
+            state.jwt =action.payload.accessToken;
         }
     },
     extraReducers:(builder)=>{
@@ -198,6 +194,21 @@ const AuthSlice =createSlice({
                 state.error = action.payload;
             }
         });
+        builder.addCase(ActGetUsersData.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActGetUsersData.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActGetUsersData.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+        
         
 
 
@@ -205,4 +216,4 @@ const AuthSlice =createSlice({
 })
 
 export default AuthSlice.reducer;
-export const {resetUI,Logout} = AuthSlice.actions
+export const {resetUI,Logout,setAccessToken} = AuthSlice.actions
