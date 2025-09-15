@@ -42,7 +42,6 @@ export type Props = {
  * Common type aliases for repetitive string arrays.
  */
 export type Amenities = string[];
-export type Utilities = string[];
 
 // ---------------- Core Property Models ----------------
 
@@ -57,7 +56,6 @@ interface BaseProperty {
   sqft?: number;
   description?: string;
   amenities?: Amenities;
-  utilities?: Utilities;
   images?: string[];
   city?: string;
   neighborhood?: string;
@@ -91,7 +89,6 @@ export interface FilterState {
   priceMin: number;
   priceMax: number;
   amenities: Amenities;
-  utilities: Utilities;
   itemsPerPage: number;
 }
 
@@ -101,7 +98,8 @@ export interface FilterOptions {
   bedroomsOptions: OptionList;
   statuses: OptionList;
   amenitiesOptions: OptionList;
-  utilitiesOptions: OptionList;
+  minPrice: number;
+  maxPrice: number;
 }
 
 export interface FiltersProps extends FilterState, FilterOptions {
@@ -112,7 +110,6 @@ export interface FiltersProps extends FilterState, FilterOptions {
   setPriceMin: NumberSetter;
   setPriceMax: NumberSetter;
   setAmenities: StringArraySetter;
-  setUtilities: StringArraySetter;
   setItemsPerPage: NumberSetter;
   clearAllFilters: () => void;
 }
