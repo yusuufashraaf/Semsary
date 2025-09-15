@@ -18,17 +18,16 @@ function Filters({
   setPriceMax,
   amenities,
   setAmenities,
-  utilities,
-  setUtilities,
   clearAllFilters,
   locations = [],
   propertyTypes = [],
   bedroomsOptions = [],
   statuses = [],
   amenitiesOptions = [],
-  utilitiesOptions = [],
   itemsPerPage,
   setItemsPerPage,
+  minPrice,
+  maxPrice,
 }: FiltersProps) {
   // Memoized handler for amenity checkbox toggle
   const handleAmenityChange = useCallback(
@@ -41,21 +40,6 @@ function Filters({
     },
     [amenities, setAmenities]
   );
-
-  // Memoized handler for utility checkbox toggle
-  const handleUtilityChange = useCallback(
-    (utility: string) => {
-      setUtilities(
-        utilities.includes(utility)
-          ? utilities.filter((u) => u !== utility)
-          : [...utilities, utility]
-      );
-    },
-    [utilities, setUtilities]
-  );
-
-  const MIN = 0; // minimum price for slider will be set from backend
-  const MAX = 700000; // maximum price for slider will be set from backend
 
   return (
     <div className={`${styles.filtersSidebar} ${styles.show}`}>
@@ -180,8 +164,8 @@ function Filters({
               setPriceMax(max);
             }}
             valueLabelDisplay="auto"
-            min={MIN}
-            max={MAX}
+            min={minPrice}
+            max={maxPrice}
             step={1}
             disableSwap
             className={styles.slider}
@@ -203,26 +187,6 @@ function Filters({
               <span className={styles.checkboxCustom}></span>
               <span className={styles.checkboxLabel}>
                 {a.charAt(0).toUpperCase() + a.slice(1)}
-              </span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Utilities checkboxes */}
-      <div className={styles.filterGroup}>
-        <label className={styles.filterLabel}>Utilities</label>
-        <div className={styles.checkboxGroup}>
-          {utilitiesOptions.map((u) => (
-            <label key={u} className={styles.checkboxItem}>
-              <input
-                type="checkbox"
-                checked={utilities.includes(u)}
-                onChange={() => handleUtilityChange(u)}
-              />
-              <span className={styles.checkboxCustom}></span>
-              <span className={styles.checkboxLabel}>
-                {u.charAt(0).toUpperCase() + u.slice(1)}
               </span>
             </label>
           ))}
