@@ -18,7 +18,7 @@ import LoadingScreen from "@components/common/LoaderScreen/LoadingScreen";
 import ErrorScreen from "@components/common/ErrorScreen/ErrorScreen";
 import ForgetPassword from "@pages/ForgetPassword/ForgetPassword";
 import ResetPassword from "@pages/ResetPassword/ResetPassword";
-import AuthCallbackPage from "@pages/AuthCallbackPage/AuthCallbackPage";
+import OAuthCallback from "@pages/OAuthCallback/OAuthCallback";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -39,18 +39,16 @@ const router = createBrowserRouter([
         element: <Register />,
       },
       {
+        path: "/auth/callback",
+        element: <OAuthCallback />,
+      },
+      {
         path:"forgot-password",
         element:<ForgetPassword />
       },
       {
         path:"/reset-password",
         element:<ResetPassword />
-
-      },
-        {
-        path:"/auth/callback",
-        element:<AuthCallbackPage />
-
       },
       {
         path: "home",
