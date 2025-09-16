@@ -1,0 +1,52 @@
+:root {
+  /* Core Colors */
+  --primary-color: #8c5c5c;
+  --secondary-color: #f2e8e8;
+  --accent-color: #c44040;
+  --danger-color: #dc3545;
+  --white: #ffffff;
+  --black: #000000;
+
+  /* Status Colors */
+  --available-color: #28a745;
+  --pending-color: #ffc107;
+  --sold-color: #dc3545;
+  --rented-color: #4285f4;
+  --invalid-color: #78726d;
+
+  /* Backgrounds & Borders */
+  --primary-bg: #ffffff;
+  --background-dark: #f2e8e8;
+  --primary-border: #c79194;
+
+  /* Hover States */
+  --hover-bg: #c79194;
+  --hover-color: #472426;
+
+  /* Disabled */
+  --disabled-bg: #2b2b2b;
+  --disabled-opacity: 0.5;
+
+  /* Fonts & Sizes */
+  --font-size-base: 0.95rem;
+  --font-size-md: 1.2rem;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  /* Spacing */
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+
+  /* Search */
+  --search-max-width: 600px;
+  --search-padding: 10px;
+  --search-radius: 6px;
+  --search-font-size: 0.95rem;
+  --search-icon-left: 12px;
+  --search-icon-right: 12px;
+  --search-clear-transition: 0.2s ease;
+}

@@ -14,9 +14,9 @@ function ReviewItem({
   reviewsPerPage = 3,
   totalReviews,
   onPageChange,
-}: ReviewsListProps) {
+  loading,
+}: ReviewsListProps & { loading: boolean }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(false);
 
   const totalPages = Math.ceil(totalReviews / reviewsPerPage);
 
@@ -25,11 +25,7 @@ function ReviewItem({
     if (newPage < 1 || newPage > totalPages) return;
 
     setCurrentPage(newPage);
-    setLoading(true);
     onPageChange(newPage);
-
-    // Simulate async fetch delay (parent should handle actual fetch)
-    setTimeout(() => setLoading(false), 500);
   };
 
   return (
@@ -62,10 +58,10 @@ function ReviewItem({
                 </p>
                 <StarRating rating={r.rating} />
               </div>
+              <p itemProp="reviewBody">{r.review}</p>
               <p className={styles.date} itemProp="datePublished">
                 {r.date}
               </p>
-              <p itemProp="reviewBody">{r.review}</p>
             </div>
           </article>
         ))

@@ -1,0 +1,47 @@
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #6c757d; /* Bootstrap's secondary text color */
+  margin: 2rem 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #dee2e6; /* Bootstrap's border color */
+}
+
+.divider:not(:empty)::before {
+  margin-right: 1em;
+}
+
+.divider:not(:empty)::after {
+  margin-left: 1em;
+}
+
+.googleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
+  background-color: #f1523c; /* A reddish-orange color similar to the image */
+  color: #fff;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  border: 1px solid #d44937;
+  transition: background-color 0.3s ease;
+}
+
+.googleBtn:hover {
+  background-color: #d44937;
+}
+
+.googleIcon {
+  height: 20px;
+  width: 20px;
+}

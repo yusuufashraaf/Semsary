@@ -17,7 +17,7 @@ function BookingSection({
     <BookingCard
       // Price & Sale/Rent
       price={property.price}
-      isSell={property.status === "sell"}
+      isSell={property.price_type === "FullPay"}
       // Booking details (check-in/out and guests)
       checkIn={booking.checkIn}
       setCheckIn={booking.setCheckIn}

@@ -9,7 +9,6 @@ import Profile from "@pages/Profile/Profile";
 import PropertyList from "@pages/PropertyList/PropertyList";
 import Register from "@pages/Register/Register";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { properties } from "@components/PropertyList/PropertyData.js";
 import { useAppDispatch, useAppSelector } from "@store/hook";
 import { useEffect } from "react";
 import ActCheckAuth from "@store/Auth/Act/ActCheckAuth";
@@ -18,7 +17,7 @@ import LoadingScreen from "@components/common/LoaderScreen/LoadingScreen";
 import ErrorScreen from "@components/common/ErrorScreen/ErrorScreen";
 import ForgetPassword from "@pages/ForgetPassword/ForgetPassword";
 import ResetPassword from "@pages/ResetPassword/ResetPassword";
-import AuthCallbackPage from "@pages/AuthCallbackPage/AuthCallbackPage";
+import OAuthCallback from "@pages/OAuthCallback/OAuthCallback";
 import OwnerDashboard from "@pages/OwnerDashboard/OwnerDashboard";
 import EditProperty from "@components/owner/EditProperty";
 import { ToastContainer } from "react-toastify";
@@ -43,17 +42,16 @@ const router = createBrowserRouter([
         element: <Register />,
       },
       {
+        path: "/auth/callback",
+        element: <OAuthCallback />,
+      },
+      {
         path:"forgot-password",
         element:<ForgetPassword />
       },
       {
         path:"/reset-password",
         element:<ResetPassword />
-
-      },
-        {
-        path:"/auth/callback",
-        element:<AuthCallbackPage />
 
       },
       {
@@ -82,7 +80,7 @@ const router = createBrowserRouter([
       },
       {
         path: "property",
-        element: <PropertyList listings={properties} />,
+        element: <PropertyList />,
       },
       {
         path: "property/:id",
