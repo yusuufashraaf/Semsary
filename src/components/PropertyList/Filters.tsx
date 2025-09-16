@@ -159,7 +159,11 @@ function Filters({
             <option value="">Any</option>
             {bedroomsOptions.map((b) => (
               <option key={b} value={b}>
-                {b === "0" ? "Studio" : b + " Bedrooms"}
+                {b.toString() === "0"
+                  ? "Studio"
+                  : b.toString() === "1"
+                  ? b + " Bedroom"
+                  : b + " bedrooms"}
               </option>
             ))}
           </select>
