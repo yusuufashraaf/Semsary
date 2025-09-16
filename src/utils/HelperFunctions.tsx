@@ -42,11 +42,6 @@ export const filterProperty = (
     filters.amenities.every(
       (a: any) => property.amenities?.includes(a) ?? false
     );
-  const matchesUtilities =
-    filters.utilities.length === 0 ||
-    filters.utilities.every(
-      (u: any) => property.utilities?.includes(u) ?? false
-    );
   const matchesPrice =
     property.price >= filters.priceMin && property.price <= filters.priceMax;
 
@@ -57,7 +52,6 @@ export const filterProperty = (
     matchesBedrooms &&
     matchesStatus &&
     matchesAmenities &&
-    matchesUtilities &&
     matchesPrice
   );
 };
@@ -92,16 +86,6 @@ export const formatActiveFilters = (filters: any, setFilters: Function) => {
   if (filters.amenities.length)
     addBadge(`Amenities: ${filters.amenities.join(", ")}`, () =>
       setFilters((prev: any) => ({ ...prev, amenities: [] }))
-    );
-
-  if (filters.utilities.length)
-    addBadge(`Utilities: ${filters.utilities.join(", ")}`, () =>
-      setFilters((prev: any) => ({ ...prev, utilities: [] }))
-    );
-
-  if (filters.priceMin > 0 || filters.priceMax < 700000)
-    addBadge(`Price: EGP ${filters.priceMin} - EGP ${filters.priceMax}`, () =>
-      setFilters((prev: any) => ({ ...prev, priceMin: 0, priceMax: 700000 }))
     );
 
   return badges;
