@@ -69,6 +69,8 @@ interface BaseProperty {
   location?: string;
   coordinates?: Coordinates;
   host?: Host;
+  state?: string;
+  price_type?: string;
 }
 
 export interface Listing extends BaseProperty {
