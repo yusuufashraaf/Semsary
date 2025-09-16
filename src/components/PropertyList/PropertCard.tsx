@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import styles from "./PropertCard.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
@@ -11,13 +10,7 @@ export default function PropertyCard({
   savedProperties,
   toggleSavedProperty,
 }: PropertyCardProps) {
-  const [isLoading, setIsLoading] = useState(true);
-
   // Image loading simulation
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
     <Link
@@ -26,11 +19,7 @@ export default function PropertyCard({
     >
       {/* Property image, status, price, and wishlist button */}
       <div className={styles.propertyImage}>
-        {isLoading ? (
-          <div className={styles.imageLoader}></div>
-        ) : (
-          <img src={property.image} alt={property.title} loading="lazy" />
-        )}
+        {<img src={property.image} alt={property.title} loading="lazy" />}
 
         <div className={styles.propertyStatus}>
           {property.status && (
@@ -68,17 +57,28 @@ export default function PropertyCard({
       <div className={styles.propertyInfo}>
         <h4 className={styles.propertyTitle}>{property.title}</h4>
         <div className={styles.propertyDetails}>
-          <span>
-            {property.bedrooms === 0
-              ? "Studio"
-              : `${property.bedrooms} bed${property.bedrooms !== 1 ? "s" : ""}`}
-          </span>
-          <span>• </span>
-          <span>
-            {property.bathrooms} bath{property.bathrooms !== 1 ? "s" : ""}
-          </span>
-          <span>• </span>
-          <span>{property.sqft!.toLocaleString()} sqft</span>
+          {property.bedrooms != null && (
+            <span>
+              {property.bedrooms === 0
+                ? "Studio"
+                : `${property.bedrooms} bed${
+                    property.bedrooms !== 1 ? "s" : ""
+                  }`}
+            </span>
+          )}
+          {property.bedrooms != null && property.bathrooms != null && (
+            <span> • </span>
+          )}
+          {property.bathrooms != null && (
+            <span>
+              {property.bathrooms} bath{property.bathrooms !== 1 ? "s" : ""}
+            </span>
+          )}
+          {(property.bedrooms != null || property.bathrooms != null) &&
+            property.sqft != null && <span> • </span>}
+          {property.sqft != null && (
+            <span>{property.sqft.toLocaleString()} sqft</span>
+          )}
         </div>
         {viewMode === "list" && (
           <p className={styles.propertyDescription}>{property.description}</p>

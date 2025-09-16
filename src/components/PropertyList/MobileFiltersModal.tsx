@@ -60,31 +60,29 @@ const MobileFiltersModal: React.FC<MobileFiltersModalProps> = ({
               <div className="d-flex justify-content-center w-100">
                 <Filters
                   location={tempFilters.location}
-                  setLocation={(val: string) => updateFilter("location", val)}
+                  setLocation={(val) => updateFilter("location", val)}
                   propertyType={tempFilters.propertyType}
-                  setPropertyType={(val: string) =>
-                    updateFilter("propertyType", val)
-                  }
+                  setPropertyType={(val) => updateFilter("propertyType", val)}
                   bedrooms={tempFilters.bedrooms}
-                  setBedrooms={(val: string) => updateFilter("bedrooms", val)}
+                  setBedrooms={(val) => updateFilter("bedrooms", val)}
                   status={tempFilters.status}
-                  setStatus={(val: string) => updateFilter("status", val)}
+                  setStatus={(val) => updateFilter("status", val)}
                   priceMin={tempFilters.priceMin}
-                  setPriceMin={(val: number) => updateFilter("priceMin", val)}
+                  setPriceMin={(val) => updateFilter("priceMin", val)}
                   priceMax={tempFilters.priceMax}
-                  setPriceMax={(val: number) => updateFilter("priceMax", val)}
+                  setPriceMax={(val) => updateFilter("priceMax", val)}
+                  minPrice={filterOptions.minPrice}
+                  maxPrice={filterOptions.maxPrice}
                   amenities={tempFilters.amenities}
-                  setAmenities={(val: string[]) =>
-                    updateFilter("amenities", val)
-                  }
-                  utilities={tempFilters.utilities}
-                  setUtilities={(val: string[]) =>
-                    updateFilter("utilities", val)
-                  }
+                  setAmenities={(val) => updateFilter("amenities", val)}
                   clearAllFilters={clearTempFilters}
                   itemsPerPage={itemsPerPage}
                   setItemsPerPage={setItemsPerPage}
-                  {...filterOptions}
+                  locations={filterOptions.locations}
+                  propertyTypes={filterOptions.propertyTypes}
+                  bedroomsOptions={filterOptions.bedroomsOptions}
+                  statuses={filterOptions.statuses}
+                  amenitiesOptions={filterOptions.amenitiesOptions}
                 />
               </div>
             </form>
