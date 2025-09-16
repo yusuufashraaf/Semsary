@@ -2,23 +2,27 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@services/axios-global";
 import { isAxiosError } from "axios";
 
-const ActCheckAuth = createAsyncThunk('auth/ActCheckAuth',
-    async(_,thunkApi)=>{
-        const {rejectWithValue,fulfillWithValue}= thunkApi;
+const ActCheckAuth = createAsyncThunk(
+  "auth/ActCheckAuth",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/refresh");
 
-        try {
-            const response = await api.post('/refresh'); 
-            return fulfillWithValue(response.data)
+      if (!response.data.access_token) {
+        return rejectWithValue("No valid session");
+      }
 
-        } catch (error) {
-            console.error("check error:", error);
-            if (isAxiosError(error)) {
-                return rejectWithValue(error.response?.data.message || error.message);
-            } else {
-                return rejectWithValue("An unexpected error");
-            }
+      return response.data;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          return rejectWithValue("Session expired");
         }
-
-})
-
-export default ActCheckAuth;
+        return rejectWithValue(error.response?.data?.message || error.message);
+      } else {
+        return rejectWithValue("An unexpected error occurred");
+      }
+    }
+  }
+);
+export default ActCheckAuth
