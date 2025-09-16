@@ -75,20 +75,25 @@ function BookingCard({
         )}
 
         {/* Reserve/Buy Button */}
-        <button
-          type="button"
-          className={styles.reserveBtn}
-          onClick={onReserve}
-          disabled={loading}
-        >
-          {loading ? (
-            <span className={styles.spinner}></span>
-          ) : isSell ? (
-            "Buy Now"
-          ) : (
-            "Reserve Now"
-          )}
-        </button>
+        {isSell ? (
+          <button
+            type="button"
+            className={styles.reserveBtn}
+            onClick={() => alert("Buy")}
+            disabled={loading}
+          >
+            {loading ? <span className={styles.spinner}></span> : "Buy Now"}
+          </button>
+        ) : (
+          <button
+            type="button"
+            className={styles.reserveBtn}
+            onClick={onReserve}
+            disabled={loading}
+          >
+            {loading ? <span className={styles.spinner}></span> : "Reserve Now"}
+          </button>
+        )}
 
         {/* Price Breakdown */}
         {!isSell && nights > 0 && (
