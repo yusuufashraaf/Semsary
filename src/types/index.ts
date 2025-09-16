@@ -143,7 +143,7 @@ export interface ReviewsListProps {
   reviewsPerPage?: number;
   totalReviews: number;
   onPageChange: NumberSetter;
-  loading?: boolean;
+  loading: boolean;
 }
 
 // ---------------- UI Props ----------------
