@@ -1,0 +1,78 @@
+/* Input fields style */
+.custom-input {
+  background-color: #f7efef !important;
+  border: 1px solid #e6cfcf !important;
+  color: black !important;
+}
+
+.custom-input:focus {
+  border-color: #c79a9a !important;
+  box-shadow: 0 0 0 0.2rem rgba(199, 154, 154, 0.25) !important;
+}
+.upload-box {
+  border: 2px dashed #e0bcbc;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  background-color: #f8eeee;
+  display: block;
+}
+
+.upload-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 12px;
+  background-color: #f3dcdc;
+  border-radius: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.upload-btn:hover {
+  background-color: #e0bcbc;
+}
+
+.preview-container {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.preview-item {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.remove-btn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #d9534f;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 20px;
+  text-align: center;
+}
+
+.remove-btn:hover {
+  background: #c9302c;
+}
+
+
+

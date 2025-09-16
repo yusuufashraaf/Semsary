@@ -1,0 +1,70 @@
+.manage-container {
+  padding: 24px;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+
+
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 16px 0 8px 0;
+  color: black;
+}
+
+.table-container {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #f9fafb;
+  text-align: left;
+}
+
+th, td {
+  padding: 12px;
+}
+
+tr + tr {
+  border-top: 1px solid #e5e7eb;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: #f7efef;
+  color: black;
+  font-size: 13px;
+}
+
+.actions {
+  color: #f7efef;
+}
+
+.actions button {
+  background: none;
+  border: none;
+  color: #8C5C5C;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  text-decoration: underline;
+}

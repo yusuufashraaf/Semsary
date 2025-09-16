@@ -8,12 +8,13 @@ import Input from '@components/forms/input/Input';
 // import ActForgotPassword from '@store/Auth/Act/ActForgotPassword'; // You will need to create this Thunk
 import { forgotPasswordSchema, ForgotPasswordType } from '@validations/forgotPasswordSchema';
 import ActforgetPass from '@store/Auth/Act/ActforgetPass';
+import { Navigate } from 'react-router-dom';
 
 
 
 const ForgotPassword = () => {
   const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector(state => state.Authslice);
+  const { loading, error,jwt } = useAppSelector(state => state.Authslice);
   
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -26,6 +27,10 @@ const ForgotPassword = () => {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
+
+  if (jwt) {
+    return <Navigate to="/" />;
+  }
 
   const submitForm: SubmitHandler<ForgotPasswordType> = (data) => {
 

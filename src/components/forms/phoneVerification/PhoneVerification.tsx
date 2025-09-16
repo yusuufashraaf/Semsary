@@ -8,17 +8,19 @@ import { useEffect, useState } from "react";
 
 import { phoneOtpSchema, PhoneOtpType } from "@validations/phoneOtpSchema"; 
 
-// import ActResendPhoneOTP from "@store/Auth/Act/ActResendPhoneOTP"; 
 import ActSendWhatsOTP from "@store/Auth/Act/ActSendWhatsOTP";
 import ActVerifyWhatsOTP from "@store/Auth/Act/ActVerifyWhatsOTP";
+import { resetUI } from "@store/Auth/AuthSlice";
 
+
+type StepStatus = 'pending' | 'completed' | 'skipped';
 interface IPhoneVerificationProps {
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
+  setStepStatus: (status: StepStatus) => void;
 }
 
-const PhoneVerification = ({ setCurrentStep }: IPhoneVerificationProps) => {
+const PhoneVerification = ({ setCurrentStep, setStepStatus }: IPhoneVerificationProps) => {
   const [timer, setTimer] = useState(0);
-  // const [resendLoading, setResendLoading] = useState(false);
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector(state => state.Authslice);
   const formData = useAppSelector(state => state.form); 
@@ -31,7 +33,11 @@ const PhoneVerification = ({ setCurrentStep }: IPhoneVerificationProps) => {
         setTimer((prev) => prev - 1);
       }, 1000);
     }
-    return () => clearInterval(interval);
+    return () =>{
+       clearInterval(interval);
+         dispatch(resetUI());
+              
+      };
   }, [timer,dispatch]);
 
 
@@ -52,51 +58,43 @@ const PhoneVerification = ({ setCurrentStep }: IPhoneVerificationProps) => {
   const handleVerification = (data: PhoneOtpType) => {
 
     dispatch(ActVerifyWhatsOTP(data)).unwrap().then(() => {
+      setStepStatus('completed');
       setCurrentStep((prev) => prev + 1);
     });
   };
+ const handleSkip = () => {
+ 
+    setStepStatus('skipped');
+    setCurrentStep((prev) => prev + 1);
+  };
 
-  // This function handles the "Resend" button click
-  // const handleClickOnResend = () => {
-  //   setResendLoading(true);
-  //   // --- 6. Dispatch the correct action for resending a phone OTP ---
-  //   dispatch(ActResendPhoneOTP())
-  //     .unwrap()
-  //     .then(() => {
-  //       setTimer(60); // Reset the timer
-  //     })
-  //     .finally(() => setResendLoading(false));
-  // };
 
   return (
-    // --- 7. The form now calls handleVerification on submit ---
+
     <Form onSubmit={handleSubmit(handleVerification)}>
       <p className="text-muted mb-3">
-        {/* --- 8. Display the phone number from the form state --- */}
+
         We've sent a verification code to <strong>{formData.phone_number}</strong>
       </p>
       
       <Input 
         label="Verification Code"
-        name="phoneOTP" // --- 9. The input field name is now 'phoneOTP' ---
+        name="phoneOTP" 
         register={register}
         error={errors.phoneOTP?.message}
         placeholder="Enter 6-digit code"
       />
       
       <div className="d-flex justify-content-between align-items-center mt-3">
-        {/* <Button 
+
+         <Button 
           variant="outline-secondary" 
-          onClick={handleClickOnResend}
-          disabled={loading === "pending" || timer > 0}
+          onClick={handleSkip}
+          disabled={loading === "pending"}
         >
-         {resendLoading
-            ? <Spinner animation="border" size="sm" />
-            : timer > 0
-              ? `Resend Code (${timer})`
-              : "Resend Code"}
-        </Button> */}
-        
+          Skip for now
+        </Button>
+
         <Button 
           variant="info" 
           type="submit" 

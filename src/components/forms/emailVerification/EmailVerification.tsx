@@ -7,13 +7,17 @@ import ActSendOTP from "@store/Auth/Act/ActSendOTP";
 import { otpSchema, OtpType } from "@validations/otpSchema";
 import ActReSendOTP from "@store/Auth/Act/ActReSendOTP";
 import { useEffect, useState } from "react";
+import { resetUI } from "@store/Auth/AuthSlice";
 
+
+type StepStatus = 'pending' | 'completed' | 'skipped';
 
 interface IEmailVerificationProps {
   setCurrentStep: React.Dispatch<React.SetStateAction<number >>;
+  setStepStatus: (status: StepStatus) => void;
 }
 
-const EmailVerification = ({ setCurrentStep }: IEmailVerificationProps) => {
+const EmailVerification = ({ setCurrentStep,setStepStatus }: IEmailVerificationProps) => {
   const [timer, setTimer] = useState(0);
   const [resendLoading, setResendLoading] = useState(false);
   const dispatch = useAppDispatch();
@@ -27,8 +31,12 @@ const EmailVerification = ({ setCurrentStep }: IEmailVerificationProps) => {
         setTimer((prev) => prev - 1);
       }, 1000);
     }
-    return () => clearInterval(interval);
-  }, [timer]);
+    return () => {
+      clearInterval(interval);
+       dispatch(resetUI());
+              
+    };
+  }, [timer,dispatch]);
 
   const {
     register,
@@ -42,6 +50,7 @@ const EmailVerification = ({ setCurrentStep }: IEmailVerificationProps) => {
 const otpValue = watch("emailOTP"); 
     const handleNext = (data: OtpType) => {
      dispatch(ActSendOTP(data)).unwrap().then(()=>{
+      setStepStatus('completed');
       setCurrentStep((prev) => prev + 1);
     })
   };

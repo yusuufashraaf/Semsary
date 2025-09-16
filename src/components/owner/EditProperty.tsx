@@ -3,37 +3,114 @@ import React, { useState, useEffect } from "react";
 import "./AddPropertyForm.css";
 import { Form, Button, Row, Col, Alert } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { createProperty } from "../../store/Owner/ownerDashboardSlice";
+import { EdittProperty} from "../../store/Owner/ownerDashboardSlice";
 import { AppDispatch, RootState } from "../../store";
 import api from "../../services/axios-global"; 
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
-const AddPropertyForm: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+const EditProperty: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
   const { errors } = useSelector((state: RootState) => state.ownerDashboard);
 
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    bedrooms: 1,
-    bathrooms: 1,
-    type: "Apartment",
-    price: "",
-    priceType: "FullPay",
-    size: "",
-    query: "",
-    selectedLocation: null as any,
-    selectedFeatures: [] as number[],
-    images: [] as File[],
-    previewUrls: [] as string[],
-  });
-
+  const [loading, setLoading] = useState(true);
   const [results, setResults] = useState<any[]>([]);
   const [features, setFeatures] = useState<{ id: number; name: string }[]>([]);
+  const [formData, setFormData] = useState<any>(null);
   const [validationErrors, setValidationErrors] = useState<any>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fetch property details
+  useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        const res = await api.get(`/properties/${id}`);
+        
+        console.log('API Response:', res.data);
+        
+        const property = res.data?.data || res.data || res.data?.property;
+        
+        if (!property) {
+          throw new Error('Property data not found in response');
+        }
+
+        console.log('Property data:', property);
+
+        // Process images with proper URLs
+        const processedImages = Array.isArray(property.images) 
+          ? property.images.map((img: any) => {
+              // If image is object with image_url property (Cloudinary)
+              if (typeof img === 'object' && img.image_url) {
+                return img.image_url;
+              }
+              // If image is string, return as is
+              if (typeof img === 'string') {
+                return img.startsWith('http') ? img : `${api.defaults.baseURL || 'http://localhost:8000'}${img}`;
+              }
+              // If image is object with url property
+              if (img.url) {
+                return img.url.startsWith('http') ? img.url : `${api.defaults.baseURL || 'http://localhost:8000'}${img.url}`;
+              }
+              // If image has path property
+              if (img.path) {
+                return img.path.startsWith('http') ? img.path : `${api.defaults.baseURL || 'http://localhost:8000'}${img.path}`;
+              }
+              return img;
+            })
+          : [];
+
+        console.log('Processed images:', processedImages);
+
+        setFormData({
+          title: property.title || "",
+          description: property.description || "",
+          bedrooms: property.bedrooms || 1,
+          bathrooms: property.bathrooms || 1,
+          type: property.type || "Apartment",
+          price: property.price || "",
+          priceType: property.price_type || property.priceType || "FullPay",
+          size: property.size || "",
+          query: property.location?.address || property.address || "",
+          selectedLocation: property.location || (property.lat && property.lng ? {
+            lat: property.lat,
+            lng: property.lng,
+            address: property.address || ""
+          } : null),
+          selectedFeatures: property.features?.map((f: any) => f.id) || [],
+          images: [] as File[],
+          previewUrls: processedImages,
+        });
+        
+      } catch (err) {
+        console.error('Error fetching property:', err);
+        toast.error("Failed to fetch property details");
+        navigate('/ownerdashboard');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchFeatures = async () => {
+      try {
+        const res = await api.get("/features");
+        setFeatures(res.data?.data || res.data || []);
+      } catch (err) {
+        console.error('Error fetching features:', err);
+        toast.error("Failed to fetch features");
+      }
+    };
+
+    if (id) {
+      fetchProperty();
+      fetchFeatures();
+    } else {
+      setLoading(false);
+      toast.error("Property ID is missing");
+      navigate('/ownerdashboard');
+    }
+  }, [id, navigate]);
 
   // Client-side validation function
   const validateForm = () => {
@@ -103,7 +180,7 @@ const AddPropertyForm: React.FC = () => {
 
   // Real-time validation on field change
   const handleChange = (key: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
+    setFormData((prev: any) => ({ ...prev, [key]: value }));
     
     // Clear validation error for this field
     if (validationErrors[key]) {
@@ -135,7 +212,7 @@ const AddPropertyForm: React.FC = () => {
 
       const urls = validFiles.map((file) => URL.createObjectURL(file));
 
-      setFormData((prev) => ({
+      setFormData((prev: any) => ({
         ...prev,
         images: [...prev.images, ...validFiles],
         previewUrls: [...prev.previewUrls, ...urls],
@@ -153,39 +230,37 @@ const AddPropertyForm: React.FC = () => {
   };
 
   const handleRemoveImage = (index: number) => {
-    // Revoke the object URL to free memory
-    URL.revokeObjectURL(formData.previewUrls[index]);
+    // Only revoke object URL if it's a blob URL (new uploads)
+    if (formData.previewUrls[index].startsWith('blob:')) {
+      URL.revokeObjectURL(formData.previewUrls[index]);
+    }
     
     const newFiles = [...formData.images];
     const newPreviews = [...formData.previewUrls];
-    newFiles.splice(index, 1);
-    newPreviews.splice(index, 1);
+    
+    // If removing an existing image (server image), we don't remove from files array
+    if (index < formData.previewUrls.length - formData.images.length) {
+      // This is an existing server image
+      newPreviews.splice(index, 1);
+    } else {
+      // This is a new uploaded file
+      const fileIndex = index - (formData.previewUrls.length - formData.images.length);
+      newFiles.splice(fileIndex, 1);
+      newPreviews.splice(index, 1);
+    }
 
-    setFormData((prev) => ({
+    setFormData((prev: any) => ({
       ...prev,
       images: newFiles,
       previewUrls: newPreviews,
     }));
   };
 
-  useEffect(() => {
-    const fetchFeatures = async () => {
-      try {
-        const res = await api.get("/features");
-        setFeatures(res.data?.data || res.data || []);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to fetch features");
-      }
-    };
-    fetchFeatures();
-  }, []);
-
   const handleFeatureToggle = (featureId: number) => {
-    setFormData((prev) => ({
+    setFormData((prev: any) => ({
       ...prev,
       selectedFeatures: prev.selectedFeatures.includes(featureId)
-        ? prev.selectedFeatures.filter((id) => id !== featureId)
+        ? prev.selectedFeatures.filter((id: number) => id !== featureId)
         : [...prev.selectedFeatures, featureId],
     }));
   };
@@ -210,7 +285,7 @@ const AddPropertyForm: React.FC = () => {
   };
 
   const handleSelect = (place: any) => {
-    setFormData((prev) => ({
+    setFormData((prev: any) => ({
       ...prev,
       query: place.display_name,
       selectedLocation: {
@@ -256,49 +331,55 @@ const AddPropertyForm: React.FC = () => {
       data.append("location[lat]", formData.selectedLocation.lat);
       data.append("location[lng]", formData.selectedLocation.lng);
 
-      formData.selectedFeatures.forEach((f, i) => {
+      formData.selectedFeatures.forEach((f: number, i: number) => {
         data.append(`features[${i}]`, f.toString());
       });
 
-      formData.images.forEach((file, i) => {
+      formData.images.forEach((file: File, i: number) => {
         data.append(`images[${i}]`, file);
       });
 
-      await dispatch(createProperty(data)).unwrap();
+      await dispatch(EdittProperty({ id: id!, data })).unwrap();
       
-      toast.success("Property saved successfully");
+      toast.success("Property updated successfully");
       
       // Clean up object URLs
-      formData.previewUrls.forEach(url => URL.revokeObjectURL(url));
-      
-      // Reset form
-      setFormData({
-        title: "",
-        description: "",
-        bedrooms: 1,
-        bathrooms: 1,
-        type: "Apartment",
-        price: "",
-        priceType: "FullPay",
-        size: "",
-        query: "",
-        selectedLocation: null as any,
-        selectedFeatures: [],
-        images: [],
-        previewUrls: [],
+      formData.previewUrls.forEach((url: string) => {
+        if (url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
       });
-      setResults([]);
-      setValidationErrors({});
       
-      // Navigate to dashboard
       navigate('/ownerdashboard');
       
     } catch (error) {
-      toast.error("Failed to save property. Please check the form for errors.");
+      toast.error("Failed to update property. Please check the form for errors.");
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{minHeight: '400px'}}>
+        <div className="text-center">
+          <div className="spinner-border text-primary mb-3"></div>
+          <p>Loading property details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!formData) {
+    return (
+      <div className="text-center mt-5">
+        <h4>Property not found</h4>
+        <Button variant="primary" onClick={() => navigate('/ownerdashboard')}>
+          Back to Dashboard
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -336,7 +417,7 @@ const AddPropertyForm: React.FC = () => {
             </div>
           )}
         </Form.Group>
-
+        
         {/* Description */}
         <Form.Group className="mb-3">
           <Form.Label>Description <span className="text-danger">*</span></Form.Label>
@@ -359,7 +440,7 @@ const AddPropertyForm: React.FC = () => {
             </div>
           )}
         </Form.Group>
-
+        
         <Row>
           <Col md={6}>
             <Form.Group className="mb-3">
@@ -398,7 +479,7 @@ const AddPropertyForm: React.FC = () => {
             </Form.Group>
           </Col>
         </Row>
-
+        
         <Row>
           <Col md={6}>
             <Form.Group className="mb-3">
@@ -517,7 +598,7 @@ const AddPropertyForm: React.FC = () => {
             </Form.Text>
           )}
         </Form.Group>
-
+        
         <div className="mb-3">
           <LocationMap
             lat={formData.selectedLocation ? formData.selectedLocation.lat : 0}
@@ -551,25 +632,36 @@ const AddPropertyForm: React.FC = () => {
         {/* Images */}
         <Form.Group className="mb-4">
           <Form.Label>Property Images <span className="text-danger">*</span></Form.Label>
-          <label htmlFor="file-upload" className="upload-box">
-            <p className="fw-bold mb-1">Upload Photos</p>
-            <span className="upload-btn">Upload</span>
-            <input type="file" id="file-upload" className="d-none" multiple accept="image/*" onChange={handleFileChange} />
+          <div className="border border-dashed border-2 p-4 text-center rounded bg-light">
+            <input 
+              type="file" 
+              id="file-upload" 
+              className="d-none" 
+              multiple 
+              accept="image/*" 
+              onChange={handleFileChange}
+              disabled={isSubmitting}
+            />
+            <label htmlFor="file-upload" className="btn btn-outline-primary mb-2">
+              <i className="fas fa-upload me-2"></i>
+              Add More Images
+            </label>
             <p className="text-muted small mb-0">
-              Drag and drop images here or click to browse<br/>
-              Maximum 10 images, 5MB each. Supported formats: JPG, PNG, GIF
+              Add additional images or replace existing ones<br/>
+              Maximum 10 images total, 5MB each. Supported formats: JPG, PNG, GIF
             </p>
-          </label>          
+          </div>
+          
           {/* Image Preview Grid */}
           {formData.previewUrls.length > 0 && (
             <div className="mt-3">
               <div className="row g-3">
-                {formData.previewUrls.map((url, i) => (
+                {formData.previewUrls.map((url: string, i: number) => (
                   <div key={i} className="col-md-3 col-sm-4 col-6">
                     <div className="position-relative">
                       <img 
                         src={url} 
-                        alt={`Preview ${i + 1}`}
+                        alt={`Property image ${i + 1}`}
                         className="img-fluid rounded shadow-sm"
                         style={{
                           aspectRatio: '1',
@@ -577,13 +669,32 @@ const AddPropertyForm: React.FC = () => {
                           width: '100%',
                           height: '150px'
                         }}
+                        onError={(e) => {
+                          console.error(`Failed to load image: ${url}`);
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const placeholder = target.nextElementSibling as HTMLElement;
+                          if (placeholder) {
+                            placeholder.style.display = 'flex';
+                          }
+                        }}
                       />
+                      <div 
+                        className="d-none align-items-center justify-content-center bg-light rounded border"
+                        style={{width: '100%', height: '150px', color: '#666'}}
+                      >
+                        <div className="text-center">
+                          <i className="fas fa-image mb-2" style={{fontSize: '24px', opacity: 0.5}}></i>
+                          <br />
+                          <small>Image not available</small>
+                        </div>
+                      </div>
                       <button
                         type="button"
-                        className="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 rounded-circle p-0"
+                        className="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 rounded-circle p-1"
                         onClick={() => handleRemoveImage(i)}
                         disabled={isSubmitting}
-                        style={{width: '25px', height: '25px'}}
+                        style={{width: '30px', height: '30px'}}
                       >
                         ×
                       </button>
@@ -604,7 +715,7 @@ const AddPropertyForm: React.FC = () => {
 
         <div className="d-flex gap-3">
           <Button 
-            variant="success" 
+            variant="primary" 
             type="submit" 
             disabled={isSubmitting}
             className="px-4"
@@ -612,11 +723,20 @@ const AddPropertyForm: React.FC = () => {
             {isSubmitting ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2"></span>
-                Saving...
+                Updating...
               </>
             ) : (
-              'Save Property'
+              'Update Property'
             )}
+          </Button>
+          
+          <Button 
+            variant="secondary" 
+            type="button" 
+            onClick={() => navigate('/ownerdashboard')}
+            disabled={isSubmitting}
+          >
+            Cancel
           </Button>
         </div>
       </Form>
@@ -624,4 +744,4 @@ const AddPropertyForm: React.FC = () => {
   );
 };
 
-export default AddPropertyForm;
+export default EditProperty;

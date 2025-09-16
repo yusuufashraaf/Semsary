@@ -2,21 +2,22 @@ import { useState, useEffect } from 'react';
 import { Form, Button, Image, Alert, Spinner } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {  useAppDispatch, useAppSelector } from '@store/hook';
+import { useAppDispatch, useAppSelector } from '@store/hook';
 import { ImageFormType, imageSchema } from '@validations/imageSchema';
 import ActUploadId from '@store/Auth/Act/ActUploadId';
-// import ActUploadId from '@store/Auth/Act/ActUploadId'; 
+import { resetUI } from '@store/Auth/AuthSlice';
 
+type StepStatus = 'pending' | 'completed' | 'skipped';
 interface IImageWithIDProps {
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
+  setStepStatus: (status: StepStatus) => void;
 }
 
-const ImageWithID = ({ setCurrentStep }: IImageWithIDProps) => {
-
+const ImageWithID = ({ setCurrentStep, setStepStatus }: IImageWithIDProps) => {
   const [preview, setPreview] = useState<string | null>(null);
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector(state => state.Authslice);
-
+  const userId = useAppSelector(state => state.Authslice.user?.id);
 
   const {
     register,
@@ -29,40 +30,59 @@ const ImageWithID = ({ setCurrentStep }: IImageWithIDProps) => {
 
   const imageFile = watch('id_image');
 
+
   useEffect(() => {
     if (imageFile && imageFile.length > 0) {
       const file = imageFile[0];
       const objectUrl = URL.createObjectURL(file);
       setPreview(objectUrl);
-      return () => URL.revokeObjectURL(objectUrl); 
-      // Cleanup
+
+ 
+      return () => URL.revokeObjectURL(objectUrl);
     } else {
       setPreview(null);
     }
-  }, [imageFile]);
+  }, [imageFile]); 
 
-  // --- 6. Handle the form submission logic internally ---
+
+  useEffect(() => {
+    dispatch(resetUI());
+    return () => {
+      dispatch(resetUI());
+    };
+  }, [dispatch]); 
+
+ 
   const handleImageSubmit = (data: ImageFormType) => {
-    // To send a file, you must use FormData.
+
+    if (!userId) {
+      console.error("User ID is not available. Cannot upload image.");
+      return;
+    }
+
+  
     const formData = new FormData();
+
     formData.append('id_image', data.id_image[0]);
-    setCurrentStep((prev) => prev + 1);
+    formData.append('user_id', String(userId));
+
     dispatch(ActUploadId(formData))
       .unwrap()
       .then(() => {
-        // On success, move to the next step (or finish).
         console.log("Image uploaded successfully!");
-        // If this is the last step, you might navigate away instead.
+        setStepStatus('completed');
         setCurrentStep((prev) => prev + 1);
+      })
+      .catch((err) => {
+        console.error("Upload failed:", err);
       });
   };
 
   return (
-    // --- 7. The form's onSubmit calls the internal handleImageSubmit ---
     <Form onSubmit={handleSubmit(handleImageSubmit)}>
       <h4 className="mb-3">Upload Your ID</h4>
       <p className="text-muted">
-        Please upload a clear image of your face with Your ID
+        Please upload a clear image of your face with Your ID.
       </p>
 
       <Form.Group controlId="formFile" className="mb-3">
@@ -94,7 +114,7 @@ const ImageWithID = ({ setCurrentStep }: IImageWithIDProps) => {
         <Button
           variant="primary"
           type="submit"
-          disabled={loading === 'pending'}
+          disabled={loading === 'pending' || !imageFile || imageFile.length === 0}
         >
           {loading === 'pending' ? (
             <>
