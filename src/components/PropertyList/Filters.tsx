@@ -35,6 +35,12 @@ function Filters({
   const [localPriceMin, setLocalPriceMin] = useState(priceMin);
   const [localPriceMax, setLocalPriceMax] = useState(priceMax);
 
+  // ✅ Sync local states with props so they don’t get stuck at 0 on reload
+  useEffect(() => {
+    setLocalPriceMin(priceMin);
+    setLocalPriceMax(priceMax);
+  }, [priceMin, priceMax]);
+
   // ---------------------- Debounced handlers ----------------------
   const debouncedSetPrice = useMemo(
     () =>
