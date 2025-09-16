@@ -9,7 +9,6 @@ import Profile from "@pages/Profile/Profile";
 import PropertyList from "@pages/PropertyList/PropertyList";
 import Register from "@pages/Register/Register";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { properties } from "@components/PropertyList/PropertyData.js";
 import { useAppDispatch, useAppSelector } from "@store/hook";
 import { useEffect } from "react";
 import ActCheckAuth from "@store/Auth/Act/ActCheckAuth";
@@ -49,6 +48,7 @@ const router = createBrowserRouter([
       {
         path:"/reset-password",
         element:<ResetPassword />
+
       },
       {
         path: "home",
@@ -76,7 +76,7 @@ const router = createBrowserRouter([
       },
       {
         path: "property",
-        element: <PropertyList listings={properties} />,
+        element: <PropertyList />,
       },
       {
         path: "property/:id",

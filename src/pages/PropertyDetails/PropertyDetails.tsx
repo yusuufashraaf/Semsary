@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useMemo, Suspense } from "react";
 import { useParams } from "react-router-dom";
 import styles from "./PropertyDetails.module.css";
 
@@ -12,95 +12,63 @@ import { Property, GuestOption } from "src/types";
 import { useReviews } from "@hooks/useReviews";
 import { useBooking } from "@hooks/useBooking";
 import { useSimilarProperties } from "@hooks/useSimilarProperties";
+import { usePropertyDetails } from "@hooks/usePropertyDetails";
 import PropertyContent from "./PropertyContent";
 import BookingSection from "./BookingSection";
-import SimilarSection from "./SimilarSection";
+import { mapListingToProperty } from "@utils/propertyMapper";
 
-// Mock Database (IDs are strings but casted later for comparison)
-const MOCK_PROPERTIES: Property[] = [
-  {
-    id: "1",
-    address: "Zamalek, Cairo",
-    price: 1800,
-    type: "Studio Apartment",
-    bedrooms: 1,
-    bathrooms: 1,
-    sqft: 600,
-    description: "Cozy studio apartment with Nile view.",
-    images: [
-      "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=2075&q=80",
-    ],
-    rating: 4.2,
-    reviewCount: 0,
-    coordinates: { lat: 30.061, lng: 31.22 },
-    amenities: ["WiFi", "AC", "Elevator"],
-    host: {
-      name: "Omar Ali",
-      avatar: "OA",
-      joinDate: "Joined in 2021",
-    },
-  },
-  {
-    id: "2",
-    address: "15 Tahrir Square, Downtown, Cairo",
-    price: 2500,
-    type: "Entire Apartment",
-    bedrooms: 3,
-    bathrooms: 2,
-    sqft: 1400,
-    description: "Bright, modern apartment in the heart of the city.",
-    images: [
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2075&q=80",
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2053&q=80",
-    ],
-    rating: 4.6,
-    reviewCount: 0,
-    coordinates: { lat: 30.05623, lng: 31.174386 },
-    amenities: ["WiFi", "Kitchen", "Parking", "AC", "Washer"],
-    host: {
-      name: "Sarah Johnson",
-      avatar: "SJ",
-      joinDate: "Joined in 2020",
-    },
-  },
+// Lazy-load SimilarSection for performance
+const SimilarSection = React.lazy(() => import("./SimilarSection"));
+
+// Guest dropdown options
+const guestOptions: GuestOption[] = [
+  { value: "1", label: "1 guest" },
+  { value: "2", label: "2 guests" },
+  { value: "3", label: "3 guests" },
+  { value: "4", label: "4 guests" },
+  { value: "5", label: "5+ guests" },
 ];
 
 function PropertyListing() {
-  //  Get propertyId from URL params
-  // parseInt ensures ID is numeric
   const { id } = useParams<{ id: string }>();
   const propertyId = id ? parseInt(id, 10) : null;
 
-  //  Component state
-  const [property, setProperty] = useState<Property | null>(null);
-  const [loadingPage, setLoadingPage] = useState<boolean>(true);
+  // Property details
+  const {
+    property: listing,
+    loading: loadingPage,
+    error,
+    refetch,
+  } = usePropertyDetails(propertyId);
 
-  //  Custom hooks for reviews, booking, similar properties
+  const property: Property | null = useMemo(
+    () => (listing ? mapListingToProperty(listing) : null),
+    [listing]
+  );
+
+  // ✅ Reviews hook (propertyId is bound inside)
   const {
     reviews,
     total: reviewsTotal,
     loading: reviewsLoading,
     fetchReviews,
-  } = useReviews();
+  } = useReviews(propertyId);
 
+  // Similar properties
   const { data: similarProperties, loading: similarLoading } =
     useSimilarProperties();
 
+  // Booking
   const booking = useBooking(property);
 
-  //  Guest dropdown options are memoized (better performance)
-  const guestOptions: GuestOption[] = useMemo(
-    () => [
-      { value: "1", label: "1 guest" },
-      { value: "2", label: "2 guests" },
-      { value: "3", label: "3 guests" },
-      { value: "4", label: "4 guests" },
-      { value: "5", label: "5+ guests" },
-    ],
-    []
-  );
+  // Auto fetch reviews when propertyId is available
+  useEffect(() => {
+    if (propertyId) {
+      fetchReviews(1);
+    }
+  }, [propertyId, fetchReviews]);
 
-  // If propertyId is missing from URL
+  // Missing propertyId in URL
   if (!propertyId) {
     return (
       <ErrorScreen
@@ -111,38 +79,27 @@ function PropertyListing() {
     );
   }
 
-  // Simulate fetching property from "database" by ID
-  useEffect(() => {
-    setLoadingPage(true);
+  // Loading state
+  if (loadingPage) {
+    return <LoadingScreen propertyId={String(propertyId)} />;
+  }
 
-    setTimeout(() => {
-      // compare numeric (Number(p.id)) with propertyId
-      const found =
-        MOCK_PROPERTIES.find((p) => Number(p.id) === propertyId) || null;
-
-      setProperty(found);
-      setLoadingPage(false);
-
-      // load reviews only if property exists
-      if (found) fetchReviews(1);
-    }, 800);
-  }, [propertyId, fetchReviews]);
-
-  // Show loading screen while "fetching"
-  if (loadingPage) return <LoadingScreen propertyId={String(propertyId)} />;
-
-  // Show error screen if property not found
-  if (!property) {
+  // Error or missing property
+  if (error || !property) {
     return (
       <ErrorScreen
         title="Property Not Found"
-        message={`Property with ID "${propertyId}" could not be loaded.`}
+        message={
+          error || `Property with ID "${propertyId}" could not be loaded.`
+        }
         icon="🏠"
+        onAction={() => refetch()}
+        actionLabel="Try Again"
       />
     );
   }
 
-  // Normal render when property is available
+  // Normal render
   return (
     <div className={styles.propertyContainer}>
       <BreadCrumb propertyId={String(propertyId)} />
@@ -150,10 +107,8 @@ function PropertyListing() {
       <ImageCarousel
         images={property.images}
         isSaved={false}
-        onToggleSaved={(e) => {
-          e.preventDefault();
-          console.log("hello");
-        }}
+        onToggleSaved={(e) => e.preventDefault()}
+        aria-label={`Image carousel for ${property.title}`}
       />
 
       <div className="row">
@@ -173,10 +128,12 @@ function PropertyListing() {
       </div>
 
       <div className="row mt-4">
-        <SimilarSection
-          properties={similarProperties}
-          loading={similarLoading}
-        />
+        <Suspense fallback={<LoadingScreen propertyId={String(propertyId)} />}>
+          <SimilarSection
+            properties={similarProperties}
+            loading={similarLoading}
+          />
+        </Suspense>
       </div>
 
       <ActionButtons

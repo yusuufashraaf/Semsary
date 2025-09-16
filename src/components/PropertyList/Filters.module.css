@@ -16,6 +16,13 @@
   overflow-y: auto;
   transition: transform 0.3s ease;
   border: 1px solid var(--primary-color);
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.filtersSidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .show {

@@ -6,7 +6,14 @@ import {
   Utensils,
   WashingMachine,
   Car,
-  Home,
+  Dumbbell,
+  Siren,
+  Waves,
+  FireExtinguisher,
+  Fence,
+  Microwave,
+  BadgePlus,
+  Blinds,
 } from "lucide-react";
 import { AmenitiesListProps } from "src/types";
 
@@ -22,12 +29,19 @@ const iconMap: Record<string, ReactNode> = {
   airconditioning: <Snowflake size={ICON_SIZE} />,
   kitchen: <Utensils size={ICON_SIZE} />,
   washer: <WashingMachine size={ICON_SIZE} />,
-  parking: <Car size={ICON_SIZE} />,
+  garage: <Car size={ICON_SIZE} />,
   freeparking: <Car size={ICON_SIZE} />,
+  gym: <Dumbbell size={ICON_SIZE} />,
+  securitysystem: <Siren size={ICON_SIZE} />,
+  swimmingpool: <Waves size={ICON_SIZE} />,
+  fireplace: <FireExtinguisher size={ICON_SIZE} />,
+  garden: <Fence size={ICON_SIZE} />,
+  stainlesssteelappliances: <Microwave size={ICON_SIZE} />,
+  balcony: <Blinds size={ICON_SIZE} />,
 };
 
 // Default fallback icon for unrecognized amenities
-const defaultIcon = <Home size={ICON_SIZE} />;
+const defaultIcon = <BadgePlus size={ICON_SIZE} />;
 
 /* Helpers */
 // Normalizes keys (removes spaces/dashes, lowercases)
