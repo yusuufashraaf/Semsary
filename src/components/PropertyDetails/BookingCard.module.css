@@ -1,46 +1,24 @@
-/* Root design tokens */
-:root {
-  --primary: #ff385c;
-  --secondary: #00a699;
-  --bg1: #0f0f23;
-  --bg2: #16213e;
-  --card: rgba(255, 255, 255, 0.03);
-  --muted: #9ca3af;
-
-  /* Layout scales */
-  --spacing-sm: 0.5rem;
-  --spacing-md: 0.75rem;
-  --spacing-lg: 1rem;
-
-  /* Border radius */
-  --radius-sm: 8px;
-  --radius-md: 10px;
-  --radius-lg: 12px;
-
-  /* Divider */
-  --divider: rgba(255, 255, 255, 0.03);
-}
-
 /* Booking card container */
 .bookingCard {
-  background: var(--card);
+  background: var(--secondary-color);
   padding: var(--spacing-lg);
   border-radius: var(--radius-lg);
   border: 1px solid var(--divider);
   position: sticky;
   top: 24px;
+  color: var(--primary-color);
 }
 
 /* Price display */
 .bookingPrice {
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--primary-color);
   margin-bottom: 0.6rem;
 }
 
 .smallMuted {
-  color: var(--muted);
+  color: var(--primary-color);
   font-size: 12px;
 }
 
@@ -57,14 +35,15 @@
   padding: 0.6rem;
   border-radius: var(--radius-sm);
   border: 1px solid rgba(0, 0, 0, 0.1);
-  background-color: #ffffff;
-  color: black;
+  background-color: var(--white);
+  color: var(--primary-color);
   appearance: none;
+  outline: 1px solid var(--primary-color);
 }
 
 .formInput option {
-  color: black;
-  background-color: white;
+  color: var(--primary-color);
+  background: var(--secondary-color);
 }
 
 .guestSelect {
@@ -77,16 +56,17 @@
   width: 100%;
   padding: 0.8rem;
   border-radius: var(--radius-md);
-  background: linear-gradient(90deg, var(--primary), #ff6b86);
+  background: var(--accent-color);
   border: none;
-  color: white;
+  color: var(--white);
   font-weight: 700;
   cursor: pointer;
   margin-top: 0.6rem;
 }
 
 .reserveBtn:disabled {
-  background-color: #ccc;
+  background-color: var(--disabled-bg);
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
 }
 
@@ -113,4 +93,10 @@
 .divider {
   border-color: var(--divider);
   margin-top: 12px;
+}
+
+/* Calendar */
+.date {
+  color: var(--primary-color) !important;
+  outline: 1px solid var(--primary-color);
 }

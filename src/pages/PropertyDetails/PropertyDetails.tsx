@@ -81,7 +81,7 @@ function PropertyListing() {
 
   // Loading state
   if (loadingPage) {
-    return <LoadingScreen propertyId={String(propertyId)} />;
+    return <LoadingScreen />;
   }
 
   // Error or missing property
@@ -128,7 +128,7 @@ function PropertyListing() {
       </div>
 
       <div className="row mt-4">
-        <Suspense fallback={<LoadingScreen propertyId={String(propertyId)} />}>
+        <Suspense fallback={<LoadingScreen />}>
           <SimilarSection
             properties={similarProperties}
             loading={similarLoading}

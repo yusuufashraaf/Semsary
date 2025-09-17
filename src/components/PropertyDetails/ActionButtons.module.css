@@ -1,36 +1,26 @@
-/* Root Variables (Theme Tokens) */
-:root {
-  --color-border: #c79194;
-  --color-hover-text: #472426;
-  --color-hover-bg: #c79194;
-}
-
-/* Container */
 .container {
   text-align: center;
-  margin-top: 16px;
+  margin-top: var(--spacing-lg);
 }
 
-/* Buttons */
 .button {
   padding: 8px 14px;
-  border-radius: 10px;
-  border: 1px solid var(--color-border);
-  background: transparent;
-  color: inherit;
+  border-radius: var(--radius-md);
+  border: 0;
+  background: var(--accent-color);
+  color: var(--white);
   cursor: pointer;
 }
 
 .button:hover {
-  color: var(--color-hover-text);
-  background-color: var(--color-hover-bg);
+  color: var(--hover-color);
+  background-color: var(--hover-bg);
 }
 
-/* Button Variants */
 .contactButton {
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .viewMoreButton {
-  margin-left: 8px;
+  margin-left: var(--spacing-sm);
 }

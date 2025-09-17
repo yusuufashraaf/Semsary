@@ -17,13 +17,13 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: #e9ecef; /* Default background */
+  background-color: var(--secondary-color); /* Default background */
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: bold;
   margin-bottom: 8px;
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--primary-border);
   transition: background-color 0.3s, border-color 0.3s;
 }
 
@@ -34,11 +34,11 @@
 /* --- Style for the CURRENT, ACTIVE step --- */
 .step.active .step-number {
   background-color: #fff;
-  border-color: #0d6efd; /* Bootstrap primary blue */
-  color: #0d6efd;
+  border-color: var(--primary-border); /* Bootstrap primary blue */
+  color: var(--primary-color);
 }
 .step.active .step-label {
-  color: #0d6efd;
+  color: var(--primary-color);
   font-weight: bold;
 }
 

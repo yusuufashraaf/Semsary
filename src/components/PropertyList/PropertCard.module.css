@@ -1,14 +1,4 @@
-/* CSS Variables for main colors */
-:root {
-  --primary-color: #c79194;
-  --background-dark: #472426;
-  --available-color: #28a745;
-  --pending-color: #ffc107;
-  --sold-color: #dc3545;
-  --white: #ffffff;
-  --rented-color: #4285f4;
-  --invalid-color: #78726d;
-}
+@import "../../styles//themes.css";
 
 /* Remove default link styles */
 .noLinkStyle {
@@ -65,6 +55,7 @@
   object-fit: cover;
   display: block;
 }
+
 /* Property status badge */
 .propertyStatus {
   position: absolute;
@@ -92,12 +83,12 @@
 
 .statusBadge.pending {
   background-color: var(--pending-color);
-  color: #000;
+  color: var(--black);
 }
 
 .statusBadge.rented {
   background-color: var(--rented-color);
-  color: #000;
+  color: var(--black);
 }
 
 .statusBadge.sold {
@@ -137,12 +128,13 @@
 }
 
 .saveBtn:hover {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: var(--primary-color);
+  color: var(--background-dark);
 }
 
 .saveBtn.savedBtn {
-  background-color: var(--sold-color);
-  color: var(--white);
+  background-color: var(--primary-color);
+  color: var(--background-dark);
 }
 
 /* Property information (title, details, description) */
@@ -155,7 +147,7 @@
 .propertyTitle {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--white);
+  color: var(--black);
   margin-bottom: 0.5rem;
   line-height: 1.3;
 }

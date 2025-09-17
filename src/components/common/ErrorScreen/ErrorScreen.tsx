@@ -9,7 +9,6 @@ import { ErrorScreenProps } from "src/types";
 function ErrorScreen({
   title = "Something Went Wrong",
   message = "We couldn't load this page. Please try again later.",
-  icon = "⚠️",
   actionLabel = "Go Home",
   actionHref = "/",
   onAction,
@@ -25,7 +24,7 @@ function ErrorScreen({
   return (
     <div className={styles.errorContainer}>
       <div className={styles.errorContent}>
-        <div className={styles.errorIcon}>{icon}</div>
+        <img src="src/assets/errorHouse.png" alt="" />
         <h2>{title}</h2>
         <p>{message}</p>
         <button className={styles.btnReturn} onClick={handleClick}>

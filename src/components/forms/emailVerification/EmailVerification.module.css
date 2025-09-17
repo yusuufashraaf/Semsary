@@ -1,0 +1,12 @@
+.resendBtn,
+.verifyEmail {
+  background-color: var(--accent-color) !important;
+  color: var(--white) !important;
+  border: 0 !important;
+}
+
+.resendBtn:hover,
+.verifyEmail:hover {
+  color: var(--hover-color) !important;
+  background-color: var(--hover-bg) !important;
+}

@@ -39,15 +39,15 @@
 }
 
 .searchIcon {
-  color: #ffffff;
+  color: var(--primary-color);
   font-size: 1rem;
   pointer-events: none;
 }
 
 /* Input styling */
 .searchInput {
-  background-color: #331a1c !important;
-  color: #ffffff !important;
+  background-color: var(--secondary-color) !important;
+  color: var(--primary-color);
   padding-left: 2.5rem !important;
   border: 0 !important;
   border-radius: 0.5rem 0 0 0.5rem !important;
@@ -56,7 +56,7 @@
 }
 
 .searchInput::placeholder {
-  color: #ffffff !important;
+  color: var(--primary-color) !important;
   opacity: 0.8;
 }
 
@@ -67,8 +67,8 @@
 
 /* Button styling */
 .searchButton {
-  background-color: #eb2933 !important;
-  color: #ffffff !important;
+  background-color: var(--accent-color) !important;
+  color: var(--white) !important;
   border: none;
   border-radius: 0 0.5rem 0.5rem 0;
   font-size: 1rem;
@@ -76,5 +76,6 @@
 }
 
 .searchButton:hover {
-  background-color: #c51f28 !important;
+  color: var(--hover-color) !important;
+  background-color: var(--hover-bg) !important;
 }

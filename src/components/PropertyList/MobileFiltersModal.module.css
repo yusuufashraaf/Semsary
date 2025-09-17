@@ -1,14 +1,8 @@
-/* Root Variables */
-:root {
-  --primary-color: #c79194;
-  --secondary-color: #472426;
-  --danger-color: #dc3545;
-  --backdrop-color: #211212;
-}
+@import "../../styles//themes.css";
 
 /* Modal Backdrop */
 .modalBackdrop {
-  background-color: var(--backdrop-color);
+  background-color: var(--white);
   display: flex;
   text-align: center;
   align-items: center;

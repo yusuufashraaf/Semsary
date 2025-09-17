@@ -12,6 +12,7 @@ function LoadingScreen({
   return (
     <div className={styles.loadingContainer}>
       <div className={styles.loadingContent}>
+        <img src="src/assets/loadingHouse.png" alt="" />
         <div className={styles.loadingSpinner} />
         <h3>{message}</h3>
       </div>

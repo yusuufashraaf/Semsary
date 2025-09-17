@@ -39,7 +39,7 @@ function BookingCard({
                 <label className="form-label">Check-in</label>
                 <input
                   type="date"
-                  className="form-control"
+                  className={`${styles.date} form-control `}
                   value={checkIn}
                   onChange={(e) => setCheckIn(e.target.value)}
                   min={today}
@@ -49,7 +49,7 @@ function BookingCard({
                 <label className="form-label">Check-out</label>
                 <input
                   type="date"
-                  className="form-control"
+                  className={`${styles.date} form-control`}
                   value={checkOut}
                   onChange={(e) => setCheckOut(e.target.value)}
                   min={checkIn || today}

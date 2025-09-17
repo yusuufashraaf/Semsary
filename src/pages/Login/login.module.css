@@ -1,0 +1,20 @@
+.loginBtn {
+  background-color: var(--accent-color) !important;
+  color: var(--white) !important;
+  border: 0 !important;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.loginBtn:hover {
+  color: var(--hover-color) !important;
+  background-color: var(--hover-bg) !important;
+}
+
+.forgetPassword a {
+  color: var(--primary-color);
+}
+
+.forgetPassword a:hover {
+  color: var(--hover-color);
+}
