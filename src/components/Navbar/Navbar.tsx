@@ -1,54 +1,45 @@
 import { useState } from "react";
 import styles from "./Navbar.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faMagnifyingGlass,
-  faBars,
-  faHeart,
-  faBell,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBars, faHeart, faBell } from "@fortawesome/free-solid-svg-icons";
 import AvatarDropdown from "./AvatarDropDownMenu/AvatarDropDownMenu";
 import { useAppSelector } from "@store/hook";
 
 export default function Navbar() {
-  const user =useAppSelector(state => state.Authslice.user);
+  const user = useAppSelector((state) => state.Authslice.user);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
-    setIsSearchOpen(false);
-  };
-
-  const toggleSearch = () => {
-    setIsSearchOpen((prev) => !prev);
-    setIsMenuOpen(false);
   };
 
 
+  const navItems = [
+    { label: "Buy", url: "/property?price_type=FullPay&page=1" },
+    { label: "Rent", url: "/property?price_type=Daily&page=1" },
+    { label: "About Us", url: "/about" },
+    { label: "Contact Us", url: "/contact" },
+  ];
 
-  const navItems = ["Buy", "Rent", "Sell", "About Us", "Contact Us"];
+  const handleNavClick = (url: string) => {
+    window.location.href = url;
+  };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark border-bottom">
       <div className="container-fluid px-3">
         {/* Brand */}
-        <a
-          href="/"
+        <span
+          onClick={() => handleNavClick("/")}
           className={`${styles.navbarBrand} d-flex align-items-center`}
+          style={{ cursor: "pointer" }}
         >
           Semsary
-        </a>
+        </span>
 
         {/* Mobile controls */}
         <div className="d-flex d-lg-none align-items-center ms-auto">
-          <button
-            className="btn btn-outline-light btn-sm me-2"
-            onClick={toggleSearch}
-          >
-            <FontAwesomeIcon icon={faMagnifyingGlass} />
-          </button>
-          <button className="navbar-toggler border-0" onClick={toggleMenu}>
+          <button className={`navbar-toggler border-0 ${styles.barsBtn}`} onClick={toggleMenu}>
             <FontAwesomeIcon icon={faBars} />
           </button>
         </div>
@@ -58,49 +49,46 @@ export default function Navbar() {
           {/* Mobile top buttons */}
           <div className="d-lg-none mb-3 text-center">
             <div className="d-flex justify-content-center mb-2">
-              <button
-                className={`btn btn-outline-light me-3 ${styles.wishlistBtn}`}
-              >
+              <button className={`${styles.wishlistBtn} me-3`}>
                 <FontAwesomeIcon icon={faHeart} />
               </button>
-              <button
-                className={`btn btn-outline-light ${styles.notificationBtn}`}
-              >
+              <button className={styles.notificationBtn}>
                 <FontAwesomeIcon icon={faBell} />
               </button>
             </div>
-            
-     
-            <AvatarDropdown user={user} />
 
+            {/* Avatar */}
+            <AvatarDropdown user={user} />
           </div>
 
           {/* Navigation links */}
           <ul className="navbar-nav me-auto ms-lg-5 mb-2 mb-lg-0">
-            {(!user || user.role === "Owner") && (
+            {(user?.role === "user" || user?.role === "owner") && (
               <li className="nav-item me-2">
-                <a className={`${styles.navLink} ${styles.highlight}`} href="#">
+                <span
+                  className={`${styles.navLink} ${styles.highlight}`}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleNavClick("/owner-dashboard/add-property")}
+                >
                   Add Property
-                </a>
+                </span>
               </li>
             )}
             {navItems.map((item) => (
-              <li className="nav-item me-2" key={item}>
-                <a className={styles.navLink} href="#">
-                  {item}
-                </a>
+              <li className="nav-item me-2" key={item.label}>
+                <span
+                  className={styles.navLink}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleNavClick(item.url)}
+                >
+                  {item.label}
+                </span>
               </li>
             ))}
           </ul>
 
           {/* Desktop controls */}
-          <div className="d-none d-lg-flex align-items-center ms-auto ">
-            <input
-              type="search"
-              className={`${styles.searchBar}`}
-              placeholder="Search"
-              aria-label="Search"
-            />
+          <div className="d-none d-lg-flex align-items-center ms-auto">
             <button className={`me-3 ${styles.wishlistBtn}`}>
               <FontAwesomeIcon icon={faHeart} />
             </button>
@@ -108,26 +96,10 @@ export default function Navbar() {
               <FontAwesomeIcon icon={faBell} />
             </button>
 
+            {/* Avatar */}
             <AvatarDropdown user={user} />
-
           </div>
         </div>
-
-        {/* Mobile search */}
-        {isSearchOpen && (
-          <div className="d-lg-none mt-2">
-            <div className="input-group">
-              <input
-                type="search"
-                className="form-control"
-                placeholder="Search"
-              />
-              <button className="btn btn-outline-secondary" type="button">
-                <FontAwesomeIcon icon={faMagnifyingGlass} />
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </nav>
   );
