@@ -291,7 +291,7 @@ const AddPropertyForm: React.FC = () => {
       setValidationErrors({});
       
       // Navigate to dashboard
-      navigate('/ownerdashboard');
+      navigate('/owner-dashboard');
       
     } catch (error) {
       toast.error("Failed to save property. Please check the form for errors.");
