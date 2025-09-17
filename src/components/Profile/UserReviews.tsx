@@ -1,31 +1,32 @@
+import React, { useState, useEffect } from 'react';
+import { fetchUserReviews } from '../../services/axios-global';
 import './UserReviews.css';
+import { Review } from 'src/types';
 
 const UserReviews = () => {
-  const reviews = [
-    {
-      id: 1,
-      name: "David Lee",
-      time: "2 months ago",
-      rating: 5,
-      content: "This property exceeded my expectations! The location was perfect, and the amenities were top-notch. I highly recommend it to anyone looking for a comfortable and convenient stay."
-    },
-    {
-      id: 2,
-      name: "David Lee",
-      time: "3 months ago",
-      rating: 4,
-      content: "The property was great overall, with a few minor issues. The location was ideal, and the space was well-maintained. I would consider staying here again."
-    },
-    {
-      id: 3,
-      name: "David Lee",
-      time: "4 months ago",
-      rating: 3,
-      content: "The property was decent, but it didn't quite meet my expectations. The location was okay, but there were some issues with cleanliness and maintenance. I might look for other options next time."
-    }
-  ];
+  const [reviewsData, setReviewsData] = useState<Review[]>([]); // This will hold your JSON data
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const renderStars = (rating:number) => {
+  useEffect(() => {
+    const getReviewsData = async () => {
+      try {
+        setLoading(true);
+        // Replace 1 with the actual user ID you want to fetch
+        const data = await fetchUserReviews(5);
+        setReviewsData(data); // Store the JSON data in state
+      } catch (err) {
+        setError('Failed to fetch reviews');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getReviewsData();
+  }, []);
+
+  const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => (
       <span key={index} className={`star ${index < rating ? 'filled' : ''}`}>
         {index < rating ? '★' : '☆'}
@@ -33,17 +34,30 @@ const UserReviews = () => {
     ));
   };
 
+  if (loading) {
+    return <div>Loading reviews...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  // Now you can use reviewsData variable anywhere in your component
+  console.log('Fetched reviews data:', reviewsData);
+
   return (
     <div className="user-reviews">
       <h1 className="reviews-title">My Reviews</h1>
       
       <div className="reviews-list">
-        {reviews.map(review => (
+        {reviewsData.map((review: Review) => (
           <div key={review.id} className="review-card">
             <div className="review-header">
               <div className="reviewer-info">
-                <h3 className="reviewer-name">{review.name}</h3>
-                <span className="review-time">{review.time}</span>
+                <h3 className="reviewer-name">Review for: {review.property.title}</h3>
+                <span className="review-time">
+                  {new Date(review.created_at).toLocaleDateString()}
+                </span>
               </div>
               <div className="review-rating">
                 {renderStars(review.rating)}
@@ -52,7 +66,12 @@ const UserReviews = () => {
             
             <div className="review-separator"></div>
             
-            <p className="review-content">{review.content}</p>
+            <p className="review-content">{review.review}</p>
+            
+            <div className="property-details">
+              <h4>Property Details:</h4>
+              <p>{review.property.location.address}, {review.property.location.city}</p>
+            </div>
           </div>
         ))}
       </div>

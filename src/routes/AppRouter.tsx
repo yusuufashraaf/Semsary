@@ -18,6 +18,7 @@ import ErrorScreen from "@components/common/ErrorScreen/ErrorScreen";
 import ForgetPassword from "@pages/ForgetPassword/ForgetPassword";
 import ResetPassword from "@pages/ResetPassword/ResetPassword";
 import AuthCallbackPage from "@pages/AuthCallbackPage/AuthCallbackPage";
+import UserProperties from "@components/Profile/UserProperty";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: "profile/home",
         element: <Profile />,
+      },
+      {
+        path: "profile/properties",
+        element: <UserProperties/>,
       },
       {
         path: "profile/reviews",
