@@ -10,12 +10,12 @@ import ActUploadId from "./Act/ActUploadId";
 import ActVerifyWhatsOTP from "./Act/ActVerifyWhatsOTP";
 import ActforgetPass from "./Act/ActforgetPass";
 import ActResetPass from "./Act/ActResetPass";
-import { TUser } from "src/types/users/users.types";
+import { TFullUser } from "src/types/users/users.types";
 import ActGetUsersData from "./Act/ActGetUsersData";
 
 
 interface IAuthState{
-    user:TUser | null,
+    user:TFullUser | null,
     loading:TLoading
     error:string|null
     jwt:string|null
@@ -71,10 +71,14 @@ const AuthSlice =createSlice({
         });
         builder.addCase(ActSignIn.fulfilled,(state,action)=>{
             state.loading = "succeeded";
-            
             state.jwt = action.payload.access_token;
-            
-            state.user = action.payload.user;
+            const partialUser = action.payload.user; 
+            state.user = {
+    
+                ...(state.user || {}), 
+
+                ...partialUser,
+            } as TFullUser; 
         });
         builder.addCase(ActSignIn.rejected,(state,action)=>{
             state.loading = "failed";
@@ -209,10 +213,11 @@ const AuthSlice =createSlice({
             state.loading = "pending";
             state.error = null;
         });
-        builder.addCase(ActGetUsersData.fulfilled,(state)=>{
+        builder.addCase(ActGetUsersData.fulfilled,(state,action)=>{
             state.loading = "succeeded";
             
-            
+            state.user= action.payload;
+
             state.error = null;
         });
         builder.addCase(ActGetUsersData.rejected,(state,action)=>{

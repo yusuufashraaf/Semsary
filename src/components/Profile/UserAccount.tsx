@@ -1,5 +1,5 @@
-import  { useEffect, useState } from 'react';
-import { UserData, AccountTab } from '../../types';
+import  { useState } from 'react';
+import {  AccountTab } from '../../types';
 import './UserAccount.css';
 import { useAppSelector } from '@store/hook';
 import { TUser } from 'src/types/users/users.types';
@@ -47,26 +47,6 @@ const UserAccount: React.FC = () => {
   return (
     
     <div className="user-account">
-      <div className="account-sidebar">
-        <nav className="account-nav">
-          <h4>Account Settings</h4>
-          <ul>
-            <li className={activeTab === 'personal' ? 'active' : ''} onClick={() => handleTabChange('personal')}>
-              <i className="fas fa-user"></i> Personal Information
-            </li>
-            <li className={activeTab === 'kyc' ? 'active' : ''} onClick={() => handleTabChange('kyc')}>
-              <i className="fas fa-id-card"></i> KYC Status
-            </li>
-            <li className={activeTab === 'security' ? 'active' : ''} onClick={() => handleTabChange('security')}>
-              <i className="fas fa-shield-alt"></i> Security
-            </li>
-            <li className={activeTab === 'actions' ? 'active' : ''} onClick={() => handleTabChange('actions')}>
-              <i className="fas fa-cog"></i> Account Actions
-            </li>
-          </ul>
-        </nav>
-      </div>
-      
       <div className="account-content">
         {activeTab === 'personal' && (
           <div className="tab-content">
@@ -105,16 +85,6 @@ const UserAccount: React.FC = () => {
                 />
               </div>
               
-              <div className="form-group">
-                <label htmlFor="address">Address</label>
-                <textarea
-                  id="address"
-                  name="address"
-                  value={userData.address}
-                  onChange={handleInputChange}
-                  rows={3}
-                />
-              </div>
               
               <button type="submit" className="update-btn">Update Information</button>
             </form>

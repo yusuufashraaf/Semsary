@@ -1,4 +1,4 @@
-import UserAccount from "@components/Profile/UserAccount";
+
 import UserNotifications from "@components/Profile/UserNotifications";
 import UserPurchases from "@components/Profile/UserPurchases";
 import UserReviews from "@components/Profile/UserReviews";
@@ -23,6 +23,11 @@ import UserProperties from "@components/Profile/UserProperty";
 import "react-toastify/dist/ReactToastify.css";
 import { ResetPassword,ForgotPassword, OAuthCallback, Login, Register, } from "@pages/index";
 import Logout from "@pages/Logout/Logout";
+import UserLayout from "@layouts/UserLayout/UserLayout";
+import BasicInfo from "@components/User/BasicInfo/BasicInfo";
+import ChangeEmail from "@components/User/ChangeEmail/ChangeEmail";
+import ChangePassword from "@components/User/ChangePassword/ChangePassword";
+import ChangePhone from "@components/User/ChangePhone/ChangePhone";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -71,10 +76,28 @@ const router = createBrowserRouter([
         path: "profile/reviews",
         element: <UserReviews />,
       },
-      {
-        path: "profile",
-        element: <UserAccount />,
-      },
+     {
+      path: "profile",
+      element: <UserLayout />,
+      children: [
+        {
+          path: 'basicInfo',
+          element: <BasicInfo />,
+        },
+        {
+          path: 'changeEmail',
+          element: <ChangeEmail />,
+        },
+        {
+          path: 'changePassword',
+          element: <ChangePassword />,
+        },
+        {
+          path: 'changePhone',
+          element: <ChangePhone />,
+        }
+      ],
+    },
        {
         path: "logout",
         element: <Logout />,
