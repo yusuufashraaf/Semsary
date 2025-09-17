@@ -1,0 +1,64 @@
+.simple-stepper-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #6c757d; /* Default, inactive color (gray) */
+  flex: 1;
+}
+
+.step-number {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--secondary-color); /* Default background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  margin-bottom: 8px;
+  border: 2px solid var(--primary-border);
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.step-label {
+  font-size: 14px;
+}
+
+/* --- Style for the CURRENT, ACTIVE step --- */
+.step.active .step-number {
+  background-color: #fff;
+  border-color: var(--primary-border); /* Bootstrap primary blue */
+  color: var(--primary-color);
+}
+.step.active .step-label {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+/* --- Style for COMPLETED steps --- */
+.step.completed .step-number {
+  background-color: #198754; /* Bootstrap success green */
+  border-color: #198754;
+  color: #fff;
+  font-size: 18px; /* Make checkmark a bit bigger */
+}
+.step.completed .step-label {
+  color: #198754;
+}
+
+/* --- NEW: Style for SKIPPED steps --- */
+.step.skipped .step-number {
+  background-color: #ffc107; /* Bootstrap warning yellow */
+  border-color: #ffc107;
+  color: #212529; /* Dark text for better contrast on yellow */
+}
+.step.skipped .step-label {
+  color: #6c757d; /* Keep label color neutral or slightly yellow */
+}

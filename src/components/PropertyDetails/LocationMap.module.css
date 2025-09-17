@@ -1,0 +1,7 @@
+.mapContainer {
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: var(--secondary-color);
+  color: var(--primary-color);
+}

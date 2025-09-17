@@ -1,0 +1,26 @@
+.container {
+  text-align: center;
+  margin-top: var(--spacing-lg);
+}
+
+.button {
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  border: 0;
+  background: var(--accent-color);
+  color: var(--white);
+  cursor: pointer;
+}
+
+.button:hover {
+  color: var(--hover-color);
+  background-color: var(--hover-bg);
+}
+
+.contactButton {
+  margin-bottom: var(--spacing-sm);
+}
+
+.viewMoreButton {
+  margin-left: var(--spacing-sm);
+}

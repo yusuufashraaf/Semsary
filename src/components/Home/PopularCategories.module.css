@@ -1,0 +1,42 @@
+.categoriesSection {
+  padding: 3rem 0;
+}
+
+.sectionTitle {
+  color: var(--black);
+  margin-bottom: 1.5rem;
+}
+
+/* Category card */
+.categoryCard {
+  background-color: transparent !important;
+  border: 1px solid var(--primary-color) !important;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+/* Category image */
+.categoryImage {
+  border: none;
+
+  height: 200px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+/* Overlay with gradient for text */
+.overlay {
+  background-color: transparent;
+  position: relative;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 1rem;
+}
+
+.categoryName {
+  color: var(--black);
+  margin: 0;
+}

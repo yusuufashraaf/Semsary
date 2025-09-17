@@ -1,0 +1,52 @@
+.featuredSection {
+  padding: 3rem 0;
+}
+
+.sectionTitle {
+  color: var(--black);
+  margin-bottom: 1.5rem;
+}
+
+/* Card styling */
+.card {
+  background-color: transparent !important;
+  border: 1px solid var(--primary-color) !important;
+  outline: 0px;
+}
+
+/* Image wrapper */
+.imageWrapper {
+  position: relative;
+}
+
+.cardImg {
+  height: 250px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+/* Price badge */
+.priceBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--primary-color);
+  color: var(--secondary-color);
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Property title */
+.propertyTitle {
+  color: var(--black);
+  margin-bottom: 0.5rem;
+}
+
+/* Property details */
+.propertyDetails {
+  display: flex;
+  gap: 0.5rem;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+}

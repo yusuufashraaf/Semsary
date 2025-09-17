@@ -1,0 +1,43 @@
+.card {
+  background: var(--secondary-color);
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+}
+
+.heading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.subHeading {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.description {
+  margin-bottom: 1rem;
+  color: var(--black);
+  line-height: 1.5;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.icon {
+  margin-right: 6px;
+  color: var(--accent-color);
+  vertical-align: middle;
+}
+
+.noAmenities {
+  font-size: 0.95rem;
+  color: var(--primary-color);
+}

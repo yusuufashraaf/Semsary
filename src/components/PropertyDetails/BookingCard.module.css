@@ -1,0 +1,102 @@
+/* Booking card container */
+.bookingCard {
+  background: var(--secondary-color);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--divider);
+  position: sticky;
+  top: 24px;
+  color: var(--primary-color);
+}
+
+/* Price display */
+.bookingPrice {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 0.6rem;
+}
+
+.smallMuted {
+  color: var(--primary-color);
+  font-size: 12px;
+}
+
+/* Form labels & inputs */
+.formLabel {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.formInput {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: var(--white);
+  color: var(--primary-color);
+  appearance: none;
+  outline: 1px solid var(--primary-color);
+}
+
+.formInput option {
+  color: var(--primary-color);
+  background: var(--secondary-color);
+}
+
+.guestSelect {
+  margin-top: 12px;
+}
+
+/* Reserve / Buy button */
+.reserveBtn {
+  display: block;
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: var(--radius-md);
+  background: var(--accent-color);
+  border: none;
+  color: var(--white);
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.6rem;
+}
+
+.reserveBtn:disabled {
+  background-color: var(--disabled-bg);
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* Price breakdown section */
+.priceBreakdown {
+  border-top: 1px solid var(--divider);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+.breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.divider {
+  border-color: var(--divider);
+  margin-top: 12px;
+}
+
+/* Calendar */
+.date {
+  color: var(--primary-color) !important;
+  outline: 1px solid var(--primary-color);
+}

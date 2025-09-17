@@ -1,0 +1,26 @@
+/* Save button (heart) */
+.saveBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: var(--background-dark);
+  border: none;
+  color: var(--primary-color);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.saveBtn:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.saveBtn.savedBtn {
+  background-color: var(--sold-color);
+  color: var(--white);
+}

@@ -1,0 +1,120 @@
+nav {
+  border-bottom: 1px solid var(--divider);
+  font-size: var(--font-size-base, 1rem);
+}
+
+.navbarBrand {
+  color: var(--black);
+  font-weight: bold;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+.navLink {
+  color: var(--black);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  padding: var(--spacing-sm);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.navLink:hover,
+.navLink:focus {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  outline: none;
+}
+
+/* Search bar */
+.searchBar {
+  width: 100%;
+  max-width: var(--search-max-width, 400px);
+  margin-right: var(--spacing-lg);
+  background-color: var(--secondary-color);
+  border-radius: 20px;
+  border: 0;
+  outline: none;
+  padding: var(--search-padding, 9px 16px);
+  color: var(--primary-color);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
+}
+
+.searchBar::placeholder {
+  color: var(--primary-color);
+  opacity: 1;
+}
+
+.searchBar:focus {
+  width: 100%;
+  box-shadow: none;
+}
+
+/* Input group */
+.inputGroup {
+  width: 100%;
+  max-width: 300px;
+  margin-right: 0;
+}
+
+/* Utility buttons */
+.signInBtn,
+.wishlistBtn,
+.notificationBtn {
+  background: var(--accent-color, var(--primary-color));
+  color: var(--white);
+  border: none;
+  border-radius: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  transition: background-color 0.3s, color 0.3s;
+  white-space: nowrap;
+}
+
+.signInBtn:hover,
+.wishlistBtn:hover,
+.notificationBtn:hover {
+  color: var(--hover-color);
+  background-color: var(--hover-bg);
+}
+
+/* Avatar */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+}
+
+/* Focus states */
+.navbar-toggler:focus,
+.input-group .form-control:focus {
+  box-shadow: none;
+  border-color: var(--primary-border, #aaa);
+}
+
+/* Outline button hover */
+.btn-outline-light:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--white);
+}
+
+/* Collapse animation */
+.navbar-collapse.show {
+  animation: slideDown 0.3s ease-in-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

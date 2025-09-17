@@ -1,0 +1,18 @@
+.propertyContainer {
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.glassCard {
+  background: var(--card-bg, var(--secondary-color));
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--divider);
+  margin-bottom: 1rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: calc(-1 * var(--spacing-sm));
+}

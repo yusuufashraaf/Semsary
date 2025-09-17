@@ -1,0 +1,15 @@
+.stars {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2px;
+}
+
+.starFilled {
+  color: var(--accent-color);
+  font-size: 1rem;
+}
+
+.starEmpty {
+  color: #ddd;
+  font-size: 1rem;
+}

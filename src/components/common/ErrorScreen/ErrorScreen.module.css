@@ -1,0 +1,41 @@
+.errorContainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+  background: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+.errorContent {
+  display: flex;
+  flex-direction: column; /* Stack icon + text + button */
+  align-items: center;
+  justify-content: center;
+  gap: 1rem; /* Space between elements */
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  text-align: center;
+}
+
+.errorIcon {
+  font-size: 3rem;
+  color: var(--danger-color); /* Use theme danger color */
+}
+
+.btnReturn {
+  padding: 0.6rem 1rem;
+  background: var(--danger-color); /* from theme */
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--white);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.btnReturn:hover {
+  background: var(--hover-bg);
+  color: var(--hover-color);
+}

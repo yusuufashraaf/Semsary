@@ -1,0 +1,38 @@
+.card {
+  background: var(--secondary-color);
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+}
+
+.title {
+  margin-bottom: 1rem;
+}
+
+.hostInfo {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-color);
+  font-weight: 700;
+  color: var(--white);
+  margin-right: var(--spacing-md);
+}
+
+.name {
+  margin: 0;
+}
+
+.joinDate {
+  color: var(--black);
+}

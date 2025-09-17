@@ -1,0 +1,28 @@
+.container {
+  margin-top: var(--spacing-lg);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+.item {
+  background: var(--accent-color);
+  color: var(--white);
+  padding: 0.6rem;
+  border-radius: var(--radius-md);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

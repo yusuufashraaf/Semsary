@@ -1,0 +1,205 @@
+@import "../../styles//themes.css";
+
+/* Remove default link styles */
+.noLinkStyle {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Property card container */
+.propertyCard {
+  background-color: transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  border: 1px solid var(--primary-color);
+  display: block;
+}
+
+.propertyCard:hover {
+  transform: translateY(-2px);
+}
+
+/* List view layout */
+.list {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+/* Property image container */
+.propertyImage {
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* Grid view images */
+.grid .propertyImage {
+  width: 100%;
+  height: 200px; /* uniform grid height */
+}
+
+/* List view images */
+.list .propertyImage {
+  width: 250px; /* fixed width */
+  height: 180px; /* fixed height */
+  border-radius: 8px;
+}
+
+/* Image styles */
+.propertyImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Property status badge */
+.propertyStatus {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+
+.statusBadge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.statusBadge.valid {
+  background-color: var(--available-color);
+  color: var(--white);
+}
+
+.statusBadge.invalid {
+  background-color: var(--invalid-color);
+  color: var(--white);
+}
+
+.statusBadge.pending {
+  background-color: var(--pending-color);
+  color: var(--black);
+}
+
+.statusBadge.rented {
+  background-color: var(--rented-color);
+  color: var(--black);
+}
+
+.statusBadge.sold {
+  background-color: var(--sold-color);
+  color: var(--white);
+}
+
+/* Property price badge */
+.propertyPrice {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background-color: var(--background-dark);
+  color: var(--primary-color);
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Save button (heart) */
+.saveBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: var(--background-dark);
+  border: none;
+  color: var(--primary-color);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.saveBtn:hover {
+  background-color: var(--primary-color);
+  color: var(--background-dark);
+}
+
+.saveBtn.savedBtn {
+  background-color: var(--primary-color);
+  color: var(--background-dark);
+}
+
+/* Property information (title, details, description) */
+.propertyInfo {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.propertyTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.propertyDetails {
+  color: var(--primary-color);
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.propertyDescription {
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Loading shimmer for images */
+.imageLoader {
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    #f3e6e6 25%,
+    var(--primary-color) 50%,
+    #f3e6e6 75%
+  );
+  background-size: 200% 100%;
+  animation: loadingShimmer 1.5s infinite;
+}
+
+/* Match grid sizing */
+.grid .imageLoader {
+  height: 200px;
+}
+
+/* Match list sizing */
+.list .imageLoader {
+  width: 250px;
+  height: 180px;
+}
+
+@keyframes loadingShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

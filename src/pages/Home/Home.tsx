@@ -1,10 +1,15 @@
+import HeroImage from "@components/Home/HeroImage";
+import FeatureListing from "../../components/Home/FeatureListing";
+import PopularCategories from "@components/Home/PopularCategories";
 
-function Home() {
+const Home = () => {
   return (
-    <div>
-      <p>home page</p>
+    <div className="homepage-container">
+      <HeroImage />
+      <FeatureListing />
+      <PopularCategories />
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

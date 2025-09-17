@@ -1,0 +1,52 @@
+@import "../../styles//themes.css";
+
+/* === Global Search Styles === */
+.searchContainer {
+  width: 100%;
+  max-width: var(--search-max-width);
+  margin: 0 auto;
+  padding: var(--search-padding);
+}
+
+.searchInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: var(--search-icon-left);
+  color: var(--primary-color);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 40px 10px 36px;
+  border-radius: var(--search-radius);
+  outline: none;
+  border: 0;
+  font-size: var(--search-font-size);
+  color: var(--primary-color);
+  background: var(--secondary-color);
+}
+
+.searchInput::placeholder {
+  color: var(--primary-color);
+  opacity: 1;
+}
+
+.clearSearchBtn {
+  position: absolute;
+  right: var(--search-icon-right);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  transition: color var(--search-clear-transition);
+}
