@@ -77,7 +77,7 @@ function Login() {
             />
 
             <div
-              className={`${styles.forgetPassword} d-flex justify-between-end mt-2`}
+              className={`${styles.forgetPassword} d-flex justify-content-between mt-2`}
             >
               <Link to="/forgot-password">Forgot Password?</Link>
               <Link to="/register">Register Here</Link>
