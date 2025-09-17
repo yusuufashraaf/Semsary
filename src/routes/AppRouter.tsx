@@ -94,23 +94,23 @@ const router = createBrowserRouter([
         element: <EditProperty />,
       },
       {
-  path: "/owner-dashboard",
-  element: <OwnerDashboard />,
-  children: [
-    {
-      index: true,
-      element: <DashboardOverview />,
-    },
-    {
-      path: "manage-properties",
-      element: <ManageProperties />,
-    },
-    {
-      path: "add-property",
-      element: <AddPropertyForm />,
-    },
-  ],
-}
+      path: "/owner-dashboard",
+      element: <OwnerDashboard />,
+      children: [
+        {
+          index: true,
+          element: <DashboardOverview />,
+        },
+        {
+          path: "manage-properties",
+          element: <ManageProperties />,
+        },
+        {
+          path: "add-property",
+          element: <AddPropertyForm />,
+        },
+      ],
+    }
     ],
   },
 ]);
