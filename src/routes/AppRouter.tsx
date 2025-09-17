@@ -19,6 +19,9 @@ import ForgetPassword from "@pages/ForgetPassword/ForgetPassword";
 import ResetPassword from "@pages/ResetPassword/ResetPassword";
 import OAuthCallback from "@pages/OAuthCallback/OAuthCallback";
 import OwnerDashboard from "@pages/OwnerDashboard/OwnerDashboard";
+import DashboardOverview from "@components/owner/DashboardOverview";
+import ManageProperties from "@components/owner/ManageProperties";
+import AddPropertyForm from "@components/owner/AddPropertyForm";
 import EditProperty from "@components/owner/EditProperty";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -86,14 +89,32 @@ const router = createBrowserRouter([
         path: "property/:id",
         element: <PropertyDetails />,
       },
-      {
-        path: "ownerdashboard",
-        element: <OwnerDashboard />,
-      },
+      // {
+      //   path: "ownerdashboard",
+      //   element: <OwnerDashboard />,
+      // },
        { 
         path: "property/:id/edit",
         element: <EditProperty />,
-      }
+      },
+      {
+  path: "/owner-dashboard",
+  element: <OwnerDashboard />,
+  children: [
+    {
+      index: true,
+      element: <DashboardOverview />,
+    },
+    {
+      path: "manage-properties",
+      element: <ManageProperties />,
+    },
+    {
+      path: "add-property",
+      element: <AddPropertyForm />,
+    },
+  ],
+}
     ],
   },
 ]);
