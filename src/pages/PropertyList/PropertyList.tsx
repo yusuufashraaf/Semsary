@@ -23,38 +23,53 @@ export default function PropertyList() {
   const [isLoading, setIsLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState<string | null>(null);
+  const [totalResults, setTotalResults] = useState(0);
 
   // URL Sync
   const [searchParams, setSearchParams] = useSearchParams();
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Main State
-  const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
-  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  // Helper function to get URL param safely
+  const getUrlParam = (key: string, defaultValue: string = ""): string => {
+    return searchParams.get(key) || defaultValue;
+  };
+
+  const getUrlNumParam = (key: string, defaultValue: number = 0): number => {
+    const value = searchParams.get(key);
+    return value ? Number(value) : defaultValue;
+  };
+
+  // Main State - Initialize from URL params
+  const [searchTerm, setSearchTerm] = useState(() => getUrlParam("q"));
+  const [debouncedSearch, setDebouncedSearch] = useState(() =>
+    getUrlParam("q")
+  );
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [savedProperties, setSavedProperties] = useState<number[]>([]);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-  const [totalResults, setTotalResults] = useState(0);
 
-  const [itemsPerPage, setItemsPerPage] = useState(
-    Number(searchParams.get("itemsPerPage")) || 12
+  const [itemsPerPage, setItemsPerPage] = useState(() =>
+    getUrlNumParam("itemsPerPage", 12)
   );
-  const [currentPage, setCurrentPage] = useState(
-    Number(searchParams.get("page")) || 1
+  const [currentPage, setCurrentPage] = useState(() =>
+    getUrlNumParam("page", 1)
   );
 
-  // Initial Filter State
-  const initialFilterState = {
-    location: searchParams.get("location") || "",
-    propertyType: searchParams.get("type") || "",
-    bedrooms: searchParams.get("beds") || "",
-    status: searchParams.get("status") || "",
-    priceMin: Number(searchParams.get("priceMin")) || 0,
-    priceMax: Number(searchParams.get("priceMax")) || 0,
-    amenities: searchParams.get("amenities")?.split(",") || [],
-    itemsPerPage: Number(searchParams.get("itemsPerPage")) || 12,
-  };
+  // ---------------------- Filters ----------------------
+  const [filters, setFilters] = useState(() => ({
+    location: getUrlParam("location"),
+    propertyType: getUrlParam("type"),
+    bedrooms: getUrlParam("beds"),
+    status: getUrlParam("status"),
+    priceMin: getUrlNumParam("priceMin", 0),
+    priceMax: getUrlNumParam("priceMax", 0),
+    priceType: getUrlParam("price_type"),
+    amenities: getUrlParam("amenities")
+      ? getUrlParam("amenities").split(",")
+      : [],
+    itemsPerPage: getUrlNumParam("itemsPerPage", 12),
+  }));
 
-  const [filters, setFilters] = useState(initialFilterState);
   const [tempFilters, setTempFilters] = useState({ ...filters });
 
   const {
@@ -73,15 +88,17 @@ export default function PropertyList() {
     maxPrice: 700000,
   };
 
+  // Initialize filter price range from backend data once
   useEffect(() => {
-    if (filterData) {
+    if (filterData && !isInitialized) {
       setFilters((prev) => ({
         ...prev,
-        priceMin: filterData.minPrice,
-        priceMax: filterData.maxPrice,
+        priceMin: prev.priceMin || filterData.minPrice,
+        priceMax: prev.priceMax || filterData.maxPrice,
       }));
+      setIsInitialized(true);
     }
-  }, [filterData]);
+  }, [filterData, isInitialized]);
 
   // Debounced Search
   const debouncedUpdate = useMemo(
@@ -117,6 +134,7 @@ export default function PropertyList() {
         status: filters.status,
         priceMin: filters.priceMin,
         priceMax: filters.priceMax,
+        price_type: filters.priceType,
         amenities: filters.amenities,
         page: currentPage,
         per_page: itemsPerPage,
@@ -146,7 +164,7 @@ export default function PropertyList() {
   // ---------------------- Reset page when filters change ----------------------
   useEffect(() => {
     setCurrentPage(1);
-  }, [filters]);
+  }, [filters, debouncedSearch]); // Add debouncedSearch here
 
   // ---------------------- Helpers ----------------------
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
@@ -165,18 +183,23 @@ export default function PropertyList() {
 
   // Clear / Apply Filters
   const clearFilters = () => {
-    setFilters({
+    const clearedFilters = {
       location: "",
       propertyType: "",
       bedrooms: "",
       status: "",
       priceMin: filterOptions.minPrice,
       priceMax: filterOptions.maxPrice,
+      priceType: "",
       amenities: [],
       itemsPerPage: 12,
-    });
+    };
+    setFilters(clearedFilters);
     setItemsPerPage(12);
+    setSearchTerm(""); // Clear search term
+    setDebouncedSearch(""); // Clear debounced search
   };
+
   const clearTempFilters = () => setTempFilters({ ...filters });
   const initializeTempFilters = () => setTempFilters({ ...filters });
   const applyFilters = () => {
@@ -190,24 +213,61 @@ export default function PropertyList() {
     [filters]
   );
 
-  // Sync state to URL
-  useEffect(() => {
-    const params: Record<string, string> = {};
-    if (debouncedSearch.trim()) params.q = debouncedSearch;
-    if (filters.location) params.location = filters.location;
-    if (filters.propertyType) params.type = filters.propertyType;
-    if (filters.bedrooms) params.beds = filters.bedrooms;
-    if (filters.status) params.status = filters.status;
-    if (filters.priceMin > 0) params.priceMin = filters.priceMin.toString();
-    if (filters.priceMax < filterOptions.maxPrice)
-      params.priceMax = filters.priceMax.toString();
-    if (filters.amenities.length)
-      params.amenities = filters.amenities.join(",");
-    if (itemsPerPage !== 12) params.itemsPerPage = itemsPerPage.toString();
-    params.page = currentPage.toString();
+  // Improved URL synchronization
+  const updateUrlParams = useCallback(() => {
+    const params = new URLSearchParams();
 
-    const currentParams = Object.fromEntries(searchParams.entries());
-    if (JSON.stringify(currentParams) !== JSON.stringify(params)) {
+    // Add search term
+    if (debouncedSearch.trim()) {
+      params.set("q", debouncedSearch.trim());
+    }
+
+    // Add filters
+    if (filters.location) {
+      params.set("location", filters.location);
+    }
+
+    if (filters.propertyType) {
+      params.set("type", filters.propertyType);
+    }
+
+    if (filters.bedrooms) {
+      params.set("beds", filters.bedrooms);
+    }
+
+    if (filters.status) {
+      params.set("status", filters.status);
+    }
+
+    if (filters.priceType) {
+      params.set("price_type", filters.priceType);
+    }
+
+    if (filters.priceMin > 0) {
+      params.set("priceMin", filters.priceMin.toString());
+    }
+
+    if (filters.priceMax > 0 && filters.priceMax < filterOptions.maxPrice) {
+      params.set("priceMax", filters.priceMax.toString());
+    }
+
+    if (filters.amenities.length > 0) {
+      params.set("amenities", filters.amenities.join(","));
+    }
+
+    if (itemsPerPage !== 12) {
+      params.set("itemsPerPage", itemsPerPage.toString());
+    }
+
+    if (currentPage !== 1) {
+      params.set("page", currentPage.toString());
+    }
+
+    // Only update URL if params have actually changed
+    const newParamsString = params.toString();
+    const currentParamsString = searchParams.toString();
+
+    if (newParamsString !== currentParamsString) {
       setSearchParams(params, { replace: true });
     }
   }, [
@@ -220,7 +280,22 @@ export default function PropertyList() {
     filterOptions.maxPrice,
   ]);
 
-  // Render
+  // Sync state to URL whenever relevant state changes
+  useEffect(() => {
+    if (!isInitialized || !filterData) return;
+
+    updateUrlParams();
+  }, [
+    debouncedSearch, // This is the key addition
+    filters,
+    currentPage,
+    itemsPerPage,
+    updateUrlParams,
+    isInitialized,
+    filterData,
+  ]);
+
+  // ---------------------- Render ----------------------
   return (
     <div className="container-fluid">
       <div className="row">
@@ -257,6 +332,10 @@ export default function PropertyList() {
                 setPriceMax={(val) =>
                   setFilters((prev) => ({ ...prev, priceMax: val }))
                 }
+                priceType={filters.priceType}
+                setPriceType={(val) =>
+                  setFilters((prev) => ({ ...prev, priceType: val }))
+                }
                 amenities={filters.amenities}
                 setAmenities={(val) =>
                   setFilters((prev) => ({ ...prev, amenities: val }))
@@ -291,7 +370,7 @@ export default function PropertyList() {
             </button>
           </div>
 
-          {/*  Mobile Filters Modal */}
+          {/* Mobile Filters Modal */}
           <MobileFiltersModal
             isOpen={showMobileFilters}
             onClose={() => setShowMobileFilters(false)}
@@ -305,7 +384,7 @@ export default function PropertyList() {
           />
 
           <div className={styles.propertyListContainer}>
-            {/*  Search */}
+            {/* Search */}
             <div className="mb-3">
               <Search
                 searchTerm={searchTerm}
@@ -313,7 +392,7 @@ export default function PropertyList() {
               />
             </div>
 
-            {/*  Active Filter Badges */}
+            {/* Active Filter Badges */}
             {activeFilters.length > 0 && (
               <div className="mb-3 d-flex flex-wrap gap-2">
                 {activeFilters.map((badge, idx) => (
@@ -329,7 +408,7 @@ export default function PropertyList() {
               </div>
             )}
 
-            {error && <p>{<ErrorMessage message={error} />}</p>}
+            {error && <ErrorMessage message={error} />}
 
             <ViewToggle
               viewMode={viewMode}
@@ -338,7 +417,7 @@ export default function PropertyList() {
               shownCount={backendListings.length}
             />
 
-            {/*  Property Cards */}
+            {/* Property Cards */}
             <div className="row g-3 g-md-4">
               {isLoading ? (
                 Array.from({ length: 6 }).map((_, idx) => (
@@ -379,7 +458,7 @@ export default function PropertyList() {
               )}
             </div>
 
-            {/*  Pagination */}
+            {/* Pagination */}
             {totalPages > 1 && (
               <Pagination
                 currentPage={currentPage}
@@ -389,7 +468,7 @@ export default function PropertyList() {
               />
             )}
 
-            {/*  Scroll to Top */}
+            {/* Scroll to Top */}
             <ScrollTopButton />
           </div>
         </div>
