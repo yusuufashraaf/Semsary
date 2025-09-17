@@ -1,16 +1,37 @@
+.loginBtn {
+  background-color: var(--accent-color) !important;
+  color: var(--white) !important;
+  border: 0 !important;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.loginBtn:hover {
+  color: var(--hover-color) !important;
+  background-color: var(--hover-bg) !important;
+}
+
+.forgetPassword a {
+  color: var(--primary-color);
+}
+
+.forgetPassword a:hover {
+  color: var(--hover-color);
+}
+
 .divider {
   display: flex;
   align-items: center;
   text-align: center;
-  color: #6c757d; /* Bootstrap's secondary text color */
+  color: #6c757d;
   margin: 2rem 0;
 }
 
 .divider::before,
 .divider::after {
-  content: '';
+  content: "";
   flex: 1;
-  border-bottom: 1px solid #dee2e6; /* Bootstrap's border color */
+  border-bottom: 1px solid #dee2e6;
 }
 
 .divider:not(:empty)::before {

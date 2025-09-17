@@ -1,11 +1,4 @@
-/* Root variables for colors */
-:root {
-  --primary-bg: #472426;
-  --primary-border: #c79194;
-  --primary-color: #c79194;
-  --hover-bg: #c79194;
-  --hover-color: #472426;
-}
+@import "../../styles//themes.css";
 
 /* Scroll to Top Button - Base */
 .scrollTopBtn {

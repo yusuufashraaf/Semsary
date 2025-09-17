@@ -1,40 +1,33 @@
-/* Breadcrumb Styles */
-
-/* Wrapper for the breadcrumb navigation */
 .breadcrumb {
-  background: var(--card);
+  background: var(--secondary-color);
   padding: 0.6rem 1rem;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.03);
   display: inline-block;
   margin-bottom: 1.25rem;
+  color: var(--primary-color);
 }
 
-/* Flex container for breadcrumb items */
 .container {
   display: flex;
   align-items: center;
 }
 
-/* Separator between breadcrumb links */
 .separator {
   margin: 0 8px;
-  color: var(--muted);
+  color: var(--black);
 }
 
-/* Links inside breadcrumb */
 .breadcrumb a {
   color: inherit;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
-/* Hover effect for links */
 .breadcrumb a:hover {
-  color: var(--primary);
+  color: var(--primary-color);
 }
 
-/* Current/active breadcrumb item */
 .current {
-  color: var(--muted);
+  color: var(--primary-color);
 }

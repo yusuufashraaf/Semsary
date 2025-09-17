@@ -3,14 +3,14 @@
 }
 
 .sectionTitle {
-  color: white;
+  color: var(--black);
   margin-bottom: 1.5rem;
 }
 
 /* Category card */
 .categoryCard {
   background-color: transparent !important;
-  border: none;
+  border: 1px solid var(--primary-color) !important;
   border-radius: 0.5rem;
   overflow: hidden;
   transition: transform 0.3s ease;
@@ -37,7 +37,6 @@
 }
 
 .categoryName {
-  color: #ffffff;
-  font-weight: bold;
+  color: var(--black);
   margin: 0;
 }

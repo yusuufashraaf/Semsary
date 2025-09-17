@@ -3,6 +3,8 @@ import styles from "./ReviewItem.module.css";
 import { ReviewsListProps } from "src/types";
 import Loader from "@components/common/Loader/Loader";
 import StarRating from "@components/PropertyDetails/StarRating";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGreaterThan, faLessThan } from "@fortawesome/free-solid-svg-icons";
 
 /* 
   ReviewItem component
@@ -75,7 +77,7 @@ function ReviewItem({
             disabled={currentPage === 1}
             onClick={() => handlePageChange(currentPage - 1)}
           >
-            Prev
+            <FontAwesomeIcon icon={faLessThan} />
           </button>
           <span className={styles.pageInfo} aria-current="page">
             Page {currentPage} of {totalPages}
@@ -85,7 +87,7 @@ function ReviewItem({
             disabled={currentPage === totalPages}
             onClick={() => handlePageChange(currentPage + 1)}
           >
-            Next
+            <FontAwesomeIcon icon={faGreaterThan} />
           </button>
         </nav>
       )}

@@ -5,108 +5,105 @@ import { resetUI } from "@store/Auth/AuthSlice";
 import { useAppDispatch, useAppSelector } from "@store/hook";
 import { signInSchema, signInType } from "@validations/signInSchema";
 import { useEffect } from "react";
-import { Alert, Button, Col, Form, Row, Spinner } from "react-bootstrap"
+import { Alert, Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
-
-import styles from "./styles.module.css"
+import styles from "./login.module.css";
 
 function Login() {
-  const [searchParams,setSearchParams]=useSearchParams();
-  const dispatch =useAppDispatch();
-  const {loading,error,jwt}=useAppSelector(state=> state.Authslice)
+  const [searchParams, setSearchParams] = useSearchParams();
+  const dispatch = useAppDispatch();
+  const { loading, error, jwt } = useAppSelector((state) => state.Authslice);
   const navigate = useNavigate();
 
-  const googleLoginUrl = 'http://127.0.0.1:8000/api/auth/google/redirect';
-  useEffect(()=>{
-    return ()=>{
-      dispatch(resetUI())
-    }
-  },[dispatch])
+  const googleLoginUrl = "http://127.0.0.1:8000/api/auth/google/redirect";
+  useEffect(() => {
+    return () => {
+      dispatch(resetUI());
+    };
+  }, [dispatch]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(resetUI());
+    };
+  }, [dispatch]);
 
   const {
-      register,
-      handleSubmit,
-      formState: { errors },
-
-    } = useForm<signInType>({
-      mode:"onBlur",
-      resolver:zodResolver(signInSchema)
-    });
-    const submitForm:SubmitHandler<signInType> =(data) =>{  
-        if (searchParams.get("message")) {
-          setSearchParams("");
-        }
-        dispatch(ActSignIn(data)).unwrap().then(()=>{
-          navigate('/')
-        })
-        
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<signInType>({
+    mode: "onBlur",
+    resolver: zodResolver(signInSchema),
+  });
+  const submitForm: SubmitHandler<signInType> = (data) => {
+    if (searchParams.get("message")) {
+      setSearchParams("");
     }
-      if (jwt) {
-      return <Navigate to="/" />;
-    }
-
+    dispatch(ActSignIn(data))
+      .unwrap()
+      .then(() => {
+        navigate("/");
+      });
+  };
+  if (jwt) {
+    return <Navigate to="/" />;
+  }
 
   return (
-  <>
-     <Row>
-
-      <Col md={{span:"4", offset:"4"}}>
-          {searchParams.get('message') === "account_created" &&
-          (
+    <>
+      <Row>
+        <Col md={{ span: "4", offset: "4" }}>
+          {searchParams.get("message") === "account_created" && (
             <Alert variant="success">
               Your account successfully created, please login
             </Alert>
           )}
 
-         <Form onSubmit={handleSubmit(submitForm)}>
-
-              <Input 
-              label='Email Address'
-              name ="email"
+          <Form onSubmit={handleSubmit(submitForm)}>
+            <Input
+              label="Email Address"
+              name="email"
               register={register}
-              error ={errors.email?.message}
-              />
-              <Input 
-              label='Password'
-              name ="password"
+              error={errors.email?.message}
+            />
+            <Input
+              label="Password"
+              name="password"
               register={register}
-              error ={errors.password?.message}
-              type='password'
-              />
+              error={errors.password?.message}
+              type="password"
+            />
 
-              <div className="d-flex justify-content-between mt-2">
+            <div
+              className={`${styles.forgetPassword} d-flex justify-between-end mt-2`}
+            >
               <Link to="/forgot-password">Forgot Password?</Link>
               <Link to="/register">Register Here</Link>
-              </div>
-
-              <Button 
-                variant="info" 
-                type="submit" 
-                className='text-light mt-3' 
-                style={{width:"100%"}}
-              >
-              
-              {loading === "pending" ? (
-                  <>
-                    <Spinner animation="border" size="sm" />
-                    Loading...
-                  </>
-                ) : (
-                  'Submit'
-              )}
-                
-              </Button>
-
-          <div className={styles.divider}>
-            <span>OR</span>
             </div>
 
-            <a
-              href={googleLoginUrl}
-              className={styles.googleBtn}
+            <Button
+              variant="info"
+              type="submit"
+              className={`${styles.loginBtn}  mt-3`}
+              style={{ width: "100%" }}
             >
+              {loading === "pending" ? (
+                <>
+                  <Spinner animation="border" size="sm" />
+                  Loading...
+                </>
+              ) : (
+                "Submit"
+              )}
+            </Button>
+
+            <div className={styles.divider}>
+              <span>OR</span>
+            </div>
+
+            <a href={googleLoginUrl} className={styles.googleBtn}>
               <img
                 src="https://www.svgrepo.com/show/355037/google.svg"
                 alt="Google logo"
@@ -114,15 +111,14 @@ function Login() {
               />
               <span>Continue With Google</span>
             </a>
-              {error && (
+            {error && (
               <p style={{ color: "#DC3545", marginTop: "10px" }}>{error}</p>
             )}
           </Form>
-      </Col>
-       
+        </Col>
       </Row>
     </>
-  )
+  );
 }
 
-export default Login
+export default Login;

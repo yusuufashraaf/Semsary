@@ -9,44 +9,47 @@ export const setStore = (s: AppStore) => {
 };
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: "http://127.0.0.1:8000/api",
   withCredentials: true,
 });
 
 const publicApiEndpoints = [
-  '/login',
-  '/register',
-  '/forgot-password',
-  '/reset-password',
-  '/verify-reset-token',
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-reset-token",
 ];
 
 // Request Interceptor
-const requestInterceptor = (config:InternalAxiosRequestConfig) => {
+const requestInterceptor = (config: InternalAxiosRequestConfig) => {
   const token = store.getState().Authslice.jwt;
   if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`;
+    config.headers["Authorization"] = `Bearer ${token}`;
   }
   return config;
 };
 
 // Response Interceptor
 const responseInterceptor = async (error: AxiosError) => {
-  const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
-
+  const originalRequest = error.config as InternalAxiosRequestConfig & {
+    _retry?: boolean;
+  };
 
   // Check if the error is a 401, if we haven't retried yet, AND if the failed request was NOT the refresh endpoint itself.
-  if (error.response?.status === 401 && !originalRequest._retry && originalRequest.url !== "/refresh") {
-
-    
-    
-    
-    const isPublicEndpoint = publicApiEndpoints.some(endpoint => 
+  if (
+    error.response?.status === 401 &&
+    !originalRequest._retry &&
+    originalRequest.url !== "/refresh"
+  ) {
+    const isPublicEndpoint = publicApiEndpoints.some((endpoint) =>
       originalRequest.url?.includes(endpoint)
     );
-    
+
     if (isPublicEndpoint) {
-      console.log(`Request to public endpoint ${originalRequest.url} failed with 401. Rejecting without refresh.`);
+      console.log(
+        `Request to public endpoint ${originalRequest.url} failed with 401. Rejecting without refresh.`
+      );
       return Promise.reject(error);
     }
     originalRequest._retry = true; // Mark that we are attempting a retry
@@ -54,22 +57,24 @@ const responseInterceptor = async (error: AxiosError) => {
     try {
       console.log("Access token expired. Attempting to refresh...");
       const refreshResponse = await api.post("/refresh");
-      
+
       // In your Thunk, you used response.data, but here you might need to access the property directly
-      const newAccessToken = refreshResponse.data.accessToken; 
+      const newAccessToken = refreshResponse.data.accessToken;
 
       // Dispatch the action to update the token in Redux
       // Using imported actions is safer than string literals
 
-      store.dispatch({ type: "AuthSlice/setAccessToken", payload: newAccessToken });
+      store.dispatch({
+        type: "AuthSlice/setAccessToken",
+        payload: newAccessToken,
+      });
       // Update the authorization header of the original request
-      if(originalRequest.headers){
-         originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+      if (originalRequest.headers) {
+        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
       }
 
       // Retry the original request with the new token
       return api(originalRequest);
-
     } catch (refreshError) {
       console.error("Unable to refresh token. Logging out.");
       // If the refresh fails, dispatch the logout action

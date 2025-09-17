@@ -1,0 +1,12 @@
+.verifyBtn,
+.skipBtn {
+  background-color: var(--accent-color) !important;
+  color: var(--white) !important;
+  border: 0 !important;
+}
+
+.verifyBtn:hover,
+.skipBtn:hover {
+  color: var(--hover-color) !important;
+  background-color: var(--hover-bg) !important;
+}

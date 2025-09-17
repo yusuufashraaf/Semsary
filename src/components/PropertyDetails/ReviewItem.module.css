@@ -1,37 +1,33 @@
-/* Review section wrapper */
 .reviewsSection {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--white);
   padding: 1.25rem;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.05);
   margin-bottom: 1rem;
+  color: var(--primary-color);
 }
 
-/* Section title */
 .title {
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 0.75rem;
 }
 
-/* Message when no reviews exist */
 .noReviews {
-  color: #aaa;
+  color: var(--black);
   font-style: italic;
 }
 
-/* Single review card container */
 .reviewCard {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--secondary-color);
   padding: 0.8rem;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   margin-bottom: 0.75rem;
 }
 
-/* User avatar (first letter of reviewer name) */
 .avatar {
   width: 44px;
   height: 44px;
@@ -39,76 +35,73 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(90deg, var(--primary), #ff6b86);
+  background: var(--accent-color);
   font-weight: 700;
-  color: white;
+  color: var(--white);
   font-size: 1rem;
 }
 
-/* Review text container */
 .reviewContent {
   flex: 1;
 }
 
-/* Reviewer name */
 .reviewer {
   font-weight: 600;
+  color: var(--black);
 }
 
-/* Review date */
 .date {
   font-size: 0.85rem;
   color: #9ca3af;
   margin-bottom: 0.25rem;
 }
 
-/* Pagination container */
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 0.75rem;
   margin-top: 1rem;
-  border: none; /* Reset unwanted border */
+  border: none;
 }
 
-/* Pagination buttons */
 .pageBtn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: white;
-  padding: 0.4rem 0.9rem;
-  border-radius: 8px;
+  background: var(--primary-bg);
+  color: var(--primary-color);
+  padding: 0.4rem 0.8rem;
+  border-radius: 100%;
   cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(6px);
+  transition: all 0.3s ease;
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  outline: 0;
 }
 
-/* Hover effect for active buttons */
-.pageBtn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-1px);
+.pagination button:hover:not(:disabled) {
+  background-color: var(--hover-bg);
+  color: var(--hover-color);
+  border-color: #555;
+  border-radius: 100%;
 }
 
-/* Disabled button styles */
 .pageBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* Current page info */
 .pageInfo {
-  color: #ddd;
+  color: var(--primary-color);
   font-size: 0.9rem;
   font-weight: 500;
 }
 
-/* Reviewer name + stars row */
 .headerRow {
   display: flex;
-  justify-content: space-between; /* reviewer left, stars right */
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 0.25rem;
 }
