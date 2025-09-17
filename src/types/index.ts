@@ -307,6 +307,7 @@ export interface LocationMapProps {
 export interface AddToWishlistProps {
   isSaved: boolean;
   onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  disabled: boolean;
 }
 
 // ---------------- Error message ----------------
