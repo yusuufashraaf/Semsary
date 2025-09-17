@@ -136,6 +136,14 @@ export interface Review {
   id: number;
   reviewer: string;
   review: string;
+  property: {
+    title: string;
+    location: {
+      address: string;
+      city: string;
+    };
+  };
+  created_at: string;
   date: string;
   rating: number;
 }

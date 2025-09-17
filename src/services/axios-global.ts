@@ -87,6 +87,56 @@ const responseInterceptor = async (error: AxiosError) => {
   return Promise.reject(error);
 };
 
+export const fetchUserReviews = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/reviews`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
+export const fetchUserProperties = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/properties`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
+export const fetchUserNotifications = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/notifications`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
+export const fetchUserPurchases = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/purchases`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
+export const fetchUserBookings = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/bookings`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
 // Attach interceptors
 api.interceptors.request.use(requestInterceptor);
 api.interceptors.response.use((response) => response, responseInterceptor);

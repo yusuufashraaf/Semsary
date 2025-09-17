@@ -24,6 +24,7 @@ import ManageProperties from "@components/owner/ManageProperties";
 import AddPropertyForm from "@components/owner/AddPropertyForm";
 import EditProperty from "@components/owner/EditProperty";
 import { ToastContainer } from "react-toastify";
+import UserProperties from "@components/Profile/UserProperty";
 import "react-toastify/dist/ReactToastify.css";
 const router = createBrowserRouter([
   {
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
       {
         path: "profile/home",
         element: <Profile />,
+      },
+      {
+        path: "profile/properties",
+        element: <UserProperties/>,
       },
       {
         path: "profile/reviews",

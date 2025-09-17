@@ -37,8 +37,6 @@ const OwnerDashboardLayout: React.FC = () => {
           </Nav.Link>
         </Nav.Item>
       </Nav>
-
-     
       <div className="mt-4">
         <Outlet />
       </div>
