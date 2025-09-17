@@ -49,17 +49,17 @@
   gap: 10px;
   width: 100%;
   padding: 10px;
-  background-color: #f1523c; /* A reddish-orange color similar to the image */
-  color: #fff;
+  background-color: var(--accent-color);
+  color: var(--white);
   border-radius: 5px;
   text-decoration: none;
   font-weight: bold;
-  border: 1px solid #d44937;
   transition: background-color 0.3s ease;
 }
 
 .googleBtn:hover {
-  background-color: #d44937;
+  color: var(--hover-color);
+  background-color: var(--hover-bg);
 }
 
 .googleIcon {
