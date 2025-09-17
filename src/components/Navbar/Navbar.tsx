@@ -7,19 +7,11 @@ import {
   faHeart,
   faBell,
 } from "@fortawesome/free-solid-svg-icons";
+import AvatarDropdown from "./AvatarDropDownMenu/AvatarDropDownMenu";
+import { useAppSelector } from "@store/hook";
 
-interface User {
-  avatar: string;
-  type: string;
-  name: string;
-  email: string;
-}
-
-type NavbarProps = {
-  user?: User | null;
-};
-
-export default function Navbar({ user }: NavbarProps) {
+export default function Navbar() {
+  const user =useAppSelector(state => state.Authslice.user);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -27,10 +19,13 @@ export default function Navbar({ user }: NavbarProps) {
     setIsMenuOpen((prev) => !prev);
     setIsSearchOpen(false);
   };
+
   const toggleSearch = () => {
     setIsSearchOpen((prev) => !prev);
     setIsMenuOpen(false);
   };
+
+
 
   const navItems = ["Buy", "Rent", "Sell", "About Us", "Contact Us"];
 
@@ -74,22 +69,15 @@ export default function Navbar({ user }: NavbarProps) {
                 <FontAwesomeIcon icon={faBell} />
               </button>
             </div>
-            {user ? (
-              <img
-                src={user.avatar}
-                alt="User Avatar"
-                className={`${styles.avatar} rounded-circle`}
-                width={40}
-                height={40}
-              />
-            ) : (
-              <button className="btn btn-outline-light w-100">Log in</button>
-            )}
+            
+     
+            <AvatarDropdown user={user} />
+
           </div>
 
           {/* Navigation links */}
           <ul className="navbar-nav me-auto ms-lg-5 mb-2 mb-lg-0">
-            {(!user || user.type === "Owner") && (
+            {(!user || user.role === "Owner") && (
               <li className="nav-item me-2">
                 <a className={`${styles.navLink} ${styles.highlight}`} href="#">
                   Add Property
@@ -119,17 +107,9 @@ export default function Navbar({ user }: NavbarProps) {
             <button className={`me-3 ${styles.notificationBtn}`}>
               <FontAwesomeIcon icon={faBell} />
             </button>
-            {user ? (
-              <img
-                src={user.avatar}
-                alt="User Avatar"
-                className={`${styles.avatar} rounded-circle`}
-                width={40}
-                height={40}
-              />
-            ) : (
-              <button className={`${styles.signInBtn}`}>Log in</button>
-            )}
+
+            <AvatarDropdown user={user} />
+
           </div>
         </div>
 

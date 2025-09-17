@@ -21,7 +21,7 @@ const ActGetUsersData = createAsyncThunk<
     }
 
     try {
-      const response = await api.get("/profile", {
+      const response = await api.post("/profile", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

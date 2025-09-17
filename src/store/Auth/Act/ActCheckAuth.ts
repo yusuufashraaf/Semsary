@@ -8,7 +8,7 @@ const ActCheckAuth = createAsyncThunk(
     try {
       const response = await api.post("/refresh");
 
-      if (!response.data.access_token) {
+      if (!response.data.access_token) {      
         return rejectWithValue("No valid session");
       }
 

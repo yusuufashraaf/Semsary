@@ -42,7 +42,7 @@ const AuthSlice =createSlice({
             state.jwt=null;
         },
         setAccessToken :(state,action)=>{
-            state.jwt =action.payload.accessToken;
+            state.jwt =action.payload.access_token;
         },
         setUser:(state,action)=>{
             state.user=action.payload.user;
@@ -71,9 +71,10 @@ const AuthSlice =createSlice({
         });
         builder.addCase(ActSignIn.fulfilled,(state,action)=>{
             state.loading = "succeeded";
-            console.log(action.payload.access_token);
             
             state.jwt = action.payload.access_token;
+            
+            state.user = action.payload.user;
         });
         builder.addCase(ActSignIn.rejected,(state,action)=>{
             state.loading = "failed";
@@ -87,7 +88,8 @@ const AuthSlice =createSlice({
         });
         builder.addCase(ActLogout.fulfilled,(state)=>{
             state.loading = "succeeded";
-            Logout();
+            state.user = null;
+            state.jwt = null;
             state.error = null;
         });
         builder.addCase(ActLogout.rejected,(state,action)=>{
@@ -209,6 +211,8 @@ const AuthSlice =createSlice({
         });
         builder.addCase(ActGetUsersData.fulfilled,(state)=>{
             state.loading = "succeeded";
+            
+            
             state.error = null;
         });
         builder.addCase(ActGetUsersData.rejected,(state,action)=>{
