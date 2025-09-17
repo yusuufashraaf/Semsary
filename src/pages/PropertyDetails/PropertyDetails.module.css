@@ -1,29 +1,18 @@
-:root {
-  --primary: #ff385c;
-  --secondary: #00a699;
-  --bg1: #0f0f23;
-  --bg2: #16213e;
-  --card: rgba(255, 255, 255, 0.03);
-  --muted: #9ca3af;
-}
-
 .propertyContainer {
   min-height: 100vh;
-  background: #211212;
-  color: #e8e8e8;
   padding: 2rem;
 }
 
 .glassCard {
-  background: var(--card);
+  background: var(--card-bg, var(--secondary-color));
   padding: 1.25rem;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--divider);
   margin-bottom: 1rem;
 }
 
 .row {
   display: flex;
   flex-wrap: wrap;
-  margin: -0.5rem;
+  margin: calc(-1 * var(--spacing-sm));
 }

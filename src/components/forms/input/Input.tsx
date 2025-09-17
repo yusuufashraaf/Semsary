@@ -1,20 +1,20 @@
-import Form from 'react-bootstrap/Form';
-import { FieldValues,Path, UseFormRegister } from 'react-hook-form';
+import Form from "react-bootstrap/Form";
+import { FieldValues, Path, UseFormRegister } from "react-hook-form";
+import styles from "./input.module.css";
+type InputProps<TFieldValue extends FieldValues> = {
+  label: string;
+  name: Path<TFieldValue>;
+  register: UseFormRegister<TFieldValue>;
+  error?: string;
+  type?: string;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  formText?: string;
+  success?: string;
+  disabled?: boolean;
+  placeholder?: string;
+};
 
-type InputProps<TFieldValue extends FieldValues>={
-    label:string;
-    name:Path<TFieldValue>;
-    register: UseFormRegister<TFieldValue>;
-    error?: string;
-    type?: string;
-    onBlur?:(e:React.FocusEvent<HTMLInputElement>)=>void;
-    formText?: string;
-    success?:string;
-    disabled?:boolean;
-    placeholder?:string;
-}
-
-const Input= <TFieldValue extends FieldValues>({
+const Input = <TFieldValue extends FieldValues>({
   label,
   name,
   type = "text",
@@ -24,9 +24,8 @@ const Input= <TFieldValue extends FieldValues>({
   formText,
   success,
   disabled,
-  placeholder
+  placeholder,
 }: InputProps<TFieldValue>) => {
-
   const onBlurHandler = (e: React.FocusEvent<HTMLInputElement>) => {
     if (onBlur) {
       onBlur(e);
@@ -37,27 +36,23 @@ const Input= <TFieldValue extends FieldValues>({
   };
 
   return (
-         
-        <Form.Group className="mb-3" >
-          <Form.Label>{label}</Form.Label>
-          <Form.Control type={type} 
-          isInvalid={error ? true:false}
-          isValid ={success ? true: false}
-           {...register(name)} 
-          onBlur={onBlurHandler}
-          disabled={disabled}
-          placeholder={placeholder || ""}
-          />
-          <Form.Control.Feedback type="invalid">
-            {error}
-          </Form.Control.Feedback>
-          <Form.Control.Feedback type='valid'>
-          {success}
-          </Form.Control.Feedback>
-          {formText && <Form.Text muted>{formText}</Form.Text>}
-          </Form.Group>
-        
-  )
-}
+    <Form.Group className="mb-3">
+      <Form.Label>{label}</Form.Label>
+      <Form.Control
+        type={type}
+        className={`${styles.input}`}
+        isInvalid={error ? true : false}
+        isValid={success ? true : false}
+        {...register(name)}
+        onBlur={onBlurHandler}
+        disabled={disabled}
+        placeholder={placeholder || ""}
+      />
+      <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>
+      <Form.Control.Feedback type="valid">{success}</Form.Control.Feedback>
+      {formText && <Form.Text muted>{formText}</Form.Text>}
+    </Form.Group>
+  );
+};
 
-export default Input
+export default Input;

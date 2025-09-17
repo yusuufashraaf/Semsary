@@ -1,13 +1,4 @@
-/* --- Root Variables --- */
-:root {
-  --primary-bg: #472426;
-  --primary-color: #c79194;
-  --hover-bg: #dc3545;
-  --hover-color: #fff;
-  --disabled-bg: #2b2b2b;
-  --disabled-opacity: 0.5;
-  --focus-outline: #dc3545;
-}
+@import "../../styles/themes.css";
 
 /* --- Pagination Container --- */
 .pagination {
@@ -25,7 +16,7 @@
   background: var(--primary-bg);
   color: var(--primary-color);
   padding: 0.4rem 0.8rem;
-  border-radius: 4px;
+  border-radius: 100%;
   cursor: pointer;
   transition: all 0.3s ease;
   min-width: 40px;
@@ -41,26 +32,26 @@
 .pagination button:hover:not(:disabled) {
   background-color: var(--hover-bg);
   color: var(--hover-color);
-  border-color: #555;
+  border-radius: 100%;
 }
 
 /* --- Disabled State --- */
 .pagination button:disabled {
   opacity: var(--disabled-opacity);
   cursor: not-allowed;
-  background-color: var(--disabled-bg);
+  background-color: var(--primary-bg);
 }
 
 /* --- Active Button --- */
 .pagination button.active {
   background-color: var(--hover-bg);
   border-color: var(--hover-bg);
-  color: white;
+  color: var(--white);
 }
 
 /* --- Focus Accessibility --- */
 .pagination button:focus {
-  outline: 2px solid var(--focus-outline);
+  outline: 2px solid var(--primary-border);
   outline-offset: 2px;
 }
 

@@ -1,47 +1,51 @@
-import { useState, useLayoutEffect } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, Button, Spinner, Alert, Col, Row } from 'react-bootstrap';
-import { useAppDispatch, useAppSelector } from '@store/hook';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import Input from '@components/forms/input/Input';
-import { resetPasswordSchema, ResetPasswordType } from '@validations/resetPasswordSchema';
-import ActVerifyResetToken from '@store/Auth/Act/ActVerifyResetToken';
+import { useState, useLayoutEffect } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, Button, Spinner, Alert, Col, Row } from "react-bootstrap";
+import { useAppDispatch, useAppSelector } from "@store/hook";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import Input from "@components/forms/input/Input";
+import {
+  resetPasswordSchema,
+  ResetPasswordType,
+} from "@validations/resetPasswordSchema";
+import ActVerifyResetToken from "@store/Auth/Act/ActVerifyResetToken";
 
-import ActResetPass from '@store/Auth/Act/ActResetPass';
-
+import ActResetPass from "@store/Auth/Act/ActResetPass";
+import styles from "./ResetPassword.module.css";
 const ResetPassword = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { loading, error } = useAppSelector(state => state.Authslice);
+  const { loading, error } = useAppSelector((state) => state.Authslice);
 
-  const [tokenState, setTokenState] = useState<'verifying' | 'valid' | 'invalid'>('verifying');
+  const [tokenState, setTokenState] = useState<
+    "verifying" | "valid" | "invalid"
+  >("verifying");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const token = searchParams.get('token');
-  const email = searchParams.get('email');
+  const token = searchParams.get("token");
+  const email = searchParams.get("email");
 
   // This effect verifies the token when the component first loads.
   useLayoutEffect(() => {
     if (!token || !email) {
-      setTokenState('invalid');
-      setErrorMessage('The reset link is incomplete or invalid.');
+      setTokenState("invalid");
+      setErrorMessage("The reset link is incomplete or invalid.");
       return;
     }
 
     dispatch(ActVerifyResetToken({ token, email }))
       .unwrap()
       .then(() => {
-        setTokenState('valid');
+        setTokenState("valid");
       })
       .catch((message) => {
-        setTokenState('invalid');
-        setErrorMessage(message || 'This link is invalid or has expired.');
+        setTokenState("invalid");
+        setErrorMessage(message || "This link is invalid or has expired.");
       });
   }, [dispatch, token, email]);
-
 
   const {
     register,
@@ -60,13 +64,14 @@ const ResetPassword = () => {
     dispatch(ActResetPass(finalData))
       .unwrap()
       .then((response) => {
-        setSuccessMessage(response.message + " You will be redirected to login shortly.");
-        setTimeout(() => navigate('/login'), 3000);
+        setSuccessMessage(
+          response.message + " You will be redirected to login shortly."
+        );
+        setTimeout(() => navigate("/login"), 3000);
       });
   };
 
-
-  if (tokenState === 'verifying') {
+  if (tokenState === "verifying") {
     return (
       <Row>
         <Col md={{ span: "6", offset: "3" }} className="text-center mt-5">
@@ -77,7 +82,7 @@ const ResetPassword = () => {
     );
   }
 
-  if (tokenState === 'invalid') {
+  if (tokenState === "invalid") {
     return (
       <Row>
         <Col md={{ span: "6", offset: "3" }} className="mt-5">
@@ -126,9 +131,8 @@ const ResetPassword = () => {
           <Button
             variant="info"
             type="submit"
-            className='text-light mt-3'
-            style={{ width: "100%" }}
-            disabled={loading === 'pending'}
+            className={`${styles.resetPasswordBtn}  mt-3`}
+            disabled={loading === "pending"}
           >
             {loading === "pending" ? (
               <>
@@ -136,7 +140,7 @@ const ResetPassword = () => {
                 Resetting...
               </>
             ) : (
-              'Reset Password'
+              "Reset Password"
             )}
           </Button>
           {error && (

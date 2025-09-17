@@ -1,11 +1,4 @@
-/* ViewToggle Styles */
-:root {
-  --toggle-bg: #472426;
-  --toggle-color: #fff;
-  --toggle-border: #c79194;
-  --toggle-hover-bg: #c79194;
-  --toggle-hover-color: #472426;
-}
+@import "../../styles//themes.css";
 
 /* Container for the view toggle */
 .viewToggle {
@@ -20,8 +13,8 @@
 /* Toggle buttons for grid/list */
 .toggleBtn {
   background: none;
-  border: 1px solid var(--toggle-border);
-  color: var(--toggle-color);
+  border: 1px solid var(--primary-border);
+  color: var(--primary-color);
   padding: 0.4rem 0.8rem;
   border-radius: 4px;
   cursor: pointer;
@@ -33,17 +26,17 @@
 
 /* Hover state for toggle buttons */
 .toggleBtn:hover {
-  background-color: var(--toggle-hover-bg);
-  color: var(--toggle-hover-color);
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
 }
 
 /* Active state for selected toggle button */
 .toggleBtn.active {
-  background-color: var(--toggle-bg);
-  color: var(--toggle-color);
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
 }
 
 /* Text showing results count */
 .showResult {
-  color: var(--toggle-border);
+  color: var(--primary-border);
 }

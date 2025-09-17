@@ -4,11 +4,7 @@ import './UserProperty.css';
 import { fetchUserProperties } from '@services/axios-global';
 import { Property } from '../../types';
 
-interface UserPropertiesProps {
-  userId: number;
-}
-
-const UserProperties: React.FC<UserPropertiesProps> = () => {
+const UserProperties: React.FC = () => {
   const userId = 7; // Replace with actual user ID
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);

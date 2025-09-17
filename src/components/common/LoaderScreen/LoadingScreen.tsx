@@ -1,3 +1,4 @@
+import Loader from "../Loader/Loader";
 import styles from "./LoadingScreen.module.css";
 import { LoadingScreenProps } from "src/types";
 
@@ -12,7 +13,8 @@ function LoadingScreen({
   return (
     <div className={styles.loadingContainer}>
       <div className={styles.loadingContent}>
-        <div className={styles.loadingSpinner} />
+        <img src="src/assets/loadingHouse.png" alt="" />
+        <Loader message="" />
         <h3>{message}</h3>
       </div>
     </div>

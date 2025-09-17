@@ -1,7 +1,8 @@
 import React, { useMemo, useCallback } from "react";
 import styles from "./Pagination.module.css";
 import { PaginationProps } from "src/types";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGreaterThan, faLessThan } from "@fortawesome/free-solid-svg-icons";
 type PageItem = number | "start-ellipsis" | "end-ellipsis";
 
 const Pagination: React.FC<
@@ -15,8 +16,8 @@ const Pagination: React.FC<
   totalPages,
   onPageChange,
   scrollToTop,
-  prevLabel = "Prev",
-  nextLabel = "Next",
+  prevLabel = <FontAwesomeIcon icon={faLessThan} />,
+  nextLabel = <FontAwesomeIcon icon={faGreaterThan} />,
   maxVisiblePages = 5,
 }) => {
   /* Generate page numbers with dynamic ellipsis */

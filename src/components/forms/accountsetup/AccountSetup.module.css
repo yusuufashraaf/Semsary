@@ -1,0 +1,10 @@
+.registerBtn {
+  background-color: var(--accent-color) !important;
+  color: var(--white) !important;
+  border: 0 !important;
+}
+
+.registerBtn:hover {
+  color: var(--hover-color) !important;
+  background-color: var(--hover-bg) !important;
+}

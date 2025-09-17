@@ -1,0 +1,12 @@
+.input {
+  background-color: var(--secondary-color) !important;
+  color: var(--primary-color) !important;
+  border: 0 !important;
+  outline: 0 !important;
+}
+
+input:focus {
+  outline: 1px solid var(--primary-color) !important;
+  box-shadow: none !important;
+  border: none !important;
+}

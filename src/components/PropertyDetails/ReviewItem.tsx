@@ -3,6 +3,8 @@ import styles from "./ReviewItem.module.css";
 import { ReviewsListProps } from "src/types";
 import Loader from "@components/common/Loader/Loader";
 import StarRating from "@components/PropertyDetails/StarRating";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGreaterThan, faLessThan } from "@fortawesome/free-solid-svg-icons";
 
 /* 
   ReviewItem component
@@ -14,9 +16,9 @@ function ReviewItem({
   reviewsPerPage = 3,
   totalReviews,
   onPageChange,
-}: ReviewsListProps) {
+  loading,
+}: ReviewsListProps & { loading: boolean }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(false);
 
   const totalPages = Math.ceil(totalReviews / reviewsPerPage);
 
@@ -25,11 +27,7 @@ function ReviewItem({
     if (newPage < 1 || newPage > totalPages) return;
 
     setCurrentPage(newPage);
-    setLoading(true);
     onPageChange(newPage);
-
-    // Simulate async fetch delay (parent should handle actual fetch)
-    setTimeout(() => setLoading(false), 500);
   };
 
   return (
@@ -62,10 +60,10 @@ function ReviewItem({
                 </p>
                 <StarRating rating={r.rating} />
               </div>
+              <p itemProp="reviewBody">{r.review}</p>
               <p className={styles.date} itemProp="datePublished">
                 {r.date}
               </p>
-              <p itemProp="reviewBody">{r.review}</p>
             </div>
           </article>
         ))
@@ -79,7 +77,7 @@ function ReviewItem({
             disabled={currentPage === 1}
             onClick={() => handlePageChange(currentPage - 1)}
           >
-            Prev
+            <FontAwesomeIcon icon={faLessThan} />
           </button>
           <span className={styles.pageInfo} aria-current="page">
             Page {currentPage} of {totalPages}
@@ -89,7 +87,7 @@ function ReviewItem({
             disabled={currentPage === totalPages}
             onClick={() => handlePageChange(currentPage + 1)}
           >
-            Next
+            <FontAwesomeIcon icon={faGreaterThan} />
           </button>
         </nav>
       )}

@@ -16,10 +16,11 @@ import { usePropertyDetails } from "@hooks/usePropertyDetails";
 import PropertyContent from "./PropertyContent";
 import BookingSection from "./BookingSection";
 import { mapListingToProperty } from "@utils/propertyMapper";
-// Lazy-load for performance
+
+// Lazy-load SimilarSection for performance
 const SimilarSection = React.lazy(() => import("./SimilarSection"));
 
-// Guest dropdown options (static, no need for useMemo)
+// Guest dropdown options
 const guestOptions: GuestOption[] = [
   { value: "1", label: "1 guest" },
   { value: "2", label: "2 guests" },
@@ -29,11 +30,10 @@ const guestOptions: GuestOption[] = [
 ];
 
 function PropertyListing() {
-  // Get propertyId from URL params
   const { id } = useParams<{ id: string }>();
   const propertyId = id ? parseInt(id, 10) : null;
 
-  // Use custom hook to fetch property details
+  // Property details
   const {
     property: listing,
     loading: loadingPage,
@@ -41,33 +41,34 @@ function PropertyListing() {
     refetch,
   } = usePropertyDetails(propertyId);
 
-  // Transform listing into Property type
   const property: Property | null = useMemo(
     () => (listing ? mapListingToProperty(listing) : null),
     [listing]
   );
 
-  // Custom hooks for reviews, booking, similar properties
+  // ✅ Reviews hook (propertyId is bound inside)
   const {
     reviews,
     total: reviewsTotal,
     loading: reviewsLoading,
     fetchReviews,
-  } = useReviews();
+  } = useReviews(propertyId);
 
+  // Similar properties
   const { data: similarProperties, loading: similarLoading } =
     useSimilarProperties();
 
+  // Booking
   const booking = useBooking(property);
 
-  // Load reviews when property is available
+  // Auto fetch reviews when propertyId is available
   useEffect(() => {
-    if (property?.id) {
+    if (propertyId) {
       fetchReviews(1);
     }
-  }, [property?.id, fetchReviews]);
+  }, [propertyId, fetchReviews]);
 
-  // If propertyId is missing from URL
+  // Missing propertyId in URL
   if (!propertyId) {
     return (
       <ErrorScreen
@@ -78,12 +79,12 @@ function PropertyListing() {
     );
   }
 
-  // Show loading screen while fetching
+  // Loading state
   if (loadingPage) {
-    return <LoadingScreen propertyId={String(propertyId)} />;
+    return <LoadingScreen />;
   }
 
-  // Show error screen if there's an error or property not found
+  // Error or missing property
   if (error || !property) {
     return (
       <ErrorScreen
@@ -98,7 +99,7 @@ function PropertyListing() {
     );
   }
 
-  // Normal render when property is available
+  // Normal render
   return (
     <div className={styles.propertyContainer}>
       <BreadCrumb propertyId={String(propertyId)} />
@@ -106,9 +107,7 @@ function PropertyListing() {
       <ImageCarousel
         images={property.images}
         isSaved={false}
-        onToggleSaved={(e) => {
-          e.preventDefault();
-        }}
+        onToggleSaved={(e) => e.preventDefault()}
         aria-label={`Image carousel for ${property.title}`}
       />
 
@@ -129,7 +128,7 @@ function PropertyListing() {
       </div>
 
       <div className="row mt-4">
-        <Suspense fallback={<LoadingScreen propertyId={String(propertyId)} />}>
+        <Suspense fallback={<LoadingScreen />}>
           <SimilarSection
             properties={similarProperties}
             loading={similarLoading}

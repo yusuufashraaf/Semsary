@@ -1,0 +1,23 @@
+.imageInput {
+  background-color: var(--secondary-color) !important;
+  color: var(--primary-color) !important;
+  border: 0 !important;
+  outline: 0 !important;
+}
+
+.imageInput:focus {
+  outline: 1px solid var(--primary-color) !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.finishRegistrationBtn {
+  background-color: var(--accent-color) !important;
+  color: var(--white) !important;
+  border: 0 !important;
+}
+
+.finishRegistrationBtn:hover {
+  color: var(--hover-color) !important;
+  background-color: var(--hover-bg) !important;
+}

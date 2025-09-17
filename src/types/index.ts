@@ -92,6 +92,7 @@ export interface FilterState {
   priceMax: number;
   amenities: Amenities;
   itemsPerPage: number;
+  priceType: string;
 }
 
 export interface FilterOptions {
@@ -113,6 +114,7 @@ export interface FiltersProps extends FilterState, FilterOptions {
   setPriceMax: NumberSetter;
   setAmenities: StringArraySetter;
   setItemsPerPage: NumberSetter;
+  setPriceType: StringSetter;
   clearAllFilters: () => void;
 }
 
@@ -151,7 +153,7 @@ export interface ReviewsListProps {
   reviewsPerPage?: number;
   totalReviews: number;
   onPageChange: NumberSetter;
-  loading?: boolean;
+  loading: boolean;
 }
 
 // ---------------- UI Props ----------------

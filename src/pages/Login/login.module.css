@@ -1,0 +1,68 @@
+.loginBtn {
+  background-color: var(--accent-color) !important;
+  color: var(--white) !important;
+  border: 0 !important;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.loginBtn:hover {
+  color: var(--hover-color) !important;
+  background-color: var(--hover-bg) !important;
+}
+
+.forgetPassword a {
+  color: var(--primary-color);
+}
+
+.forgetPassword a:hover {
+  color: var(--hover-color);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #6c757d;
+  margin: 2rem 0;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.divider:not(:empty)::before {
+  margin-right: 1em;
+}
+
+.divider:not(:empty)::after {
+  margin-left: 1em;
+}
+
+.googleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
+  background-color: var(--accent-color);
+  color: var(--white);
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.googleBtn:hover {
+  color: var(--hover-color);
+  background-color: var(--hover-bg);
+}
+
+.googleIcon {
+  height: 20px;
+  width: 20px;
+}
