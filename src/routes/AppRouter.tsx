@@ -17,7 +17,11 @@ import LoadingScreen from "@components/common/LoaderScreen/LoadingScreen";
 import ErrorScreen from "@components/common/ErrorScreen/ErrorScreen";
 import ForgetPassword from "@pages/ForgetPassword/ForgetPassword";
 import ResetPassword from "@pages/ResetPassword/ResetPassword";
-import AuthCallbackPage from "@pages/AuthCallbackPage/AuthCallbackPage";
+import OAuthCallback from "@pages/OAuthCallback/OAuthCallback";
+import OwnerDashboard from "@pages/OwnerDashboard/OwnerDashboard";
+import EditProperty from "@components/owner/EditProperty";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -38,16 +42,17 @@ const router = createBrowserRouter([
         element: <Register />,
       },
       {
-        path: "forgot-password",
-        element: <ForgetPassword />,
-      },
-      {
-        path: "/reset-password",
-        element: <ResetPassword />,
-      },
-      {
         path: "/auth/callback",
-        element: <AuthCallbackPage />,
+        element: <OAuthCallback />,
+      },
+      {
+        path:"forgot-password",
+        element:<ForgetPassword />
+      },
+      {
+        path:"/reset-password",
+        element:<ResetPassword />
+
       },
       {
         path: "home",
@@ -81,6 +86,14 @@ const router = createBrowserRouter([
         path: "property/:id",
         element: <PropertyDetails />,
       },
+      {
+        path: "ownerdashboard",
+        element: <OwnerDashboard />,
+      },
+       { 
+        path: "property/:id/edit",
+        element: <EditProperty />,
+      }
     ],
   },
 ]);
@@ -98,7 +111,12 @@ function AppRouter() {
   if (!isInitialized) {
     return <LoadingScreen />;
   }
-  return <RouterProvider router={router} />;
+  return(
+  <>
+     <RouterProvider router={router} />;
+     <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
+  </>
+  ) 
 }
 
 export default AppRouter;

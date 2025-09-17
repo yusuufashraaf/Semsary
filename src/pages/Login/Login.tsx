@@ -9,11 +9,19 @@ import { Alert, Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import styles from "./login.module.css";
+
 function Login() {
   const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useAppDispatch();
   const { loading, error, jwt } = useAppSelector((state) => state.Authslice);
   const navigate = useNavigate();
+
+  const googleLoginUrl = "http://127.0.0.1:8000/api/auth/google/redirect";
+  useEffect(() => {
+    return () => {
+      dispatch(resetUI());
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     return () => {
@@ -69,14 +77,17 @@ function Login() {
             />
 
             <div
-              className={`${styles.forgetPassword} d-flex justify-content-end mt-2`}
+              className={`${styles.forgetPassword} d-flex justify-between-end mt-2`}
             >
               <Link to="/forgot-password">Forgot Password?</Link>
+              <Link to="/register">Register Here</Link>
             </div>
+
             <Button
               variant="info"
               type="submit"
               className={`${styles.loginBtn}  mt-3`}
+              style={{ width: "100%" }}
             >
               {loading === "pending" ? (
                 <>
@@ -87,6 +98,19 @@ function Login() {
                 "Submit"
               )}
             </Button>
+
+            <div className={styles.divider}>
+              <span>OR</span>
+            </div>
+
+            <a href={googleLoginUrl} className={styles.googleBtn}>
+              <img
+                src="https://www.svgrepo.com/show/355037/google.svg"
+                alt="Google logo"
+                className={styles.googleIcon}
+              />
+              <span>Continue With Google</span>
+            </a>
             {error && (
               <p style={{ color: "#DC3545", marginTop: "10px" }}>{error}</p>
             )}

@@ -27,7 +27,8 @@ const initialState:IAuthState={
     loading:"idle",
     error:null,
     jwt:null,
-    isInitialized:false
+    isInitialized:false,
+
 };
 const AuthSlice =createSlice({
     name:"Auth",
@@ -42,6 +43,9 @@ const AuthSlice =createSlice({
         },
         setAccessToken :(state,action)=>{
             state.jwt =action.payload.accessToken;
+        },
+        setUser:(state,action)=>{
+            state.user=action.payload.user;
         }
     },
     extraReducers:(builder)=>{
@@ -92,22 +96,27 @@ const AuthSlice =createSlice({
                 state.error = action.payload;
             }
         });
-           builder
+        builder
 
-            .addCase(ActCheckAuth.pending, (state) => {
-                state.loading = 'pending';
-            })
-            .addCase(ActCheckAuth.fulfilled, (state, action) => {
-                state.loading = 'succeeded';              
-                state.jwt = action.payload.access_token;
-                state.isInitialized = true;
-                
-            })
-            .addCase(ActCheckAuth.rejected, (state) => {
-                state.loading = 'failed';
-                state.isInitialized = true; 
+        .addCase(ActCheckAuth.pending, (state) => {
+            state.loading = 'pending';
+        })
 
-            });
+        .addCase(ActCheckAuth.fulfilled, (state, action) => {
+            state.user = action.payload.user;
+            state.jwt = action.payload.access_token; 
+
+            state.isInitialized = true;
+            state.loading = 'succeeded';
+        })
+
+        .addCase(ActCheckAuth.rejected, (state) => {
+            console.log(" AuthSlice: ActCheckAuth failed. Clearing auth state.");
+            state.user = null;
+            state.jwt = null;
+            state.isInitialized = true; 
+            state.loading = 'failed';
+        });
 
         builder.addCase(ActSendOTP.pending,(state)=>{
             state.loading = "pending";
@@ -209,11 +218,10 @@ const AuthSlice =createSlice({
             }
         });
         
-        
-
+    
 
     }
 })
 
 export default AuthSlice.reducer;
-export const {resetUI,Logout,setAccessToken} = AuthSlice.actions
+export const {resetUI,Logout,setAccessToken,setUser} = AuthSlice.actions
