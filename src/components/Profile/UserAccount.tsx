@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { UserData, AccountTab } from '../../types';
 import './UserAccount.css';
+import { useAppSelector } from '@store/hook';
+import { TUser } from 'src/types/users/users.types';
+
 
 const UserAccount: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AccountTab>('personal');
-  const [userData, setUserData] = useState<UserData>({
-    fullName: 'Alex Johnson',
-    email: 'alex.johnson@example.com',
-    phoneNumber: '+1 (555) 123-4567',
-    address: '123 Main Street, Anytown, CA 12345'
+  const {jwt,user,loading}=useAppSelector(state => state.Authslice);
+  
+  const [userData, setUserData] = useState<TUser>({
+    
   });
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { name, value } = e.target;

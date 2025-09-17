@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import api from '@services/axios-global';
 import { setAccessToken, setUser } from '@store/Auth/AuthSlice';
+import ActCheckAuth from '@store/Auth/Act/ActCheckAuth';
+import { useAppDispatch } from '@store/hook';
 
 const OAuthCallback = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         const handleCallback = async () => {
@@ -31,10 +32,10 @@ const OAuthCallback = () => {
                 const response = await api.post('/auth/google/exchange', { 
                     token 
                 });
+                
+                dispatch(ActCheckAuth()); 
                 dispatch(setAccessToken(response.data.access_token)) ;
                 dispatch(setUser(response.data.user))   
-
-
                 navigate('/');
 
             } catch (error) {
