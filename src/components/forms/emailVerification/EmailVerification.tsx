@@ -9,6 +9,7 @@ import ActReSendOTP from "@store/Auth/Act/ActReSendOTP";
 import { useEffect, useState } from "react";
 import { resetUI } from "@store/Auth/AuthSlice";
 import styles from "./EmailVerification.module.css";
+import { toast } from "react-toastify";
 
 type StepStatus = "pending" | "completed" | "skipped";
 
@@ -29,6 +30,7 @@ const EmailVerification = ({
 
   useEffect(() => {
     let interval: number;
+    
     if (timer > 0) {
       interval = window.setInterval(() => {
         setTimer((prev) => prev - 1);
@@ -40,10 +42,15 @@ const EmailVerification = ({
     };
   }, [timer, dispatch]);
 
+  useEffect(() => {
+    toast.success("OTP has been sent to your email.");
+  },[])
+
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors,isValid },
     watch,
   } = useForm<OtpType>({
     mode: "onBlur",
@@ -90,7 +97,7 @@ const EmailVerification = ({
           onClick={() => {
             handleClickOnResend();
           }}
-          disabled={loading === "pending" || timer > 0}
+          disabled={loading === "pending" ||  timer > 0 }
         >
           {resendLoading ? (
             <Spinner animation="border" size="sm" />
@@ -105,7 +112,7 @@ const EmailVerification = ({
           variant="info"
           type="submit"
           className={`${styles.verifyEmail}`}
-          disabled={loading === "pending"}
+          disabled={loading === "pending" || !isValid || otpValue.length < 6}
         >
           {loading === "pending" && otpValue ? (
             <>

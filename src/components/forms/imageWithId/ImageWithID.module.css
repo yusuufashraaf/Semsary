@@ -3,6 +3,7 @@
   color: var(--primary-color) !important;
   border: 0 !important;
   outline: 0 !important;
+  
 }
 
 .imageInput:focus {
@@ -15,6 +16,11 @@
   background-color: var(--accent-color) !important;
   color: var(--white) !important;
   border: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
 }
 
 .finishRegistrationBtn:hover {
