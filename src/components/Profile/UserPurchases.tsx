@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import './UserPurchases.css';
 import { fetchUserPurchases, fetchUserBookings } from '@services/axios-global';
 
 type TabType = 'purchases' | 'bookings';
@@ -123,220 +122,157 @@ const UserPurchases: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="purchases-bookings">
-        <div className="main-content">
-          <div className="loading">Loading...</div>
-        </div>
+      <div className="container">
+        <div className="loading">Loading...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="purchases-bookings">
-        <div className="main-content">
-          <div className="error">Error: {error}</div>
-        </div>
+      <div className="container">
+        <div className="error">Error: {error}</div>
       </div>
     );
   }
 
   return (
-    <div className="purchases-bookings">
-      <div className="sidebar">
-        <div className="brand">
-          <h2>Urban Dwellings</h2>
-        </div>
-        
-        <nav className="main-nav">
-          <ul>
-            <li><a href="#"><i className="fas fa-shopping-bag"></i> Buy</a></li>
-            <li><a href="#"><i className="fas fa-key"></i> Rent</a></li>
-            <li><a href="#"><i className="fas fa-dollar-sign"></i> Sell</a></li>
-            <li><a href="#"><i className="fas fa-home"></i> Manage Property</a></li>
-          </ul>
-        </nav>
-        
-        <div className="search-box">
-          <i className="fas fa-search"></i>
-          <input type="text" placeholder="Search" />
+    <div className="container">
+      <div className="content-header">
+        <div className="tabs">
+          <button 
+            className={`tab ${activeTab === 'purchases' ? 'active' : ''}`}
+            onClick={() => handleTabChange('purchases')}
+          >
+            Purchases
+          </button>
+          <button 
+            className={`tab ${activeTab === 'bookings' ? 'active' : ''}`}
+            onClick={() => handleTabChange('bookings')}
+          >
+            Bookings
+          </button>
         </div>
       </div>
       
-      <div className="main-content">
-        <div className="content-header">
-          <h1>Purchases and bookings</h1>
-          <div className="tabs">
-            <button 
-              className={`tab ${activeTab === 'purchases' ? 'active' : ''}`}
-              onClick={() => handleTabChange('purchases')}
-            >
-              Purchases
-            </button>
-            <button 
-              className={`tab ${activeTab === 'bookings' ? 'active' : ''}`}
-              onClick={() => handleTabChange('bookings')}
-            >
-              Bookings
-            </button>
-          </div>
-        </div>
-        
-        {activeTab === 'purchases' ? (
-          <div className="purchases-section">
-            <h2>Past purchases</h2>
-            <div className="purchases-list">
-              {purchases.length > 0 ? (
-                purchases.map(purchase => (
-                  <div key={purchase.purchase_id} className="purchase-card">
-                    <div className="purchase-header">
-                      <span className="order-date">
-                        Order placed on {formatDate(purchase.created_at)}
-                      </span>
-                      <span className={`status-badge ${purchase.status}`}>
-                        {purchase.status}
-                      </span>
-                    </div>
-                    
-                    <h3 className="property-address">
-                      {purchase.property.title}
-                    </h3>
-                    
-                    <p className="seller-info">
-                      {purchase.property.location.address}, {purchase.property.location.city}, {purchase.property.location.state}
-                    </p>
-                    
-                    <div className="property-details" style={{
-                      display: 'flex',
-                      gap: '12px',
-                      marginBottom: '16px',
-                      fontSize: '14px',
-                      color: '#67758d'
-                    }}>
-                      <span>{purchase.property.type}</span>
-                      <span>•</span>
-                      <span>{purchase.property.bedrooms} beds</span>
-                      <span>•</span>
-                      <span>{purchase.property.bathrooms} baths</span>
-                      <span>•</span>
-                      <span>{purchase.property.size} sq ft</span>
-                    </div>
-                    
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '16px'
-                    }}>
-                      <span style={{
-                        fontSize: '18px',
-                        fontWeight: '600',
-                        color: '#28a745'
-                      }}>
-                        {formatCurrency(purchase.amount, purchase.payment_details.currency)}
-                      </span>
-                      <span style={{
-                        fontSize: '14px',
-                        color: '#67758d'
-                      }}>
-                        Paid via {purchase.payment_gateway}
-                      </span>
-                    </div>
-                    
-                    <button className="view-details-btn">
-                      View details
-                    </button>
+      {activeTab === 'purchases' ? (
+        <div className="purchases-section">
+          <h2 className="heading-secondary">Past purchases</h2>
+          <div className="list">
+            {purchases.length > 0 ? (
+              purchases.map(purchase => (
+                <div key={purchase.purchase_id} className="card card-hover">
+                  <div className="purchase-header">
+                    <span className="order-date">
+                      Order placed on {formatDate(purchase.created_at)}
+                    </span>
+                    <span className={`status-badge ${purchase.status}`}>
+                      {purchase.status}
+                    </span>
                   </div>
-                ))
-              ) : (
-                <div className="empty-state">
-                  <i className="fas fa-shopping-bag"></i>
-                  <h3>No purchases yet</h3>
-                  <p>You haven't made any purchases yet. Start exploring properties to find your perfect home.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="bookings-section">
-            <h2>Upcoming bookings</h2>
-            <div className="bookings-list">
-              {bookings.length > 0 ? (
-                bookings.map(booking => (
-                  <div key={booking.id} className="booking-card">
-                    <div className="booking-header">
-                      <span className="booking-dates">
-                        {formatDate(booking.start_date)} - {formatDate(booking.end_date)}
-                      </span>
-                      <span className={`status-badge ${booking.status}`}>
-                        {booking.status}
-                      </span>
-                    </div>
-                    
-                    <h3 className="property-address">
-                      {booking.property.title}
-                    </h3>
-                    
-                    <p className="seller-info">
-                      {booking.property.location.address}, {booking.property.location.city}, {booking.property.location.state}
-                    </p>
-                    
-                    <div className="property-details" style={{
-                      display: 'flex',
-                      gap: '12px',
-                      marginBottom: '16px',
-                      fontSize: '14px',
-                      color: '#67758d'
-                    }}>
-                      <span>{booking.property.type}</span>
-                      <span>•</span>
-                      <span>{booking.property.bedrooms} beds</span>
-                      <span>•</span>
-                      <span>{booking.property.bathrooms} baths</span>
-                      <span>•</span>
-                      <span>{booking.property.size} sq ft</span>
-                    </div>
-                    
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '16px'
-                    }}>
-                      <span style={{
-                        fontSize: '18px',
-                        fontWeight: '600',
-                        color: '#28a745'
-                      }}>
-                        {formatCurrency(booking.total_price)}
-                      </span>
-                      <span style={{
-                        fontSize: '14px',
-                        color: '#67758d'
-                      }}>
-                        {booking.property.price_type}
-                      </span>
-                    </div>
-                    
-                    <button className="view-details-btn">
-                      View details
-                    </button>
+                  
+                  <h3 className="heading-tertiary">
+                    {purchase.property.title}
+                  </h3>
+                  
+                  <p className="seller-info">
+                    {purchase.property.location.address}, {purchase.property.location.city}, {purchase.property.location.state}
+                  </p>
+                  
+                  <div className="property-details">
+                    <span>{purchase.property.type}</span>
+                    <span>•</span>
+                    <span>{purchase.property.bedrooms} beds</span>
+                    <span>•</span>
+                    <span>{purchase.property.bathrooms} baths</span>
+                    <span>•</span>
+                    <span>{purchase.property.size} sq ft</span>
                   </div>
-                ))
-              ) : (
-                <div className="empty-state">
-                  <i className="fas fa-calendar-times"></i>
-                  <h3>No upcoming bookings</h3>
-                  <p>You don't have any upcoming bookings. Explore properties and book your next stay.</p>
-                  <button className="explore-btn">
-                    Explore properties
+                  
+                  <div className="property-actions">
+                    <span className="property-price">
+                      {formatCurrency(purchase.amount, purchase.payment_details.currency)}
+                    </span>
+                    <span>
+                      Paid via {purchase.payment_gateway}
+                    </span>
+                  </div>
+                  
+                  <button className="btn btn-primary">
+                    View details
                   </button>
                 </div>
-              )}
-            </div>
+              ))
+            ) : (
+              <div className="empty-state">
+                <i className="fas fa-shopping-bag empty-state-icon"></i>
+                <h3>No purchases yet</h3>
+                <p>You haven't made any purchases yet. Start exploring properties to find your perfect home.</p>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="bookings-section">
+          <h2 className="heading-secondary">Upcoming bookings</h2>
+          <div className="list">
+            {bookings.length > 0 ? (
+              bookings.map(booking => (
+                <div key={booking.id} className="card card-hover">
+                  <div className="booking-header">
+                    <span className="booking-dates">
+                      {formatDate(booking.start_date)} - {formatDate(booking.end_date)}
+                    </span>
+                    <span className={`status-badge ${booking.status}`}>
+                      {booking.status}
+                    </span>
+                  </div>
+                  
+                  <h3 className="heading-tertiary">
+                    {booking.property.title}
+                  </h3>
+                  
+                  <p className="seller-info">
+                    {booking.property.location.address}, {booking.property.location.city}, {booking.property.location.state}
+                  </p>
+                  
+                  <div className="property-details">
+                    <span>{booking.property.type}</span>
+                    <span>•</span>
+                    <span>{booking.property.bedrooms} beds</span>
+                    <span>•</span>
+                    <span>{booking.property.bathrooms} baths</span>
+                    <span>•</span>
+                    <span>{booking.property.size} sq ft</span>
+                  </div>
+                  
+                  <div className="property-actions">
+                    <span className="property-price">
+                      {formatCurrency(booking.total_price)}
+                    </span>
+                    <span>
+                      {booking.property.price_type}
+                    </span>
+                  </div>
+                  
+                  <button className="btn btn-primary">
+                    View details
+                  </button>
+                </div>
+              ))
+            ) : (
+              <div className="empty-state">
+                <i className="fas fa-calendar-times empty-state-icon"></i>
+                <h3>No upcoming bookings</h3>
+                <p>You don't have any upcoming bookings. Explore properties and book your next stay.</p>
+                <button className="btn btn-primary">
+                  Explore properties
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

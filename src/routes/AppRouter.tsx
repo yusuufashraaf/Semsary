@@ -1,7 +1,3 @@
-import UserAccount from "@components/Profile/UserAccount";
-import UserNotifications from "@components/Profile/UserNotifications";
-import UserPurchases from "@components/Profile/UserPurchases";
-import UserReviews from "@components/Profile/UserReviews";
 import MainLayout from "@layouts/MainLayout/MainLayout";
 import Home from "@pages/Home/Home";
 import Login from "@pages/Login/Login";
@@ -24,7 +20,6 @@ import ManageProperties from "@components/owner/ManageProperties";
 import AddPropertyForm from "@components/owner/AddPropertyForm";
 import EditProperty from "@components/owner/EditProperty";
 import { ToastContainer } from "react-toastify";
-import UserProperties from "@components/Profile/UserProperty";
 import "react-toastify/dist/ReactToastify.css";
 const router = createBrowserRouter([
   {
@@ -63,28 +58,12 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "profile/home",
+        path: "profile",
         element: <Profile />,
       },
       {
-        path: "profile/properties",
-        element: <UserProperties/>,
-      },
-      {
-        path: "profile/reviews",
-        element: <UserReviews />,
-      },
-      {
-        path: "profile/account",
-        element: <UserAccount />,
-      },
-      {
-        path: "profile/notifications",
-        element: <UserNotifications />,
-      },
-      {
-        path: "profile/purchases",
-        element: <UserPurchases />,
+        path: "profile/:section",
+        element: <Profile />,
       },
       {
         path: "property",
@@ -94,10 +73,6 @@ const router = createBrowserRouter([
         path: "property/:id",
         element: <PropertyDetails />,
       },
-      // {
-      //   path: "ownerdashboard",
-      //   element: <OwnerDashboard />,
-      // },
        { 
         path: "property/:id/edit",
         element: <EditProperty />,
