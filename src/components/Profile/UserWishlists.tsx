@@ -1,0 +1,203 @@
+import React, { useState, useEffect } from 'react';
+import PropertyCard from './PropertyCard';
+import { fetchUserWishlists } from '@services/axios-global';
+
+interface WishlistItem {
+  id: number;
+  user_id: number;
+  property_id: number;
+  created_at: string;
+  updated_at: string;
+  property: {
+    id: number;
+    owner_id: number;
+    title: string;
+    description: string;
+    type: string;
+    price: string;
+    price_type: string;
+    location: {
+      address: string;
+      city: string;
+      lat: number;
+      lng: number;
+    };
+    size: number;
+    property_state: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
+    bedrooms: number;
+    bathrooms: number;
+    is_in_wishlist: boolean;
+  };
+  user: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    // ... other user fields
+  };
+}
+
+const UserWishlist: React.FC = () => {
+  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getWishlistData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchUserWishlists(7);
+        
+        // Handle different possible response structures
+        let items: WishlistItem[] = [];
+        
+        if (Array.isArray(response)) {
+          // If response is directly an array
+          items = response;
+        } else if (response && Array.isArray(response.data)) {
+          // If response has a data property that is an array
+          items = response.data;
+        } else if (response && typeof response === 'object') {
+          // If response is a single object, wrap it in an array
+          items = [response];
+        } else {
+          console.warn('Unexpected API response structure:', response);
+          setError('Unexpected data format received from server');
+        }
+        
+        setWishlistItems(items);
+      } catch (err) {
+        setError('Failed to fetch wishlist items');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getWishlistData();
+  }, []);
+
+  const handleSave = (id: number, section: string) => {
+    console.log(`Property ${id} saved/unsaved from section: ${section}`);
+    // Remove from wishlist when unsaved
+    setWishlistItems(prevItems => {
+      if (Array.isArray(prevItems)) {
+        return prevItems.filter(item => item.property.id !== id);
+      }
+      return [];
+    });
+  };
+
+  const formatPropertyForCard = (wishlistItem: WishlistItem) => {
+    const property = wishlistItem.property;
+    return {
+      id: property.id,
+      address: `${property.location.address}, ${property.location.city}`,
+      price: `${formatCurrency(property.price)} ${property.price_type === 'Monthly' ? '/mo' : ''}`,
+      image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80',
+      saved: true, // Always true for wishlist items
+      bedrooms: property.bedrooms,
+      bathrooms: property.bathrooms,
+      size: `${property.size} sqft`
+    };
+  };
+
+  const formatCurrency = (amount: string) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(parseFloat(amount));
+  };
+
+  // Calculate average rating safely
+  const calculateAverageRating = () => {
+    if (!Array.isArray(wishlistItems) || wishlistItems.length === 0) return 0;
+    
+    // Since your response doesn't include ratings, we'll use a placeholder
+    // If you have ratings in your actual data, update this calculation
+    return 4.5; // Placeholder average rating
+  };
+
+  if (loading) {
+    return (
+      <div className="container">
+        <div className="loading">Loading wishlist...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container">
+        <div className="error">Error: {error}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container">
+      <div className="stats-grid">
+        <div className="stat-card">
+          <div className="stat-icon">
+            <i className="fas fa-heart"></i>
+          </div>
+          <div className="stat-info">
+            <h3>{Array.isArray(wishlistItems) ? wishlistItems.length : 0}</h3>
+            <p>Total Wishlist Items</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon">
+            <i className="fas fa-home"></i>
+          </div>
+          <div className="stat-info">
+            <h3>{Array.isArray(wishlistItems) ? wishlistItems.length : 0}</h3>
+            <p>Properties</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon">
+            <i className="fas fa-star"></i>
+          </div>
+          <div className="stat-info">
+            <h3>{calculateAverageRating().toFixed(1)}</h3>
+            <p>Average Rating</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="content-header">
+        <h2 className="heading-secondary">My Wishlist</h2>
+      </div>
+
+      <div className="list">
+        {!Array.isArray(wishlistItems) || wishlistItems.length === 0 ? (
+          <div className="empty-state">
+            <i className="fas fa-heart empty-state-icon"></i>
+            <h3>Your wishlist is empty</h3>
+            <p>Start saving properties you love to see them here.</p>
+            <button className="btn btn-primary">
+              Browse Properties
+            </button>
+          </div>
+        ) : (
+          wishlistItems.map(wishlistItem => (
+            <PropertyCard
+              key={wishlistItem.id}
+              property={formatPropertyForCard(wishlistItem)}
+              onSave={handleSave}
+              section="wishlist"
+            />
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default UserWishlist;

@@ -65,7 +65,7 @@ const AvatarDropdown = ({ user }: { user: TUser | null }) => {
         <div className={styles.dropdownMenu}>
           <ul>
             <li>
-              <Link to={`/profile`} onClick={() => setIsOpen(false)}>
+              <Link to={`/profile/home`} onClick={() => setIsOpen(false)}>
                 Show Profile
               </Link>
             </li>
