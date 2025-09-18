@@ -9,6 +9,7 @@ import { Alert, Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import styles from "./login.module.css";
+import ActCheckAuth from "@store/Auth/Act/ActCheckAuth";
 
 function Login() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -44,7 +45,9 @@ function Login() {
     dispatch(ActSignIn(data))
       .unwrap()
       .then(() => {
-        navigate("/");
+        dispatch(ActCheckAuth()).unwrap().then(() => {
+          navigate("/");
+        });
       });
   };
   if (jwt) {

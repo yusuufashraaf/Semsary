@@ -92,6 +92,7 @@ export interface FilterState {
   priceMax: number;
   amenities: Amenities;
   itemsPerPage: number;
+  priceType: string;
 }
 
 export interface FilterOptions {
@@ -113,6 +114,7 @@ export interface FiltersProps extends FilterState, FilterOptions {
   setPriceMax: NumberSetter;
   setAmenities: StringArraySetter;
   setItemsPerPage: NumberSetter;
+  setPriceType: StringSetter;
   clearAllFilters: () => void;
 }
 
@@ -134,6 +136,14 @@ export interface Review {
   id: number;
   reviewer: string;
   review: string;
+  property: {
+    title: string;
+    location: {
+      address: string;
+      city: string;
+    };
+  };
+  created_at: string;
   date: string;
   rating: number;
 }
@@ -298,6 +308,7 @@ export interface LocationMapProps {
 export interface AddToWishlistProps {
   isSaved: boolean;
   onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  disabled: boolean;
 }
 
 // ---------------- Error message ----------------

@@ -3,10 +3,10 @@ import api from "@services/axios-global"; // Your global axios instance
 import { RootState } from "@store/index";
 import axios from "axios";
 
-import { TUser } from "src/types/users/users.types";
+import { TFullUser } from "src/types/users/users.types";
 
 const ActGetUsersData = createAsyncThunk<
-  TUser, 
+  TFullUser, 
   void,
   { state: RootState }
 >(
@@ -21,18 +21,17 @@ const ActGetUsersData = createAsyncThunk<
     }
 
     try {
-      const response = await api.get("/profile", {
+      const response = await api.post("/profile", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
 
-      return response.data;
+      return response.data.user;
 
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        console.error("Fetch user profile error:", error.response.data);
         return rejectWithValue(error.response.data.message || "Failed to fetch user profile.");
       }
       return rejectWithValue("An unexpected error occurred.");

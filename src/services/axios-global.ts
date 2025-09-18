@@ -9,7 +9,7 @@ export const setStore = (s: AppStore) => {
 };
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/api",
+  baseURL: "http://localhost:8000/api",
   withCredentials: true,
 });
 
@@ -85,6 +85,56 @@ const responseInterceptor = async (error: AxiosError) => {
 
   // If the error is not a 401, or if it's the refresh endpoint failing, just reject.
   return Promise.reject(error);
+};
+
+export const fetchUserReviews = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/reviews`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
+export const fetchUserProperties = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/properties`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
+export const fetchUserNotifications = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/notifications`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
+export const fetchUserPurchases = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/purchases`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
+export const fetchUserBookings = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/bookings`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
 };
 
 // Attach interceptors

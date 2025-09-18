@@ -28,6 +28,7 @@ export interface PropertyQuery {
   amenities?: string[];
   page?: number;
   per_page?: number;
+  price_type?: string;
 }
 
 // Get properties with query filters
