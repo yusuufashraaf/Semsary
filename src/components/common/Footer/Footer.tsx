@@ -1,10 +1,27 @@
+import styles from "./Footer.module.css";
 
-function Footer() {
+const Footer = () => {
   return (
-    <div>
-      <p>this is Footer</p>
-    </div>
-  )
-}
+    <footer className={styles.footer}>
+      <div className={styles.container}>
+        <nav className={styles.linkContainer}>
+          <a href="/about" className={styles.link}>
+            About
+          </a>
+          <a href="/contact" className={styles.link}>
+            Contact
+          </a>
+          <a href="/privacy-policy" className={styles.link}>
+            Privacy Policy
+          </a>
+          <a href="/terms-of-service" className={styles.link}>
+            Terms of Service
+          </a>
+        </nav>
+        <p className={styles.copyright}>© 2025 ITI. Buy smart, rent easy.</p>
+      </div>
+    </footer>
+  );
+};
 
-export default Footer
+export default Footer;

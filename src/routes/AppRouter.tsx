@@ -18,6 +18,8 @@ import DashboardOverview from "@components/owner/DashboardOverview";
 import ManageProperties from "@components/owner/ManageProperties";
 import AddPropertyForm from "@components/owner/AddPropertyForm";
 import EditProperty from "@components/owner/EditProperty";
+import AboutUs from "@components/AboutUs/AboutUs";
+import ContactUs from "@components/ContactUs/ContactUs";
 import { ToastContainer } from "react-toastify";
 import UserProperties from "@components/Profile/UserProperty";
 import "react-toastify/dist/ReactToastify.css";
@@ -139,6 +141,14 @@ const router = createBrowserRouter([
           element: <AddPropertyForm />,
         },
       ],
+    },
+    {
+      path: "/about",
+      element: <AboutUs />,
+    },
+    {
+      path: "/contact",
+      element: <ContactUs />,
     }
     ],
   },
