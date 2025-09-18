@@ -53,17 +53,17 @@ const UserLayout = () => {
                 <Col md={2}>
                   <nav className="nested-sidebar">
                     <ListGroup>
-                      <ListGroupItem as={NavLink} to="/profile/basicInfo" end>
+                      <ListGroupItem as={NavLink} to="/profiles/basicInfo" end>
                         <User size={20} /> Basic Information
                       </ListGroupItem>
                       
-                      <ListGroupItem as={NavLink} to="/profile/changeEmail">
+                      <ListGroupItem as={NavLink} to="/profiles/changeEmail">
                         <Mail size={20} /> Change Email
                       </ListGroupItem>
-                        <ListGroupItem as={NavLink} to="/profile/changePhone">
+                        <ListGroupItem as={NavLink} to="/profiles/changePhone">
                         <Phone size={20} /> Change Phone
                       </ListGroupItem>
-                      <ListGroupItem as={NavLink} to="/profile/changePassword">
+                      <ListGroupItem as={NavLink} to="/profiles/changePassword">
                         <Key size={20} /> Change Password
                       </ListGroupItem>
                     </ListGroup>

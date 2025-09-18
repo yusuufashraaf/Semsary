@@ -89,7 +89,7 @@ export default function Navbar() {
 
           {/* Desktop controls */}
           <div className="d-none d-lg-flex align-items-center ms-auto">
-            <button className={`me-3 ${styles.wishlistBtn}`}>
+            <button className={`me-3 ${styles.wishlistBtn}`} onClick={() => handleNavClick("/profile/wishlist")}>
               <FontAwesomeIcon icon={faHeart} />
             </button>
             <button className={`me-3 ${styles.notificationBtn}`}>

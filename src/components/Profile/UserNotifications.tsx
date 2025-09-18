@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import './UserNotifications.css';
 import { fetchUserNotifications } from '@services/axios-global';
 
 type NotificationType = 'all' | 'unread' | 'archived';
@@ -24,7 +23,7 @@ const UserNotifications: React.FC = () => {
     const getNotificationsData = async () => {
       try {
         setLoading(true);
-        const data = await fetchUserNotifications(7); // Replace with actual user ID
+        const data = await fetchUserNotifications(7);
         setNotifications(data);
       } catch (err) {
         setError('Failed to fetch notifications');
@@ -45,7 +44,6 @@ const UserNotifications: React.FC = () => {
     setNotifications(notifications.map(notification => 
       notification.id === id ? { ...notification, is_read: true } : notification
     ));
-    // Here you would also call your API to update the notification status
   };
 
   const formatDate = (dateString: string) => {
@@ -77,15 +75,14 @@ const UserNotifications: React.FC = () => {
 
   const filteredNotifications = notifications.filter(notification => {
     if (activeTab === 'unread') return !notification.is_read;
-    if (activeTab === 'archived') return false; // Your data doesn't have archived field
-    return true; // For 'all' tab, show all notifications
+    return true;
   });
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   if (loading) {
     return (
-      <div className="notifications">
+      <div className="container">
         <div className="loading">Loading notifications...</div>
       </div>
     );
@@ -93,17 +90,17 @@ const UserNotifications: React.FC = () => {
 
   if (error) {
     return (
-      <div className="notifications">
+      <div className="container">
         <div className="error">Error: {error}</div>
       </div>
     );
   }
 
   return (
-    <div className="notifications">
-      <h1 className="notifications-title">Notifications</h1>
+    <div className="container">
+      <h1 className="heading-primary">Notifications</h1>
       
-      <div className="notifications-tabs">
+      <div className="tabs">
         <button 
           className={`tab ${activeTab === 'all' ? 'active' : ''}`}
           onClick={() => handleTabChange('all')}
@@ -116,23 +113,17 @@ const UserNotifications: React.FC = () => {
         >
           Unread
           {unreadCount > 0 && (
-            <span className="unread-count">
+            <span className="notification-badge">
               {unreadCount}
             </span>
           )}
         </button>
-        <button 
-          className={`tab ${activeTab === 'archived' ? 'active' : ''}`}
-          onClick={() => handleTabChange('archived')}
-        >
-          Archived
-        </button>
       </div>
       
-      <div className="notifications-list">
+      <div className="list">
         {filteredNotifications.length === 0 ? (
           <div className="empty-state">
-            <i className="fas fa-bell-slash"></i>
+            <i className="fas fa-bell-slash empty-state-icon"></i>
             <p>
               {activeTab === 'unread' 
                 ? 'No unread notifications' 
@@ -146,14 +137,14 @@ const UserNotifications: React.FC = () => {
           filteredNotifications.map(notification => (
             <div 
               key={notification.id} 
-              className={`notification-card ${!notification.is_read ? 'unread' : ''}`}
+              className={`card card-hover ${!notification.is_read ? 'unread' : ''}`}
             >
               <div className="notification-header">
-                <div className="notification-icon">
+                <div className="stat-icon">
                   <i className={getNotificationIcon(notification.title)}></i>
                 </div>
                 <div className="notification-info">
-                  <h3 className="notification-title">{notification.title}</h3>
+                  <h3 className="heading-tertiary">{notification.title}</h3>
                   <span className="notification-time">
                     {formatDate(notification.created_at)}
                   </span>
@@ -167,14 +158,14 @@ const UserNotifications: React.FC = () => {
                 <p>{notification.message}</p>
               </div>
               
-              <div className="notification-actions">
-                <button className="action-btn primary">
+              <div className="property-actions">
+                <button className="btn btn-primary">
                   View Details
                 </button>
                 <div className="secondary-actions">
                   {!notification.is_read && (
                     <button 
-                      className="action-btn secondary"
+                      className="btn btn-secondary"
                       onClick={() => markAsRead(notification.id)}
                     >
                       Mark as read
