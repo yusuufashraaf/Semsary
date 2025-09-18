@@ -12,12 +12,16 @@ import ActforgetPass from "./Act/ActforgetPass";
 import ActResetPass from "./Act/ActResetPass";
 import { TFullUser } from "src/types/users/users.types";
 import ActGetUsersData from "./Act/ActGetUsersData";
+import { toast } from "react-toastify";
+import ActChangePassword from "./Act/ActChangePassword";
+import ActChangeEmail from "./Act/ActChangeEmail";
+import ActChangePhone from "./Act/ActChangePhone";
 
 
 interface IAuthState{
     user:TFullUser | null,
     loading:TLoading
-    error:string|null
+    error:string| null
     jwt:string|null
     isInitialized:boolean
 }
@@ -53,16 +57,20 @@ const AuthSlice =createSlice({
             state.loading = "pending";
             state.error = null;
         });
-        builder.addCase(ActSignUp.fulfilled,(state,action)=>{
+        builder.addCase(ActSignUp.fulfilled,(state)=>{
             state.loading = "succeeded";
-   
-            state.user = action.payload.user;
             
         });
         builder.addCase(ActSignUp.rejected,(state,action)=>{
             state.loading = "failed";
-            if (typeof action.payload ==="string"){
+            
+           if (typeof action.payload === "string") {
                 state.error = action.payload;
+                 toast.error(action.payload)
+            }  
+            else {
+                state.error = "Something went wrong.";
+                toast.error("Something went wrong.")
             }
         });
         builder.addCase(ActSignIn.pending,(state)=>{
@@ -82,9 +90,15 @@ const AuthSlice =createSlice({
         });
         builder.addCase(ActSignIn.rejected,(state,action)=>{
             state.loading = "failed";
-            if (typeof action.payload ==="string"){
-                state.error = action.payload;
-            }
+
+            if (typeof action.payload === "string") {
+                    state.error = action.payload;
+                    toast.error(action.payload)
+                }  
+                else {
+                    state.error = "Something went wrong.";
+                    toast.error("Something went wrong.")
+                }
         });
         builder.addCase(ActLogout.pending,(state)=>{
             state.loading = "pending";
@@ -226,8 +240,67 @@ const AuthSlice =createSlice({
                 state.error = action.payload;
             }
         });
-        
-    
+        builder.addCase(ActChangePassword.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActChangePassword.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            toast.success("Password changed successfully");
+            state.error = null;
+        });
+        builder.addCase(ActChangePassword.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload === "string") {
+                state.error = action.payload;
+                 toast.error(action.payload)
+            }  
+            else {
+                state.error = "Something went wrong.";
+                toast.error("Something went wrong.")
+            }
+        });
+        builder.addCase(ActChangeEmail.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActChangeEmail.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            toast.success("Email changed successfully");
+            state.error = null;
+        });
+        builder.addCase(ActChangeEmail.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload === "string") {
+                state.error = action.payload;
+                 toast.error(action.payload)
+            }  
+            else {
+                state.error = "Something went wrong.";
+                toast.error("Something went wrong.")
+            }
+        });
+        builder.addCase(ActChangePhone.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActChangePhone.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            toast.success("Phone changed successfully");
+            state.error = null;
+        });
+        builder.addCase(ActChangePhone.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload === "string") {
+                state.error = action.payload;
+                 toast.error(action.payload)
+            }  
+            else {
+                state.error = "Something went wrong.";
+                toast.error("Something went wrong.")
+            }
+        });
+
 
     }
 })

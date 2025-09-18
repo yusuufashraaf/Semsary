@@ -23,14 +23,15 @@ const BasicInfo = () => {
   }
 
 
-  // Dummy user data
+
   const userData = {
     firstName: user?.first_name,
     lastName: user?.last_name,
     email: user?.email,
     phoneNumber: user?.phone_number,
     isEmailVerified: user?.email_verified_at ? true : false,
-    isPhoneVerified: user?.phone_verified_at ? true : false
+    isPhoneVerified: user?.phone_verified_at ? true : false,
+    role: user?.role
   };
 
 

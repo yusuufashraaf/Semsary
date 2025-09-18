@@ -11,6 +11,7 @@ import { resetUI } from "@store/Auth/AuthSlice";
 import styles from "./AccountSetup.module.css";
 import useCheckEmailForAvailability from "@hooks/useCheckEmailForAvailability";
 import useCheckPhoneForAvailability from "@hooks/useCheckPhoneForAvailability";
+import { toast } from "react-toastify";
 
 type StepStatus = "pending" | "completed" | "skipped";
 interface IAccountSetupProps {
@@ -46,6 +47,7 @@ const AccountSetup = ({
       .then(() => {
         dispatch(updateFormData(data));
         setStepStatus("completed");
+        toast.success("Account setup completed successfully. And you can log In");
         setCurrentStep((prev) => prev + 1);
       });
   };
@@ -143,11 +145,28 @@ const phoneOnBlurHandler = async (e: React.FocusEvent<HTMLInputElement>) => {
         register={register}
         error={errors.password_confirmation?.message}
       />
+      <Form.Group className="mb-3" controlId="role">
+        <Form.Label>Role</Form.Label>
+        <Form.Select
+          {...register("role")}
+          isInvalid={!!errors.role}
+          aria-label="Select your role"
+        >
+          <option value="">Select a role...</option>
+          <option value="user">User</option>
+          <option value="agent">Agent</option>
+          <option value="owner">Owner</option>
+        </Form.Select>
+        <Form.Control.Feedback type="invalid">
+          {errors.role?.message}
+        </Form.Control.Feedback>
+      </Form.Group>
       <div className="d-flex justify-content-end">
         <Button
           variant="info"
           type="submit"
           className={` ${styles.registerBtn}`}
+          style={{ minWidth: "100%" }}
         >
           {loading === "pending" ? (
             <>
