@@ -114,11 +114,11 @@ const router = createBrowserRouter([
       ],
     },
     {
-      path: "/about-us",
+      path: "/about",
       element: <AboutUs />,
     },
     {
-      path: "/contact-us",
+      path: "/contact",
       element: <ContactUs />,
     }
     ],
