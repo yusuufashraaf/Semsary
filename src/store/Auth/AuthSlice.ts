@@ -10,12 +10,12 @@ import ActUploadId from "./Act/ActUploadId";
 import ActVerifyWhatsOTP from "./Act/ActVerifyWhatsOTP";
 import ActforgetPass from "./Act/ActforgetPass";
 import ActResetPass from "./Act/ActResetPass";
-import { TUser } from "src/types/users/users.types";
+import { TFullUser } from "src/types/users/users.types";
 import ActGetUsersData from "./Act/ActGetUsersData";
 
 
 interface IAuthState{
-    user:TUser | null,
+    user:TFullUser | null,
     loading:TLoading
     error:string|null
     jwt:string|null
@@ -42,7 +42,7 @@ const AuthSlice =createSlice({
             state.jwt=null;
         },
         setAccessToken :(state,action)=>{
-            state.jwt =action.payload.accessToken;
+            state.jwt =action.payload.access_token;
         },
         setUser:(state,action)=>{
             state.user=action.payload.user;
@@ -71,9 +71,14 @@ const AuthSlice =createSlice({
         });
         builder.addCase(ActSignIn.fulfilled,(state,action)=>{
             state.loading = "succeeded";
-            console.log(action.payload.access_token);
-            
             state.jwt = action.payload.access_token;
+            const partialUser = action.payload.user; 
+            state.user = {
+    
+                ...(state.user || {}), 
+
+                ...partialUser,
+            } as TFullUser; 
         });
         builder.addCase(ActSignIn.rejected,(state,action)=>{
             state.loading = "failed";
@@ -87,7 +92,8 @@ const AuthSlice =createSlice({
         });
         builder.addCase(ActLogout.fulfilled,(state)=>{
             state.loading = "succeeded";
-            Logout();
+            state.user = null;
+            state.jwt = null;
             state.error = null;
         });
         builder.addCase(ActLogout.rejected,(state,action)=>{
@@ -207,8 +213,11 @@ const AuthSlice =createSlice({
             state.loading = "pending";
             state.error = null;
         });
-        builder.addCase(ActGetUsersData.fulfilled,(state)=>{
+        builder.addCase(ActGetUsersData.fulfilled,(state,action)=>{
             state.loading = "succeeded";
+            
+            state.user= action.payload;
+
             state.error = null;
         });
         builder.addCase(ActGetUsersData.rejected,(state,action)=>{

@@ -72,6 +72,7 @@ const EditProperty: React.FC = () => {
           price: property.price || "",
           priceType: property.price_type || property.priceType || "FullPay",
           size: property.size || "",
+          propertyState: property.property_state || "Pending",
           query: property.location?.address || property.address || "",
           selectedLocation: property.location || (property.lat && property.lng ? {
             lat: property.lat,
@@ -86,7 +87,7 @@ const EditProperty: React.FC = () => {
       } catch (err) {
         console.error('Error fetching property:', err);
         toast.error("Failed to fetch property details");
-        navigate('/ownerdashboard');
+        navigate('/owner-dashboard');
       } finally {
         setLoading(false);
       }
@@ -108,7 +109,7 @@ const EditProperty: React.FC = () => {
     } else {
       setLoading(false);
       toast.error("Property ID is missing");
-      navigate('/ownerdashboard');
+      navigate('/owner-dashboard');
     }
   }, [id, navigate]);
 
@@ -327,6 +328,7 @@ const EditProperty: React.FC = () => {
       data.append("price", formData.price);
       data.append("price_type", formData.priceType);
       data.append("size", formData.size);
+      data.append("property_state", formData.propertyState);
       data.append("location[address]", formData.selectedLocation.address);
       data.append("location[lat]", formData.selectedLocation.lat);
       data.append("location[lng]", formData.selectedLocation.lng);
@@ -350,7 +352,7 @@ const EditProperty: React.FC = () => {
         }
       });
       
-      navigate('/ownerdashboard');
+      navigate('/owner-dashboard');
       
     } catch (error) {
       toast.error("Failed to update property. Please check the form for errors.");
@@ -374,7 +376,7 @@ const EditProperty: React.FC = () => {
     return (
       <div className="text-center mt-5">
         <h4>Property not found</h4>
-        <Button variant="primary" onClick={() => navigate('/ownerdashboard')}>
+        <Button variant="primary" onClick={() => navigate('/owner-dashboard')}>
           Back to Dashboard
         </Button>
       </div>
@@ -481,7 +483,7 @@ const EditProperty: React.FC = () => {
         </Row>
         
         <Row>
-          <Col md={6}>
+          <Col md={4}>
             <Form.Group className="mb-3">
               <Form.Label>Type <span className="text-danger">*</span></Form.Label>
               <Form.Select
@@ -500,7 +502,7 @@ const EditProperty: React.FC = () => {
             </Form.Group>
           </Col>
 
-          <Col md={6}>
+          <Col md={4}>
             <Form.Group className="mb-3">
               <Form.Label>Size (sq ft) <span className="text-danger">*</span></Form.Label>
               <Form.Control
@@ -516,6 +518,30 @@ const EditProperty: React.FC = () => {
               {(errors?.size || validationErrors.size) && (
                 <div className="invalid-feedback">
                   {errors?.size ? errors.size[0] : validationErrors.size}
+                </div>
+              )}
+            </Form.Group>
+          </Col>
+          <Col md={4}>
+            <Form.Group className="mb-3">
+              <Form.Label>Status <span className="text-danger">*</span></Form.Label>
+              <Form.Control
+                as="select"
+                value={formData.propertyState}
+                className={`custom-input ${errors?.status || validationErrors.status ? "is-invalid" : ""}`}
+                onChange={(e) => handleChange("propertyState", e.target.value)}
+                placeholder="Select status"
+                disabled={isSubmitting}
+              >
+                <option value="Pending">Pending</option>
+                <option value="Valid">Valid</option>
+                <option value="Invalid">Invalid</option>
+                <option value="Rented">Rented</option>
+                <option value="Sold">Sold</option>
+              </Form.Control>
+              {(errors?.status || validationErrors.status) && (
+                <div className="invalid-feedback">
+                  {errors?.status ? errors.status[0] : validationErrors.status}
                 </div>
               )}
             </Form.Group>
@@ -733,7 +759,7 @@ const EditProperty: React.FC = () => {
           <Button 
             variant="secondary" 
             type="button" 
-            onClick={() => navigate('/ownerdashboard')}
+            onClick={() => navigate('/owner-dashboard')}
             disabled={isSubmitting}
           >
             Cancel

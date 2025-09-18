@@ -7,7 +7,6 @@ const OwnerDashboardLayout: React.FC = () => {
     <Container fluid className="p-4">
       <h2 className="mb-4">Owner Dashboard</h2>
 
-      {/* الروابط */}
       <Nav variant="tabs">
         <Nav.Item>
           <Nav.Link
@@ -38,8 +37,6 @@ const OwnerDashboardLayout: React.FC = () => {
           </Nav.Link>
         </Nav.Item>
       </Nav>
-
-      {/* هنا يبدل المحتوى حسب الـ Route */}
       <div className="mt-4">
         <Outlet />
       </div>

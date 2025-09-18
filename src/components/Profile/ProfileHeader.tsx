@@ -50,11 +50,44 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section }) => {
             <span>Notifications</span>
             <span className="notification-badge">12</span>
           </a>
-          <a href='account' className="btn btn-primary">
+          {/* <a href='basicInfo' className="btn btn-secondary">
             <i className="fas fa-user"></i>
-            <span>Profile</span>
+            <span>Basic Info</span>
+          </a> */}
+          <a href='changePhone' className="btn btn-secondary">
+            <i className="fas fa-user"></i>
+            <span>Change Phone</span>
+          </a>
+          <a href='changeEmail' className="btn btn-secondary">
+            <i className="fas fa-user"></i>
+            <span>Change Email</span>
+          </a>
+          <a href='changePassword' className="btn btn-secondary">
+            <i className="fas fa-user"></i>
+            <span>Change Password</span>
           </a>
         </div>
+
+        
+
+        {/* <div className="nav-section">
+          <h4 className="heading-tertiary">Account</h4>
+                    <ListGroup>
+                      <ListGroupItem className="btn btn-secondary" as={NavLink} to="/profile/basicInfo" end>
+                        <User size={20} /> Basic Information
+                      </ListGroupItem>
+                      
+                      <ListGroupItem className="btn btn-secondary" as={NavLink} to="/profile/changeEmail">
+                        <Mail size={20} /> Change Email
+                      </ListGroupItem>
+                        <ListGroupItem className="btn btn-secondary" as={NavLink} to="/profile/changePhone">
+                        <Phone size={20} /> Change Phone
+                      </ListGroupItem>
+                      <ListGroupItem className="btn btn-secondary" as={NavLink} to="/profile/changePassword">
+                        <Key size={20} /> Change Password
+                      </ListGroupItem>
+                    </ListGroup>
+          </div> */}
       </div>
     </div>
   );

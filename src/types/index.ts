@@ -165,8 +165,9 @@ export interface PropertyCardProps {
   toggleSavedProperty: (id: number) => void;
 }
 
-export interface CategoryCardProps {
-  name: string;
+export interface CategoryCardProps  {
+  id: number;
+  type: string;
   image: string;
   link: string;
 }
@@ -307,6 +308,7 @@ export interface LocationMapProps {
 export interface AddToWishlistProps {
   isSaved: boolean;
   onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  disabled: boolean;
 }
 
 // ---------------- Error message ----------------

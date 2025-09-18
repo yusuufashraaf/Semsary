@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import debounce from "lodash.debounce";
+import { toast } from "react-toastify";
 
 import Search from "../../components/PropertyList/Search";
 import Filters from "../../components/PropertyList/Filters";
@@ -174,14 +175,21 @@ export default function PropertyList() {
     scrollToTop();
   };
 
-  // Toggle Saved Properties
+  // ---------------------- Wishlist ----------------------
   const toggleSavedProperty = (id: number) => {
-    setSavedProperties((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+    setSavedProperties((prev) => {
+      const isSaved = prev.includes(id);
+      const updated = isSaved ? prev.filter((i) => i !== id) : [...prev, id];
+
+      // Toast feedback
+      if (isSaved) toast.info("Removed from wishlist");
+      else toast.success("Added to wishlist");
+
+      return updated;
+    });
   };
 
-  // Clear / Apply Filters
+  // ---------------------- Filters helpers ----------------------
   const clearFilters = () => {
     const clearedFilters = {
       location: "",

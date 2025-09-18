@@ -1,0 +1,176 @@
+/* AboutUs.css */
+
+.about-us-container {
+  min-height: 100vh;
+  background-color: var(--primary-bg);
+  font-family: "Public Sans", sans-serif;
+}
+/* Mission & Vision Section */
+.mission-vision-section {
+  padding: 80px 0;
+  background: var(--background-dark);
+}
+
+.mission-vision-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  padding: 2rem;
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+
+.mission-vision-card:hover {
+  transform: translateY(-5px);
+}
+
+.mission-vision-icon {
+  font-size: 3rem;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+.mission-vision-title {
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.mission-vision-text {
+  margin-bottom: 0;
+  color: #666;
+  line-height: 1.7;
+  font-size: var(--font-size-base);
+}
+
+/* Values Section */
+.values-section {
+  padding: 80px 0;
+  background: var(--white);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+}
+
+.section-subtitle {
+  font-size: 1.25rem;
+  color: #6c757d;
+  margin-bottom: 0;
+}
+
+.value-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  padding: 2rem;
+  text-align: center;
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+
+.value-card:hover {
+  transform: translateY(-5px);
+}
+
+.value-icon {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+.value-title {
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.value-description {
+  margin-bottom: 0;
+  color: #6c757d;
+}
+
+/* Team Section */
+.team-section {
+  padding: 80px 0;
+  background: var(--background-dark);
+}
+
+.team-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  padding: 2rem;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.team-card:hover {
+  transform: translateY(-5px);
+}
+
+.team-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.team-name {
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.team-position {
+  color: #6c757d;
+  margin-bottom: 1rem;
+  font-weight: normal;
+}
+
+.team-description {
+  margin-bottom: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero-content p {
+    font-size: 1.1rem;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .mission-vision-card,
+  .value-card,
+  .team-card {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-section,
+  .mission-vision-section,
+  .values-section,
+  .team-section {
+    padding: 60px 0;
+  }
+}

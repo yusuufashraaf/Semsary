@@ -9,6 +9,10 @@ import UserAccount from '@components/Profile/UserAccount';
 import UserPurchases from '@components/Profile/UserPurchases';
 import ProfileHeader from '@components/Profile/ProfileHeader';
 import UserWishlist from '@components/Profile/UserWishlists';
+import BasicInfo from '@components/User/BasicInfo/BasicInfo';
+import ChangeEmail from '@components/User/ChangeEmail/ChangeEmail';
+import ChangePhone from '@components/User/ChangePhone/ChangePhone';
+import ChangePassword from '@components/User/ChangePassword/ChangePassword';
 
 
 const Profile = () => {
@@ -16,7 +20,7 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-  const validSections = ['home', 'properties', 'reviews', 'notifications', 'account', 'purchases', 'wishlist'];
+  const validSections = ['home', 'properties', 'reviews', 'notifications', 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword'];
   
   if (!section || !validSections.includes(section)) {
     navigate('/profile/home', { replace: true });
@@ -26,7 +30,7 @@ const Profile = () => {
   const renderSection = () => {
   switch (section) {
     case 'home':
-      return <HomeFinderPage />;
+      return <BasicInfo />;
     case 'properties':
       return <UserProperties />;
     case 'reviews':
@@ -39,6 +43,14 @@ const Profile = () => {
       return <UserPurchases/>;
     case 'wishlist':
       return <UserWishlist />;
+    // case 'basicInfo':
+    //   return <BasicInfo />;
+    case 'changeEmail':
+      return <ChangeEmail />;
+    case 'changePhone':
+      return <ChangePhone />;
+    case 'changePassword':
+      return <ChangePassword />;
     default:
       return <HomeFinderPage />;
   }

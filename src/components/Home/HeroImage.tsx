@@ -1,13 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./HeroImage.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
 export default function HeroImage() {
   const [searchValue, setSearchValue] = useState("");
+  const navigate = useNavigate();
 
   const handleSearch = () => {
-    console.log("Searching for:", searchValue);
+    if (searchValue.trim()) {
+      navigate(`/property?q=${encodeURIComponent(searchValue.trim())}`);
+    }
   };
 
   return (
@@ -23,7 +27,7 @@ export default function HeroImage() {
               </p>
 
               {/* Search Box */}
-              <div className={`${styles.searchContainer} `}>
+              <div className={styles.searchContainer}>
                 <div className="input-group input-group-lg w-100 w-md-75 w-lg-50">
                   <span className={styles.searchIconWrapper}>
                     <FontAwesomeIcon
@@ -37,7 +41,7 @@ export default function HeroImage() {
                     placeholder="Enter city or type"
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   />
                   <button
                     className={`btn px-4 ${styles.searchButton}`}

@@ -1,16 +1,12 @@
 import styles from "./PropertCard.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { PropertyCardProps } from "src/types";
+import { useWishlist } from "@hooks/useWishlist";
+import AddToWishlist from "@components/common/AddToWishlist/AddToWishlist";
 
-export default function PropertyCard({
-  property,
-  viewMode,
-  savedProperties,
-  toggleSavedProperty,
-}: PropertyCardProps) {
-  // Image loading simulation
+export default function PropertyCard({ property, viewMode }: PropertyCardProps) {
+  // Use the hook for wishlist
+  const { isSaved, toggleWishlist, loading } = useWishlist(Number(property.id));
 
   return (
     <Link
@@ -40,17 +36,11 @@ export default function PropertyCard({
           }).format(property.price)}
         </div>
 
-        <button
-          className={`${styles.saveBtn} ${
-            savedProperties.includes(property.id) ? styles.savedBtn : ""
-          }`}
-          onClick={(e) => {
-            e.preventDefault();
-            toggleSavedProperty(Number(property.id));
-          }}
-        >
-          <FontAwesomeIcon icon={faHeart} />
-        </button>
+        <AddToWishlist
+          isSaved={isSaved}
+          onClick={toggleWishlist}
+          disabled={loading} 
+        />
       </div>
 
       {/* Property title, details, and description (list view only) */}

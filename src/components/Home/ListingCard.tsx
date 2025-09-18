@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import styles from "./FeatureListing.module.css";
 import { Listing } from "src/types";
+import { formatCurrency } from "@utils/HelperFunctions";
 export default function ListingCard({
   id,
   image,
@@ -17,7 +18,7 @@ export default function ListingCard({
         <Link to={`/property/${id}`}>
           <img src={image} className={styles.cardImg} alt={title} />
         </Link>
-        <span className={`${styles.priceBadge} badge`}>{price}</span>
+        <span className={`${styles.priceBadge} badge`}>{formatCurrency(price)}</span>
       </div>
 
       <div className="card-body">
@@ -25,7 +26,7 @@ export default function ListingCard({
         <div className={styles.propertyDetails}>
           <span>{bedrooms} beds</span>
           <span>• {bathrooms} baths</span>
-          <span>• {sqft}</span>
+          <span>• {sqft} sqft</span>
         </div>
       </div>
     </div>

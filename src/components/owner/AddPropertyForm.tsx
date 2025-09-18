@@ -23,6 +23,7 @@ const AddPropertyForm: React.FC = () => {
     price: "",
     priceType: "FullPay",
     size: "",
+    status: "sale",
     query: "",
     selectedLocation: null as any,
     selectedFeatures: [] as number[],
@@ -84,7 +85,7 @@ const AddPropertyForm: React.FC = () => {
     } else if (Number(formData.size) > 50000) {
       errors.size = "Size is too large";
     }
-
+    
     // Location validation
     if (!formData.selectedLocation) {
       errors.location = "Please select a location";
@@ -249,6 +250,7 @@ const AddPropertyForm: React.FC = () => {
       data.append("bedrooms", formData.bedrooms.toString());
       data.append("bathrooms", formData.bathrooms.toString());
       data.append("type", formData.type);
+      data.append("status", formData.status);
       data.append("price", formData.price);
       data.append("price_type", formData.priceType);
       data.append("size", formData.size);
@@ -281,6 +283,7 @@ const AddPropertyForm: React.FC = () => {
         price: "",
         priceType: "FullPay",
         size: "",
+        status: "sale",
         query: "",
         selectedLocation: null as any,
         selectedFeatures: [],
@@ -400,7 +403,7 @@ const AddPropertyForm: React.FC = () => {
         </Row>
 
         <Row>
-          <Col md={6}>
+          <Col md={4}>
             <Form.Group className="mb-3">
               <Form.Label>Type <span className="text-danger">*</span></Form.Label>
               <Form.Select
@@ -419,7 +422,7 @@ const AddPropertyForm: React.FC = () => {
             </Form.Group>
           </Col>
 
-          <Col md={6}>
+          <Col md={4}>
             <Form.Group className="mb-3">
               <Form.Label>Size (sq ft) <span className="text-danger">*</span></Form.Label>
               <Form.Control
@@ -438,6 +441,27 @@ const AddPropertyForm: React.FC = () => {
                 </div>
               )}
             </Form.Group>
+          </Col>
+          <Col md={4}>
+              <Form.Group>
+                <Form.Label>Status</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={formData.status}
+                  className={`custom-input ${errors?.size || validationErrors.size ? "is-invalid" : ""}`}
+                  onChange={(e) => handleChange("status", e.target.value)}
+                  placeholder="Select status"
+                  disabled={isSubmitting}
+                >
+                  <option value="sale">For Sale</option>
+                  <option value="rent">For Rent</option>
+                </Form.Control>
+                {(errors?.status || validationErrors.size) && (
+                <div className="invalid-feedback">
+                  {errors?.status ? errors.status[0] : validationErrors.size}
+                </div>
+              )}
+              </Form.Group>
           </Col>
         </Row>
 
