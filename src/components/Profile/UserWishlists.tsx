@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import PropertyCard from './PropertyCard';
+import { useState, useEffect } from 'react';
+//import PropertyCard from './PropertyCard';
 import { fetchUserWishlists } from '@services/axios-global';
+import { TFullUser } from 'src/types/users/users.types';
+import PropertyCard from '@components/PropertyList/PropertCard';
+import { toast } from 'react-toastify';
+import { Listing } from 'src/types';
 
 interface WishlistItem {
   id: number;
@@ -8,29 +12,30 @@ interface WishlistItem {
   property_id: number;
   created_at: string;
   updated_at: string;
-  property: {
-    id: number;
-    owner_id: number;
-    title: string;
-    description: string;
-    type: string;
-    price: string;
-    price_type: string;
-    location: {
-      address: string;
-      city: string;
-      lat: number;
-      lng: number;
-    };
-    size: number;
-    property_state: string;
-    status: string;
-    created_at: string;
-    updated_at: string;
-    bedrooms: number;
-    bathrooms: number;
-    is_in_wishlist: boolean;
-  };
+  // property: {
+  //   id: number;
+  //   owner_id: number;
+  //   title: string;
+  //   description: string;
+  //   type: string;
+  //   price: string;
+  //   price_type: string;
+  //   location: {
+  //     address: string;
+  //     city: string;
+  //     lat: number;
+  //     lng: number;
+  //   };
+  //   size: number;
+  //   property_state: string;
+  //   status: string;
+  //   created_at: string;
+  //   updated_at: string;
+  //   bedrooms: number;
+  //   bathrooms: number;
+  //   is_in_wishlist: boolean;
+  // };
+  property: Listing;
   user: {
     id: number;
     first_name: string;
@@ -40,16 +45,17 @@ interface WishlistItem {
   };
 }
 
-const UserWishlist: React.FC = () => {
+const UserWishlist = ({ user }: {user: TFullUser })=> {
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [savedProperties, setSavedProperties] = useState<number[]>([]);
 
   useEffect(() => {
     const getWishlistData = async () => {
       try {
         setLoading(true);
-        const response = await fetchUserWishlists(7);
+        const response = await fetchUserWishlists(user.id);
         
         // Handle different possible response structures
         let items: WishlistItem[] = [];
@@ -80,39 +86,6 @@ const UserWishlist: React.FC = () => {
     getWishlistData();
   }, []);
 
-  const handleSave = (id: number, section: string) => {
-    console.log(`Property ${id} saved/unsaved from section: ${section}`);
-    // Remove from wishlist when unsaved
-    setWishlistItems(prevItems => {
-      if (Array.isArray(prevItems)) {
-        return prevItems.filter(item => item.property.id !== id);
-      }
-      return [];
-    });
-  };
-
-  const formatPropertyForCard = (wishlistItem: WishlistItem) => {
-    const property = wishlistItem.property;
-    return {
-      id: property.id,
-      address: `${property.location.address}, ${property.location.city}`,
-      price: `${formatCurrency(property.price)} ${property.price_type === 'Monthly' ? '/mo' : ''}`,
-      image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80',
-      saved: true, // Always true for wishlist items
-      bedrooms: property.bedrooms,
-      bathrooms: property.bathrooms,
-      size: `${property.size} sqft`
-    };
-  };
-
-  const formatCurrency = (amount: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(parseFloat(amount));
-  };
 
   // Calculate average rating safely
   const calculateAverageRating = () => {
@@ -139,6 +112,19 @@ const UserWishlist: React.FC = () => {
     );
   }
 
+const toggleSavedProperty = (id: number) => {
+    setSavedProperties((prev) => {
+      const isSaved = prev.includes(id);
+      const updated = isSaved ? prev.filter((i) => i !== id) : [...prev, id];
+
+      // Toast feedback
+      if (isSaved) toast.info("Removed from wishlist");
+      else toast.success("Added to wishlist");
+
+      return updated;
+    });
+  };
+
   return (
     <div className="container">
       <div className="stats-grid">
@@ -149,24 +135,6 @@ const UserWishlist: React.FC = () => {
           <div className="stat-info">
             <h3>{Array.isArray(wishlistItems) ? wishlistItems.length : 0}</h3>
             <p>Total Wishlist Items</p>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">
-            <i className="fas fa-home"></i>
-          </div>
-          <div className="stat-info">
-            <h3>{Array.isArray(wishlistItems) ? wishlistItems.length : 0}</h3>
-            <p>Properties</p>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">
-            <i className="fas fa-star"></i>
-          </div>
-          <div className="stat-info">
-            <h3>{calculateAverageRating().toFixed(1)}</h3>
-            <p>Average Rating</p>
           </div>
         </div>
       </div>
@@ -187,17 +155,25 @@ const UserWishlist: React.FC = () => {
           </div>
         ) : (
           wishlistItems.map(wishlistItem => (
+            // <PropertyCard
+            //   key={wishlistItem.id}
+            //   property={formatPropertyForCard(wishlistItem)}
+            //   onSave={handleSave}
+            //   section="wishlist"
+            // />
             <PropertyCard
-              key={wishlistItem.id}
-              property={formatPropertyForCard(wishlistItem)}
-              onSave={handleSave}
-              section="wishlist"
-            />
+                                  property={wishlistItem.property}
+                                  viewMode={"list"}
+                                  savedProperties={savedProperties}
+                                  toggleSavedProperty={toggleSavedProperty}
+                                />
           ))
         )}
       </div>
     </div>
   );
 };
+
+
 
 export default UserWishlist;

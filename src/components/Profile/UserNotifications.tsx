@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { fetchUserNotifications } from '@services/axios-global';
+import { fetchUserNotifications, markNotificationAsRead } from '@services/axios-global';
+import { TFullUser } from 'src/types/users/users.types';
 
 type NotificationType = 'all' | 'unread' | 'archived';
 
@@ -13,7 +14,7 @@ interface Notification {
   updated_at: string;
 }
 
-const UserNotifications: React.FC = () => {
+const UserNotifications = ({ user }: {user: TFullUser })=> {
   const [activeTab, setActiveTab] = useState<NotificationType>('all');
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +24,7 @@ const UserNotifications: React.FC = () => {
     const getNotificationsData = async () => {
       try {
         setLoading(true);
-        const data = await fetchUserNotifications(7);
+        const data = await fetchUserNotifications(user.id);
         setNotifications(data);
       } catch (err) {
         setError('Failed to fetch notifications');
@@ -44,6 +45,7 @@ const UserNotifications: React.FC = () => {
     setNotifications(notifications.map(notification => 
       notification.id === id ? { ...notification, is_read: true } : notification
     ));
+    markNotificationAsRead(user.id,id);
   };
 
   const formatDate = (dateString: string) => {

@@ -1,18 +1,19 @@
-import React from 'react';
 import '../../styles/themes.css';
+import { TFullUser } from 'src/types/users/users.types';
 //import './profile-components.css';
 
 
-interface ProfileHeaderProps {
-  section: string;
-}
-
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section }) => {
+const ProfileHeader = ({ section, user }: { section: string|undefined, user: TFullUser })=> {
   return (
+    
     <div className="card">
+      <div>
+        <h6 className="text-center text-capitalize">Welcome {user.first_name}</h6>
+      </div>
       <div>
         <h2 className="heading-secondary text-capitalize">{section} page</h2>
       </div>
+      
       <div className="sidebar-nav">
         <div className="nav-section">
           <h4 className="heading-tertiary">Navigation</h4>
