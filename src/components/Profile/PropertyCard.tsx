@@ -6,14 +6,15 @@ interface PropertyCardProps {
   property: Property;
   onSave: (id: number, section: string) => void;
   section: string;
+  saved?: boolean;
 }
 
-const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSave, section }) => {
+const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSave, section, saved = false }) => {
   return (
     <div className="property-card">
       <div className="property-image">
         <img 
-          src={property.image} 
+          src={property.images?.[0] || 'fallback-url'} 
           alt={property.address}
           className="property-img"
           onError={(e) => {
@@ -22,8 +23,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSave, section }
           }}
         />
         <div className="property-image-overlay">
-          <button className="favorite-btn" onClick={() => onSave(property.id, section)}>
-            <i className={`fas fa-heart ${property.saved ? 'saved' : ''}`}></i>
+          <button className="favorite-btn" onClick={() => onSave(parseInt(property.id), section)}>
+            <i className={`fas fa-heart ${saved ? 'saved' : ''}`}></i>
           </button>
         </div>
       </div>
@@ -38,10 +39,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSave, section }
         <div className="property-actions">
           <button className="btn btn-primary">View Details</button>
           <button 
-            className={`btn ${property.saved && section === 'recentlyViewed' ? 'btn-primary' : 'btn-outline'}`}
-            onClick={() => onSave(property.id, section)}
+            className={`btn ${saved && section === 'recentlyViewed' ? 'btn-primary' : 'btn-outline'}`}
+            onClick={() => onSave(parseInt(property.id), section)}
           >
-            {section === 'recentlyViewed' ? (property.saved ? 'Saved' : 'Save') : 'Remove'}
+            {section === 'recentlyViewed' ? (saved ? 'Saved' : 'Save') : 'Remove'}
           </button>
         </div>
       </div>

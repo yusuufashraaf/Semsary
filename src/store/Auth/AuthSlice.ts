@@ -88,17 +88,17 @@ const AuthSlice =createSlice({
                 ...partialUser,
             } as TFullUser; 
         });
-        builder.addCase(ActSignIn.rejected,(state,action)=>{
+        builder.addCase(ActSignIn.rejected, (state, action) => {
             state.loading = "failed";
 
             if (typeof action.payload === "string") {
-                    state.error = action.payload;
-                    toast.error(action.payload)
-                }  
-                else {
-                    state.error = "Something went wrong.";
-                    toast.error("Something went wrong.")
-                }
+                state.error = action.payload;
+                toast.error(action.payload)
+            }  
+            else {
+                state.error = "Something went wrong.";
+                toast.error("Something went wrong.")
+            }
         });
         builder.addCase(ActLogout.pending,(state)=>{
             state.loading = "pending";
