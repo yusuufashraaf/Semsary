@@ -9,10 +9,6 @@ import ActCheckAuth from "@store/Auth/Act/ActCheckAuth";
 import PropertyDetails from "@pages/PropertyDetails/PropertyDetails";
 import LoadingScreen from "@components/common/LoaderScreen/LoadingScreen";
 import ErrorScreen from "@components/common/ErrorScreen/ErrorScreen";
-import OwnerDashboard from "@pages/OwnerDashboard/OwnerDashboard";
-import DashboardOverview from "@components/owner/DashboardOverview";
-import ManageProperties from "@components/owner/ManageProperties";
-import AddPropertyForm from "@components/owner/AddPropertyForm";
 import EditProperty from "@components/owner/EditProperty";
 import AboutUs from "@components/AboutUs/AboutUs";
 import ContactUs from "@components/ContactUs/ContactUs";
@@ -103,24 +99,6 @@ const router = createBrowserRouter([
         path: "property/:id/edit",
         element: <EditProperty />,
       },
-      {
-      path: "/owner-dashboard",
-      element: <OwnerDashboard />,
-      children: [
-        {
-          index: true,
-          element: <DashboardOverview />,
-        },
-        {
-          path: "manage-properties",
-          element: <ManageProperties />,
-        },
-        {
-          path: "add-property",
-          element: <AddPropertyForm />,
-        },
-      ],
-    },
     {
       path: "/about",
       element: <AboutUs />,
@@ -151,7 +129,7 @@ function AppRouter() {
      <RouterProvider router={router} />;
      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
      <div className="fixed bottom-4 right-4">
-        <Chatbot />
+      <Chatbot />
       </div>
   </>
   ) 

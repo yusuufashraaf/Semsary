@@ -324,7 +324,7 @@ const AddPropertyForm: React.FC = () => {
       setValidationErrors({});
       
       // Navigate to dashboard
-      navigate('/owner-dashboard');
+      // navigate('/owner-dashboard');
       
     } catch (error) {
       toast.error("Failed to save property. Please check the form for errors.");
@@ -658,7 +658,7 @@ const AddPropertyForm: React.FC = () => {
             className="d-none"
             multiple
             accept="image/*"
-            onChange={handleFileChange} // 👈 صور
+            onChange={handleFileChange} 
           />
           <p className="text-muted small mb-0">
             Drag and drop images here or click to browse<br />
@@ -686,7 +686,7 @@ const AddPropertyForm: React.FC = () => {
                     />
                     <button
                       type="button"
-                      className="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 rounded-circle p-0"
+                      className="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 rounded-circle p-2"
                       onClick={() => handleRemoveImage(i)}
                       disabled={isSubmitting}
                       style={{ width: "25px", height: "25px" }}
@@ -701,7 +701,7 @@ const AddPropertyForm: React.FC = () => {
         )}
       </Form.Group>
 
-      {/* ✅ Section for contract / documents */}
+      {/* contract / documents */}
       <Form.Group className="mb-4">
         <Form.Label>
           Property Contract <span className="text-danger">*</span>
@@ -713,8 +713,8 @@ const AddPropertyForm: React.FC = () => {
             type="file"
             id="contract-upload"
             className="d-none"
-            accept=".pdf,.doc,.docx,.xls,.xlsx" // 👈 المستندات المسموحة
-            onChange={handleContractChange} // 👈 هنعمله تحت
+            accept=".pdf,.doc,.docx,.xls,.xlsx" 
+            onChange={handleContractChange} 
           />
           <p className="text-muted small mb-0">
             Supported formats: PDF, Word, Excel <br />
@@ -763,7 +763,7 @@ const AddPropertyForm: React.FC = () => {
             )}
           </Button>
         </div>
-      </Form>
+    </Form>
     </>
   );
 };
