@@ -45,7 +45,7 @@ export type Amenities = string[];
 
 // ---------------- Core Property Models ----------------
 
-interface BaseProperty {
+export interface BaseProperty {
   id: string;
   title?: string;
   address?: string;
@@ -72,7 +72,7 @@ interface BaseProperty {
 }
 
 export interface Listing extends BaseProperty {
-  image: string;
+  image: string|null;
 }
 
 export type Property = Omit<BaseProperty, "images" | "coordinates" | "host"> & {
@@ -132,20 +132,75 @@ export interface MobileFiltersModalProps {
 
 // ---------------- Reviews ----------------
 
+// export interface Review {
+//   id: number;
+//   reviewer: string;
+//   review: string;
+//   property: {
+//     title: string;
+//     location: {
+//       address: string;
+//       city: string;
+//     };
+//   };
+//   created_at: string;
+//   date: string;
+//   rating: number;
+// }
+
 export interface Review {
   id: number;
-  reviewer: string;
-  review: string;
-  property: {
-    title: string;
-    location: {
-      address: string;
-      city: string;
-    };
-  };
-  created_at: string;
-  date: string;
+  property_id: number;
+  user_id: number;
+  comment: string; // Changed from 'review' to 'comment'
   rating: number;
+  created_at: string;
+  updated_at: string;
+  property: {
+    id: number;
+    owner_id: number;
+    title: string;
+    description: string;
+    type: string;
+    price: string;
+    price_type: string;
+    location: {
+      city: string;
+      state: string;
+      zip_code: string;
+      address: string;
+      latitude?: number;
+      longitude?: number;
+    };
+    size: number;
+    property_state: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
+    bedrooms: number;
+    bathrooms: number;
+    is_in_wishlist: boolean;
+  };
+  user: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    google_id: string | null;
+    email_verified_at: string | null;
+    email_otp: string | null;
+    email_otp_expires_at: string | null;
+    email_otp_sent_at: string | null;
+    id_image_url: string;
+    role: string;
+    phone_number: string;
+    status: string;
+    phone_verified_at: string | null;
+    whatsapp_otp: string | null;
+    whatsapp_otp_expires_at: string | null;
+    created_at: string;
+    updated_at: string;
+  };
 }
 
 export interface ReviewsListProps {

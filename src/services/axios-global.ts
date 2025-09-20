@@ -147,6 +147,16 @@ export const fetchUserWishlists = async (userId: number) => {
   }
 };
 
+export const markNotificationAsRead = async (userId:number,notificationId:number) => {
+  try {
+    const response = await api.patch(`/user/${userId}/notifications/${notificationId}/read`);
+    return response.data;
+  } catch (error) {
+    console.error('Error marking notification as read:', error);
+    throw error;
+  }
+};
+
 // Attach interceptors
 api.interceptors.request.use(requestInterceptor);
 api.interceptors.response.use((response) => response, responseInterceptor);

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchUserPurchases, fetchUserBookings } from '@services/axios-global';
+import { TFullUser } from 'src/types/users/users.types';
 
 type TabType = 'purchases' | 'bookings';
 
@@ -63,7 +64,7 @@ interface Booking {
   property: Property;
 }
 
-const UserPurchases: React.FC = () => {
+const UserPurchases = ({ user }: {user: TFullUser })=> {
   const [activeTab, setActiveTab] = useState<TabType>('purchases');
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -74,7 +75,7 @@ const UserPurchases: React.FC = () => {
     const getPurchasesData = async () => {
       try {
         setLoading(true);
-        const data = await fetchUserPurchases(7);
+        const data = await fetchUserPurchases(user.id);
         setPurchases(data);
       } catch (err) {
         setError('Failed to fetch purchases');
