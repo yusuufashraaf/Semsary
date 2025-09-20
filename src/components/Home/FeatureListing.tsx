@@ -17,7 +17,7 @@ export default function FeatureListing() {
         <h2 className={styles.sectionTitle}>Featured Listings</h2>
 
         <div className="row g-4">
-          {listings.map((listing) => (
+          {listings?.map((listing) => (
             <div key={listing.id} className="col-12 col-md-6 col-xl-4">
               <ListingCard {...listing} />
             </div>

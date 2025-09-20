@@ -7,6 +7,7 @@ import { ImageFormType, imageSchema } from "@validations/imageSchema";
 import ActUploadId from "@store/Auth/Act/ActUploadId";
 import { resetUI } from "@store/Auth/AuthSlice";
 import styles from "./ImageWithID.module.css";
+import { toast } from "react-toastify";
 type StepStatus = "pending" | "completed" | "skipped";
 interface IImageWithIDProps {
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
@@ -63,12 +64,12 @@ const ImageWithID = ({ setCurrentStep, setStepStatus }: IImageWithIDProps) => {
     dispatch(ActUploadId(formData))
       .unwrap()
       .then(() => {
-        console.log("Image uploaded successfully!");
         setStepStatus("completed");
         setCurrentStep((prev) => prev + 1);
+        toast.success("ID image uploaded successfully.");
       })
       .catch((err) => {
-        console.error("Upload failed:", err);
+        toast.error(err || "Failed to upload ID image.");
       });
   };
 

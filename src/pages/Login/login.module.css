@@ -4,6 +4,11 @@
   border: 0 !important;
   margin-top: 10px;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
 }
 
 .loginBtn:hover {

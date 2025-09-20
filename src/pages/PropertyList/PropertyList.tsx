@@ -17,6 +17,7 @@ import { formatActiveFilters } from "@utils/HelperFunctions";
 import { useFilterOptions } from "@hooks/useFilterOptions";
 import { getProperties } from "@services/PropertyListServices";
 import ErrorMessage from "@components/common/ErrorMessage/ErrorMessage";
+import Loader from "@components/common/Loader/Loader";
 
 export default function PropertyList() {
   // ---------------------- State ----------------------
@@ -311,7 +312,7 @@ export default function PropertyList() {
         <div className="col-xxl-3 col-xl-3 col-lg-4 d-none d-lg-block">
           <div className="sticky-top" style={{ top: "20px" }}>
             {filtersLoading ? (
-              <p>Loading filters...</p>
+              <Loader message="Loading filters..." />
             ) : filtersError ? (
               <p className="text-danger">{filtersError}</p>
             ) : (

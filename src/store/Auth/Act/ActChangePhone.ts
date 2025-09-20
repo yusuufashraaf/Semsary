@@ -1,23 +1,29 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@services/axios-global";
-import { signUpType } from "@validations/signUpSchema";
+import { RootState } from "@store/index";
 import { isAxiosError } from "axios";
+import {  ChangePhoneFormValues } from "src/types/users/users.types";
 
-const ActSignUp =createAsyncThunk('Auth/SignUp',
-    async(formData:signUpType,thunkApi)=>{
 
+const ActChangePhone=createAsyncThunk('Auth/changePhone',
+    async(formData:ChangePhoneFormValues,thunkApi)=>{
+
+        const {rejectWithValue,fulfillWithValue,getState}= thunkApi;
+        const state = getState() as RootState;
         
-        const {rejectWithValue,fulfillWithValue}= thunkApi;
+        const token = state.Authslice.jwt;
+        
         try {
-            const response = await api.post('/register',formData);
-            
+        const response = await api.post('user/change-phone',{...formData},{headers: {
+          Authorization: `Bearer ${token}`,
+        },});
             return fulfillWithValue(response.data)
 
         } catch (error) {
-            if (isAxiosError(error)) {
+             if (isAxiosError(error)) {
                 const serverData = error.response?.data;
 
-              if (serverData?.errors) {
+            if (serverData?.errors) {
                 const flatErrors = Object.values(serverData.errors)
                     .flat()
                     .join(", ");
@@ -28,5 +34,5 @@ const ActSignUp =createAsyncThunk('Auth/SignUp',
                 return rejectWithValue("An unexpected error");
             }
         }
-})
-export default ActSignUp
+});
+export default ActChangePhone;

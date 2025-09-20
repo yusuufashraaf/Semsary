@@ -1,100 +1,93 @@
-import  { useState } from 'react';
-import { Form, Button, Card, Alert, FloatingLabel } from 'react-bootstrap';
-import { Mail, CheckCircle, XCircle } from 'lucide-react';
-import { useAppSelector } from '@store/hook';
+import { useForm } from 'react-hook-form';
+import { Card, Button, Alert, Form, Row, Col } from 'react-bootstrap';
+import { Mail, XCircle } from 'lucide-react';
+
+import { useAppDispatch, useAppSelector } from '@store/hook';
+import ActChangeEmail from '@store/Auth/Act/ActChangeEmail';
+import { ChangeEmailFormValues } from 'src/types/users/users.types';
+import Input from '@components/forms/input/Input';
 
 const ChangeEmail = () => {
-const {email}=useAppSelector(state=> state.Authslice.user);
-  const [currentEmail, setCurrentEmail] = useState(email);
-  const [newEmail, setNewEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const dispatch = useAppDispatch();
+  const { loading, error, user } = useAppSelector(state => state.Authslice);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ChangeEmailFormValues>({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
-    if (newEmail === currentEmail) {
-      setError('New email cannot be the same as the current email.');
-      return;
-    }
+  const onSubmit = (data:ChangeEmailFormValues) => {
 
-    // Basic validation for demonstration
-    if (!newEmail || !password) {
-      setError('Please fill in all fields.');
-      return;
-    }
-
-    // Here you would typically make an API call to update the email
-    console.log('Attempting to change email...');
-    
-    setTimeout(() => {
-      // Simulate API response
-      const isSuccess = true; // Set to false to test the error case
-
-      if (isSuccess) {
-        setSuccess('Your email has been successfully updated.');
-        setCurrentEmail(newEmail); // Update state with the new email
-        setNewEmail('');
-        setPassword('');
-      } else {
-        setError('Failed to update email. Please check your credentials.');
-      }
-    }, 1500); // Simulate network delay
+    dispatch(ActChangeEmail(data))
+      .then(() => {
+        reset();
+      })
+      .catch((err) => {
+        console.error("Error dispatching action: ", err);
+      });
   };
 
   return (
-    <Card className="shadow-sm">
-      <Card.Header as="h5" className="d-flex align-items-center">
-        <Mail size={24} className="me-2" />
-        Change Your Email Address
-      </Card.Header>
-      <Card.Body>
-        {success && (
-          <Alert variant="success" className="d-flex align-items-center">
-            <CheckCircle size={18} className="me-2" /> {success}
-          </Alert>
-        )}
-        {error && (
-          <Alert variant="danger" className="d-flex align-items-center">
-            <XCircle size={18} className="me-2" /> {error}
-          </Alert>
-        )}
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Current Email Address</Form.Label>
-            <Form.Control type="email" value={currentEmail} readOnly disabled />
-          </Form.Group>
 
-          <FloatingLabel controlId="newEmail" label="New Email Address" className="mb-3">
-            <Form.Control
-              type="email"
-              placeholder="name@example.com"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-              required
-            />
-          </FloatingLabel>
-          
-          <FloatingLabel controlId="password" label="Password" className="mb-3">
-            <Form.Control
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </FloatingLabel>
+      <Row className="mx-5">
+        <Col md={8}>
+          <Card className="shadow-sm">
+            <Card.Header as="h5" className="d-flex align-items-center">
+              <Mail size={24} className="me-2" />
+              Change Your Email Address
+            </Card.Header>
+            <Card.Body>
+              {error && (
+                <Alert variant="danger" className="d-flex align-items-center">
+                  <XCircle size={18} className="me-2" /> {error}
+                </Alert>
+              )}
+              <Form onSubmit={handleSubmit(onSubmit)}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Current Email Address</Form.Label>
+                  <Form.Control type="email" value={user?.email} readOnly disabled />
+                </Form.Group>
+                <Input
+                  label="New Email Address"
+                  name="email"
+                  type="email"
+                  register={register}
+                  error={errors.email?.message}
+                  placeholder="New Email Address"
+                  disabled={loading === "pending"}
+                />
+                <Input
+                  label="Password"
+                  name="password"
+                  type="password"
+                  register={register}
+                  error={errors.password?.message}
+                  placeholder="Password"
+                  disabled={loading === "pending"}
+                />
+                <Button
+                  variant="primary"
+                  type="submit"
+                  className="w-100 d-flex justify-content-center"
+                  disabled={loading === "pending"}
+                >
+                  {loading === "pending" ? 'Updating...' : 'Update Email'}
+                </Button>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
 
-          <Button variant="primary" type="submit" className="w-100">
-            Update Email
-          </Button>
-        </Form>
-      </Card.Body>
-    </Card>
   );
 };
 
 export default ChangeEmail;
+
