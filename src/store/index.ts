@@ -5,7 +5,7 @@ import ownerDashboardReducer from "./Owner/ownerDashboardSlice";
 import { setStore } from '@services/axios-global';
 import { persistStore, persistReducer, FLUSH,REHYDRATE,PAUSE,PERSIST,PURGE,REGISTER, } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-
+import notificationsReducer from "./Noifications/notificationsSlice"
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
@@ -17,6 +17,8 @@ const rootReducer = combineReducers({
     Authslice: Authslice,
     form: FormSlice,
     ownerDashboard: ownerDashboardReducer,
+        notifications: notificationsReducer,
+
 });
 
 const persistConfig ={

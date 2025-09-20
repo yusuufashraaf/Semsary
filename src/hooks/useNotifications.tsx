@@ -1,5 +1,8 @@
-import { useEffect, useState } from "react";
+// hooks/useNotifications.ts
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { getEcho } from "../services/echoManager";
+import { addNotification } from "../store/Noifications/notificationsSlice";
 
 type RentNotification = {
   id: number;
@@ -16,13 +19,10 @@ type NotificationPayload = {
 };
 
 export function useNotifications(userId: number | null) {
-  const [notifications, setNotifications] = useState<RentNotification[]>([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!userId) {
-      setNotifications([]);
-      return;
-    }
+    if (!userId) return;
 
     const echo = getEcho();
     if (!echo) return;
@@ -32,13 +32,11 @@ export function useNotifications(userId: number | null) {
 
     channel.notification((notification: NotificationPayload | any) => {
       const data: RentNotification = notification.data ?? notification;
-      setNotifications((prev) => [data, ...prev]);
+      dispatch(addNotification(data));
     });
 
     return () => {
       echo.leave(channelName);
     };
-  }, [userId]);
-
-  return notifications;
+  }, [userId, dispatch]);
 }
