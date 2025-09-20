@@ -1,69 +1,107 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Property } from "src/types";
+import { useAppSelector } from "@store/hook";
 import { validateBooking } from "@validations/bookingValidation";
 
 /**
  * Custom hook to manage booking state and logic.
  */
 export const useBooking = (property: Property | null) => {
-  // State
+  // State for booking inputs and loading
   const [checkIn, setCheckIn] = useState<string>("");
   const [checkOut, setCheckOut] = useState<string>("");
   const [guests, setGuests] = useState<string>("2");
   const [loading, setLoading] = useState<boolean>(false);
 
+  // Errors state to hold validation messages
   const [errors, setErrors] = useState<{
     checkIn?: string;
     checkOut?: string;
     guests?: string;
   }>({});
 
-  // Derived values
+  // API error state
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  // Redux hook to get JWT token from the store
+  const { jwt } = useAppSelector((state) => state.Authslice);
+
+  // Derived values (calculated fields)
   const nights =
     checkIn && checkOut
       ? Math.max(
           0,
-          (new Date(checkOut).getTime() - new Date(checkIn).getTime()) /
-            (1000 * 60 * 60 * 24)
+          (new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)
         )
       : 0;
 
   const subtotal = property ? property.price * nights : 0;
   const total = subtotal;
 
-  // Actions
-  const handleReserve = async (propertyId: string) => {
-    if (!property) return;
+  // Clear API error when booking data changes
+  const clearApiError = useCallback(() => {
+    setApiError(null);
+  }, []);
 
-    // Use centralized validation
+  // Clear all errors
+  const clearErrors = useCallback(() => {
+    setErrors({});
+    setApiError(null);
+  }, []);
+
+  // Validate booking data
+  const validateBookingData = useCallback(() => {
+    if (!property) return false;
+
     const validationErrors = validateBooking({
       checkIn,
       checkOut,
       guests,
-      isSell: property.status === "sell",
+      isSell: property.status === "Valid",
     });
 
+    // If there are validation errors, update the errors state
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      return;
+      return false;
     }
 
     setErrors({});
-    setLoading(true);
+    return true;
+  }, [checkIn, checkOut, guests, property]);
 
-    try {
-      // Fake API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      alert(
-        `Reservation Confirmed!\nProperty ID: ${propertyId}\nNights: ${nights}\nTotal: $${total}`
-      );
-    } finally {
-      setLoading(false);
+  // Handle the reserve action (validation only - actual API call handled in parent)
+  const handleReserve = useCallback(async () => {
+    if (!property || !jwt) {
+      setApiError("Unable to proceed with reservation");
+      return false;
     }
-  };
 
-  // Exposed values
+    // Clear previous errors
+    setApiError(null);
+    
+    // Perform validation
+    const isValid = validateBookingData();
+    
+    if (!isValid) {
+      return false;
+    }
+
+    // Return true if validation passes - parent component handles API call
+    return true;
+  }, [property, jwt, validateBookingData]);
+
+  // Reset booking form
+  const resetBooking = useCallback(() => {
+    setCheckIn("");
+    setCheckOut("");
+    setGuests("2");
+    setErrors({});
+    setApiError(null);
+    setLoading(false);
+  }, []);
+
+  // Exposed values to be used in the component
   return {
     checkIn,
     setCheckIn,
@@ -75,7 +113,14 @@ export const useBooking = (property: Property | null) => {
     subtotal,
     total,
     loading,
+    setLoading,
     errors,
+    apiError,
+    setApiError,
     handleReserve,
+    validateBookingData,
+    clearApiError,
+    clearErrors,
+    resetBooking,
   };
 };

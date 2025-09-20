@@ -268,6 +268,7 @@ export interface BookingCardProps {
   nights: number;
   subtotal: number;
   total: number;
+  property_state?: string;
   property_state: string;
 }
 
