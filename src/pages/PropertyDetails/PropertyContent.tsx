@@ -4,7 +4,7 @@ import PropertyDetailsCard from "@components/PropertyDetails/PropertyDetailsCard
 import HostCard from "@components/PropertyDetails/HostCard";
 import LocationMap from "@components/PropertyDetails/LocationMap";
 import ReviewItem from "@components/PropertyDetails/ReviewItem";
-
+import PropertyReviewAnalysis from "./PropertyReviewAnalysis";
 import { Props } from "src/types";
 import styles from "./PropertyDetails.module.css";
 
@@ -60,6 +60,7 @@ function PropertyContent({
         onPageChange={onPageChange}
         loading={loading}
       />
+      <PropertyReviewAnalysis propertyId={Number(property.id)} totalReviews={Number(totalReviews)} />
     </div>
   );
 }
