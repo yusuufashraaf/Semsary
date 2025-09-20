@@ -1,13 +1,11 @@
-import UserAccount from "@components/Profile/UserAccount";
+
 import UserNotifications from "@components/Profile/UserNotifications";
 import UserPurchases from "@components/Profile/UserPurchases";
 import UserReviews from "@components/Profile/UserReviews";
 import MainLayout from "@layouts/MainLayout/MainLayout";
 import Home from "@pages/Home/Home";
-import Login from "@pages/Login/Login";
 import Profile from "@pages/Profile/Profile";
 import PropertyList from "@pages/PropertyList/PropertyList";
-import Register from "@pages/Register/Register";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@store/hook";
 import { useEffect } from "react";
@@ -15,17 +13,23 @@ import ActCheckAuth from "@store/Auth/Act/ActCheckAuth";
 import PropertyDetails from "@pages/PropertyDetails/PropertyDetails";
 import LoadingScreen from "@components/common/LoaderScreen/LoadingScreen";
 import ErrorScreen from "@components/common/ErrorScreen/ErrorScreen";
-import ForgetPassword from "@pages/ForgetPassword/ForgetPassword";
-import ResetPassword from "@pages/ResetPassword/ResetPassword";
-import OAuthCallback from "@pages/OAuthCallback/OAuthCallback";
 import OwnerDashboard from "@pages/OwnerDashboard/OwnerDashboard";
 import DashboardOverview from "@components/owner/DashboardOverview";
 import ManageProperties from "@components/owner/ManageProperties";
 import AddPropertyForm from "@components/owner/AddPropertyForm";
 import EditProperty from "@components/owner/EditProperty";
+import AboutUs from "@components/AboutUs/AboutUs";
+import ContactUs from "@components/ContactUs/ContactUs";
 import { ToastContainer } from "react-toastify";
 import UserProperties from "@components/Profile/UserProperty";
 import "react-toastify/dist/ReactToastify.css";
+import { ResetPassword,ForgotPassword, OAuthCallback, Login, Register, } from "@pages/index";
+import Logout from "@pages/Logout/Logout";
+import UserLayout from "@layouts/UserLayout/UserLayout";
+import BasicInfo from "@components/User/BasicInfo/BasicInfo";
+import ChangeEmail from "@components/User/ChangeEmail/ChangeEmail";
+import ChangePassword from "@components/User/ChangePassword/ChangePassword";
+import ChangePhone from "@components/User/ChangePhone/ChangePhone";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -51,7 +55,7 @@ const router = createBrowserRouter([
       },
       {
         path:"forgot-password",
-        element:<ForgetPassword />
+        element:<ForgotPassword />
       },
       {
         path:"/reset-password",
@@ -74,9 +78,31 @@ const router = createBrowserRouter([
         path: "profile/reviews",
         element: <UserReviews />,
       },
-      {
-        path: "profile/account",
-        element: <UserAccount />,
+     {
+      path: "profile",
+      element: <UserLayout />,
+      children: [
+        {
+          path: 'basicInfo',
+          element: <BasicInfo />,
+        },
+        {
+          path: 'changeEmail',
+          element: <ChangeEmail />,
+        },
+        {
+          path: 'changePassword',
+          element: <ChangePassword />,
+        },
+        {
+          path: 'changePhone',
+          element: <ChangePhone />,
+        }
+      ],
+    },
+       {
+        path: "logout",
+        element: <Logout />,
       },
       {
         path: "profile/notifications",
@@ -94,32 +120,36 @@ const router = createBrowserRouter([
         path: "property/:id",
         element: <PropertyDetails />,
       },
-      // {
-      //   path: "ownerdashboard",
-      //   element: <OwnerDashboard />,
-      // },
        { 
         path: "property/:id/edit",
         element: <EditProperty />,
       },
       {
-  path: "/owner-dashboard",
-  element: <OwnerDashboard />,
-  children: [
-    {
-      index: true,
-      element: <DashboardOverview />,
+      path: "/owner-dashboard",
+      element: <OwnerDashboard />,
+      children: [
+        {
+          index: true,
+          element: <DashboardOverview />,
+        },
+        {
+          path: "manage-properties",
+          element: <ManageProperties />,
+        },
+        {
+          path: "add-property",
+          element: <AddPropertyForm />,
+        },
+      ],
     },
     {
-      path: "manage-properties",
-      element: <ManageProperties />,
+      path: "/about",
+      element: <AboutUs />,
     },
     {
-      path: "add-property",
-      element: <AddPropertyForm />,
-    },
-  ],
-}
+      path: "/contact",
+      element: <ContactUs />,
+    }
     ],
   },
 ]);

@@ -16,6 +16,7 @@ import { usePropertyDetails } from "@hooks/usePropertyDetails";
 import PropertyContent from "./PropertyContent";
 import BookingSection from "./BookingSection";
 import { mapListingToProperty } from "@utils/propertyMapper";
+import { useWishlist } from "@hooks/useWishlist";
 
 // Lazy-load SimilarSection for performance
 const SimilarSection = React.lazy(() => import("./SimilarSection"));
@@ -46,7 +47,9 @@ function PropertyListing() {
     [listing]
   );
 
-  // ✅ Reviews hook (propertyId is bound inside)
+  // Wishlist hook
+  const { isSaved, toggleWishlist } = useWishlist(propertyId ?? 0);
+
   const {
     reviews,
     total: reviewsTotal,
@@ -104,10 +107,11 @@ function PropertyListing() {
     <div className={styles.propertyContainer}>
       <BreadCrumb propertyId={String(propertyId)} />
 
+      {/* Pass wishlist state and toggle function */}
       <ImageCarousel
         images={property.images}
-        isSaved={false}
-        onToggleSaved={(e) => e.preventDefault()}
+        isSaved={isSaved}
+        onToggleSaved={toggleWishlist}
         aria-label={`Image carousel for ${property.title}`}
       />
 

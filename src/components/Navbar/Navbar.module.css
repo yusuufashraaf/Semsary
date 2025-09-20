@@ -118,3 +118,8 @@ nav {
     transform: translateY(0);
   }
 }
+
+.barsBtn svg {
+  color: var(--primary-color); 
+  font-size: 1.25rem;
+}

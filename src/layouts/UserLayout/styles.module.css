@@ -1,0 +1,71 @@
+.sidebar {
+  position: fixed;
+  top: 50px; /* same as navbar height */
+  left: 0;
+  bottom: 0;
+  width: 16.6667%; /* ~2/12 of bootstrap grid */
+  background-color: #f8f9fa;
+  border-right: 1px solid #dee2e6;
+  overflow-y: auto;
+}
+
+.user-sidebar {
+   width: 20%;
+   max-width: 320px;
+   min-width: 240px;
+  background-color: #f8f9fa; /* A light, clean background */
+  border-right: 1px solid #dee2e6;
+  padding: 1.5rem 0; /* Add some vertical padding */
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s ease-in-out;
+}
+
+
+.sidebar-header {
+  padding: 0 1.5rem 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #dee2e6;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #343a40;
+  width:100%;
+  height: 20px;
+  background-color: #000;
+}
+
+
+.sidebar-nav .list-group {
+  border: none;
+  border-radius: 0;
+}
+
+
+.sidebar-nav .list-group-item {
+  border: none; /* Remove individual borders */
+  padding: 1rem 1.5rem; /* Consistent padding */
+  color: #495057;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* Space between icon and text */
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+
+.sidebar-nav .list-group-item:not(.active):hover {
+  background-color: #e9ecef;
+  color: #000;
+}
+
+.sidebar-nav .list-group-item.active {
+  background-color: #0d6efd; /* Bootstrap primary color */
+  color: white;
+  border-left: 4px solid #0a58ca; /* Active indicator */
+  padding-left: calc(1.5rem - 4px); /* Adjust padding to keep text aligned */
+}
+
+
+.sidebar-nav .list-group-item.active svg {
+  color: white;
+}
