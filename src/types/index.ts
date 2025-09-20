@@ -60,7 +60,6 @@ export interface BaseProperty {
   city?: string;
   neighborhood?: string;
   zip?: string;
-  status?: string;
   dateListed?: string;
   rating?: number;
   reviewCount?: number;
@@ -69,6 +68,7 @@ export interface BaseProperty {
   host?: Host;
   state?: string;
   price_type?: string;
+  status: "Valid" | "Invalid" | "Pending" | "Rented" | "Sold"; 
 }
 
 export interface Listing extends BaseProperty {
@@ -220,7 +220,7 @@ export interface PropertyCardProps {
   toggleSavedProperty: (id: number) => void;
 }
 
-export interface CategoryCardProps  {
+export interface CategoryCardProps {
   id: number;
   type: string;
   image: string;
@@ -251,25 +251,33 @@ export interface GuestOption {
   label: string;
 }
 
+// Update your types file to remove cancel-related props
 export interface BookingCardProps {
   price: number;
-  isSell?: boolean;
+  isSell: boolean;
   checkIn: string;
-  setCheckIn: React.Dispatch<React.SetStateAction<string>>;
+  setCheckIn: (value: string) => void;
   checkOut: string;
-  setCheckOut: React.Dispatch<React.SetStateAction<string>>;
+  setCheckOut: (value: string) => void;
   guests: string;
-  setGuests: React.Dispatch<React.SetStateAction<string>>;
+  setGuests: (value: string) => void;
   guestOptions: GuestOption[];
-  onReserve?: () => void;
-  loading?: boolean;
-  errorMessage?: string;
+  onReserve: () => void;
+  loading: boolean;
+  errorMessage: string;
   nights: number;
   subtotal: number;
   total: number;
+  property_state: string;
 }
 
-export interface BookingHookReturn {
+export interface GuestOption {
+  value: string;
+  label: string;
+}
+
+// src/types/BookingHookReturn.ts
+export type BookingHookReturn = {
   checkIn: string;
   setCheckIn: React.Dispatch<React.SetStateAction<string>>;
   checkOut: string;
@@ -285,13 +293,21 @@ export interface BookingHookReturn {
     checkOut?: string;
     guests?: string;
   };
+  apiError: string | null;
   handleReserve: (propertyId: string) => Promise<void>;
-}
+};
+
 
 export interface BookingSectionProps {
   property: Property;
   booking: BookingHookReturn;
   guestOptions: GuestOption[];
+  errorMessages: string
+    onReserve: () => void;
+  onCancelRequest: () => void;
+  isReservationSuccessful: boolean;
+  rentRequestLoading: boolean;
+
 }
 
 // ---------------- Misc UI ----------------
@@ -363,7 +379,7 @@ export interface LocationMapProps {
 export interface AddToWishlistProps {
   isSaved: boolean;
   onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-  disabled: boolean;
+  disabled?: boolean;
 }
 
 // ---------------- Error message ----------------
@@ -420,3 +436,61 @@ export interface UserData {
 }
 
 export type AccountTab = "personal" | "kyc" | "security" | "actions";
+
+//-------------------------- Rent Request ----------------------------
+export type RentRequest = {
+  id: number;
+  message: string;
+  check_in: string;
+  check_out: string;
+  property_id: number;
+  user_id: number;
+  status: string;
+};
+
+// Laravel paginator response
+export interface LaravelPaginatedResponse<T> {
+  data: T[];
+  current_page: number;
+  last_page: number;
+  total: number;
+  per_page: number;
+  next_page_url?: string | null;
+  prev_page_url?: string | null;
+}
+
+// Rent Request Query Params
+export interface RentRequestQuery {
+  userId?: number;
+  status?: string;
+  page?: number;
+  per_page?: number;
+}
+
+// Create Rent Request Data
+export interface CreateRentRequestData {
+  property_id: number;
+  check_in: string;
+  check_out: string;
+  message?: string;
+  // Add other fields as needed
+}
+
+// Payment Data
+export interface PaymentData {
+  paymentMethod: string;
+  amount: number;
+  currency?: string;
+  // Add other payment fields as needed
+}
+
+// Request Stats
+export interface RequestStats {
+  totalRequests: number;
+  pendingRequests: number;
+  confirmedRequests: number;
+  cancelledRequests: number;
+  rejectedRequests: number;
+  paidRequests: number;
+  // Add other stats as needed
+}
