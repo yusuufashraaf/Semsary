@@ -1,0 +1,255 @@
+.stat-card {
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-sm);
+  transition: all 0.3s ease;
+  background: var(--white);
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 12px rgba(140, 92, 92, 0.08);
+  transform: translateY(-1px);
+}
+
+.stat-icon {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-size: 0.85rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--invalid-color);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.1rem;
+}
+
+.stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--hover-color);
+  line-height: 1;
+}
+
+/* Section Title */
+.section-title {
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.properties-section {
+  margin-top: 2rem;
+}
+
+/* Empty State */
+.empty-state-card {
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  opacity: 0.6;
+}
+
+.empty-title {
+  color: var(--hover-color);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.empty-text {
+  font-size: 0.85rem;
+  max-width: 300px;
+  margin: 0 auto;
+  line-height: 1.4;
+}
+
+/* Properties Table */
+.properties-table-card {
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+}
+
+.property-thumb {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.property-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--hover-color);
+  line-height: 1.2;
+}
+
+.property-type {
+  font-size: 0.7rem;
+  color: var(--invalid-color);
+}
+
+.location-text {
+  font-size: 0.75rem;
+  color: var(--invalid-color);
+  line-height: 1.2;
+}
+
+/* Status Badges */
+.status-badge {
+  font-size: 0.65rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.status-valid {
+  background: rgba(40, 167, 69, 0.1);
+  color: var(--available-color);
+}
+
+.status-rented {
+  background: rgba(66, 133, 244, 0.1);
+  color: var(--rented-color);
+}
+
+.status-pending {
+  background: rgba(255, 193, 7, 0.1);
+  color: var(--pending-color);
+}
+
+.status-inactive {
+  background: rgba(120, 114, 109, 0.1);
+  color: var(--invalid-color);
+}
+
+/* View Button */
+.view-btn {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.view-btn:hover {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--white);
+}
+
+.view-btn i {
+  font-size: 0.65rem;
+}
+
+/* View All Button */
+.view-all-btn {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.75rem;
+  color: var(--invalid-color);
+  border-color: var(--primary-border);
+}
+
+.view-all-btn:hover {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+  background: var(--secondary-color);
+}
+
+/* Table Styling */
+.table-sm td {
+  vertical-align: middle;
+  border-color: var(--primary-border);
+  border-width: 1px 0 0 0;
+}
+
+.table-sm th {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--hover-color);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  background: var(--secondary-color);
+}
+
+.table-hover tbody tr:hover {
+  background: rgba(242, 232, 232, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stat-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+  }
+  
+  .stat-value {
+    font-size: 1.2rem;
+  }
+  
+  .stat-label {
+    font-size: 0.7rem;
+  }
+  
+  .section-title {
+    font-size: 0.85rem;
+  }
+  
+  .property-thumb {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .property-title {
+    font-size: 0.8rem;
+  }
+  
+  .view-btn {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+  }
+  
+  .view-all-btn {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.6rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .properties-section {
+    margin-top: 1.5rem;
+  }
+  
+  .stat-card .card-body {
+    padding: 0.75rem !important;
+  }
+  
+  .empty-icon {
+    font-size: 2rem;
+  }
+  
+  .empty-title {
+    font-size: 1rem;
+  }
+  
+  .empty-text {
+    font-size: 0.8rem;
+  }
+}

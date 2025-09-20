@@ -13,14 +13,14 @@ import BasicInfo from '@components/User/BasicInfo/BasicInfo';
 import ChangeEmail from '@components/User/ChangeEmail/ChangeEmail';
 import ChangePhone from '@components/User/ChangePhone/ChangePhone';
 import ChangePassword from '@components/User/ChangePassword/ChangePassword';
-
+import OwnerDashboard from '@components/owner/OwnerDashboard';
 
 const Profile = () => {
   const { section } = useParams<{ section: string }>();
   const navigate = useNavigate();
 
   useEffect(() => {
-  const validSections = ['home', 'properties', 'reviews', 'notifications', 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword'];
+  const validSections = ['home', 'properties','owner-dashboard' ,'reviews', 'notifications', 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword'];
   
   if (!section || !validSections.includes(section)) {
     navigate('/profile/home', { replace: true });
@@ -51,6 +51,8 @@ const Profile = () => {
       return <ChangePhone />;
     case 'changePassword':
       return <ChangePassword />;
+    case 'owner-dashboard':
+      return <OwnerDashboard />;
     default:
       return <HomeFinderPage />;
   }
@@ -59,7 +61,7 @@ renderSection();
 
 return (
 <div className="profile-container">
-  <ProfileHeader section={section}/>
+  <ProfileHeader section={String(section)}/>
   {renderSection()}
 </div>
 );
