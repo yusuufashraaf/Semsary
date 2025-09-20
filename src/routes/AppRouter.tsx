@@ -17,11 +17,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { ResetPassword,ForgotPassword, OAuthCallback, Login, Register, } from "@pages/index";
 import Logout from "@pages/Logout/Logout";
 import Chatbot from "@components/Chatbot/Chatbot";
-import UserLayout from "@layouts/UserLayout/UserLayout";
-import BasicInfo from "@components/User/BasicInfo/BasicInfo";
-import ChangeEmail from "@components/User/ChangeEmail/ChangeEmail";
-import ChangePassword from "@components/User/ChangePassword/ChangePassword";
-import ChangePhone from "@components/User/ChangePhone/ChangePhone";
 const router = createBrowserRouter([
   {
     path: "/",

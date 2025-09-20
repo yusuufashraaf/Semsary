@@ -1,7 +1,6 @@
 import styles from "./BookingCard.module.css";
 import { formatCurrency } from "@utils/HelperFunctions";
 import { BookingCardProps } from "src/types";
-import ErrorMessage from "@components/common/ErrorMessage/ErrorMessage";
 
 function BookingCard({
   price,
@@ -19,8 +18,12 @@ function BookingCard({
   nights,
   subtotal,
   total,
+  property_state
 }: BookingCardProps) {
   const today = new Date().toISOString().split("T")[0];
+
+  const isFormValid = !isSell && checkIn && checkOut && guests && nights > 0;
+
 
   return (
     <div className="col-lg-4">
@@ -43,6 +46,7 @@ function BookingCard({
                   value={checkIn}
                   onChange={(e) => setCheckIn(e.target.value)}
                   min={today}
+                  disabled={loading}
                 />
               </div>
               <div className="col-6">
@@ -53,6 +57,7 @@ function BookingCard({
                   value={checkOut}
                   onChange={(e) => setCheckOut(e.target.value)}
                   min={checkIn || today}
+                  disabled={loading}
                 />
               </div>
             </div>
@@ -63,7 +68,9 @@ function BookingCard({
                 className={styles.formInput}
                 value={guests}
                 onChange={(e) => setGuests(e.target.value)}
+                disabled={loading}
               >
+                <option value="">Select guests</option>
                 {guestOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -74,25 +81,39 @@ function BookingCard({
           </>
         )}
 
-        {/* Reserve/Buy Button */}
-        {isSell ? (
-          <button
-            type="button"
-            className={styles.reserveBtn}
-            onClick={() => alert("Buy")}
-            disabled={loading}
-          >
-            {loading ? <span className={styles.spinner}></span> : "Buy Now"}
-          </button>
+        {/* Display combined error message */}
+        {errorMessage && !loading && (
+          <div className={styles.validationMsg}>
+            {errorMessage}
+          </div>
+        )}
+
+        {/* Reserve/Cancel Button */}
+        {property_state === "Valid" ? (
+           (
+            isSell ? (
+              <button
+                type="button"
+                className={styles.reserveBtn}
+                onClick={onReserve}
+                disabled={loading}
+              >
+                {loading ? <span className={styles.spinner}></span> : "Buy Now"}
+              </button>
+            ) : (
+              <button
+                type="button"
+                className={styles.reserveBtn}
+                onClick={onReserve}
+                disabled={loading || !isFormValid}
+                title={!isFormValid ? "Please fill in all booking details" : ""}
+              >
+                {loading ? <span className={styles.spinner}></span> : "Submit Rent Request"}
+              </button>
+            )
+          )
         ) : (
-          <button
-            type="button"
-            className={styles.reserveBtn}
-            onClick={onReserve}
-            disabled={loading}
-          >
-            {loading ? <span className={styles.spinner}></span> : "Reserve Now"}
-          </button>
+          <p className={styles.disabledMsg}>This property is not available for booking.</p>
         )}
 
         {/* Price Breakdown */}
@@ -105,16 +126,12 @@ function BookingCard({
               </span>
               <span>{formatCurrency(subtotal)}</span>
             </div>
-            <hr className={styles.divider} />
-            <div className={styles.totalRow}>
-              <span>Total</span>
-              <span>{formatCurrency(total)}</span>
+            <div className={styles.breakdownRow}>
+              <strong>Total</strong>
+              <strong>{formatCurrency(total)}</strong>
             </div>
           </div>
         )}
-
-        {/* Error */}
-        <ErrorMessage message={errorMessage} />
       </div>
     </div>
   );

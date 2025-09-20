@@ -1,24 +1,39 @@
+import { Dispatch, SetStateAction } from "react";
 import BookingCard from "@components/PropertyDetails/BookingCard";
-import { BookingSectionProps } from "src/types";
+import { Property, GuestOption } from "src/types";
 
-/**
- * BookingSection
- *
- * A wrapper around BookingCard that passes booking data and handlers.
- * - Handles guest selection, dates, and reservation submission
- * - Calculates nights, subtotal, and total
- */
+interface BookingSectionProps {
+  property: Property;
+  booking: {
+    checkIn: string;
+    setCheckIn: Dispatch<SetStateAction<string>>; // Fixed type
+    checkOut: string;
+    setCheckOut: Dispatch<SetStateAction<string>>; // Fixed type
+    guests: string;
+    setGuests: Dispatch<SetStateAction<string>>; // Fixed type
+    nights: number;
+    subtotal: number;
+    total: number;
+    loading: boolean;
+  };
+  guestOptions: GuestOption[];
+  onReserve: () => void;
+  rentRequestLoading: boolean;
+  errorMessages: string;
+}
+
 function BookingSection({
   property,
   booking,
   guestOptions,
+  onReserve,
+  rentRequestLoading,
+  errorMessages,
 }: BookingSectionProps) {
   return (
     <BookingCard
-      // Price & Sale/Rent
       price={property.price}
-      isSell={property.price_type === "FullPay"}
-      // Booking details (check-in/out and guests)
+      isSell={property.status === "Sold"}
       checkIn={booking.checkIn}
       setCheckIn={booking.setCheckIn}
       checkOut={booking.checkOut}
@@ -26,19 +41,13 @@ function BookingSection({
       guests={booking.guests}
       setGuests={booking.setGuests}
       guestOptions={guestOptions}
-      // Reserve button handler
-      onReserve={() => booking.handleReserve(property.id)}
-      // Loading and error handling
-      loading={booking.loading}
-      errorMessage={
-        booking.errors.checkIn ||
-        booking.errors.checkOut ||
-        booking.errors.guests
-      }
-      // Booking summary
+      onReserve={onReserve}
+      loading={rentRequestLoading || booking.loading}
+      errorMessage={errorMessages}
       nights={booking.nights}
       subtotal={booking.subtotal}
       total={booking.total}
+      property_state={property.status}
     />
   );
 }

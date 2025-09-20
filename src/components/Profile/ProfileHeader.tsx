@@ -2,13 +2,14 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../../styles/themes.css';
 import './ProfileHeader.css';
+import { TFullUser } from 'src/types/users/users.types';
 import { useAppSelector } from "@store/hook";
 
 interface ProfileHeaderProps {
   section: string;
 }
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section }) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user }: { section: string|undefined, user: TFullUser }) => {
   const user = useAppSelector((state) => state.Authslice.user);
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,6 +42,9 @@ console.log("USER ROLE:", user?.role);
 const role = user?.role?.toLowerCase();
   return (
     <div className="profile-layout container-fluid">
+      <div>
+        <h6 className="text-center text-capitalize">Welcome {user.first_name}</h6>
+      </div>
       {/* Navigation Sidebar */}
       <div className="profile-sidebar">
         <div className="sidebar-header">
