@@ -5,12 +5,13 @@ import './ProfileHeader.css';
 import { TFullUser } from 'src/types/users/users.types';
 import { useAppSelector } from "@store/hook";
 
-interface ProfileHeaderProps {
+type ProfileHeaderProps = {
   section: string;
-}
+  user: TFullUser | null; 
+};
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user }: { section: string|undefined, user: TFullUser }) => {
-  const user = useAppSelector((state) => state.Authslice.user);
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user }: ProfileHeaderProps) => {
+  // const user = useAppSelector((state) => state.Authslice.user);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -42,9 +43,6 @@ console.log("USER ROLE:", user?.role);
 const role = user?.role?.toLowerCase();
   return (
     <div className="profile-layout container-fluid">
-      <div>
-        <h6 className="text-center text-capitalize">Welcome {user.first_name}</h6>
-      </div>
       {/* Navigation Sidebar */}
       <div className="profile-sidebar">
         <div className="sidebar-header">

@@ -10,7 +10,6 @@ import BasicInfo from '@components/User/BasicInfo/BasicInfo';
 import ChangeEmail from '@components/User/ChangeEmail/ChangeEmail';
 import ChangePhone from '@components/User/ChangePhone/ChangePhone';
 import ChangePassword from '@components/User/ChangePassword/ChangePassword';
-
 import OwnerDashboard from '@components/owner/OwnerDashboard';
 import { useAppSelector } from '@store/hook';
 import { TFullUser } from 'src/types/users/users.types';
@@ -35,21 +34,20 @@ const Profile = () => {
 }, [section, navigate]); // Add dependencies
 
   const renderSection = () => {
+    if (!user) return null; 
   switch (section) {
     case 'home':
       return <BasicInfo />;
-    case 'properties':
-      return <UserProperties />;
-    case 'reviews':
-      return <UserReviews />;
-    case 'notifications':
-      return <UserNotifications />;
-    case 'account':
-      return <UserAccount />;
-    case 'purchases':
-      return <UserPurchases/>;
-    case 'wishlist':
-      return <UserWishlist />;
+     case 'properties':
+        return <UserProperties user={user} />;
+      case 'reviews':
+        return <UserReviews user={user} />;
+      case 'notifications':
+        return <UserNotifications user={user} />;
+      case 'purchases':
+        return <UserPurchases user={user} />;
+      case 'wishlist':
+        return <UserWishlist user={user} />;
     // case 'basicInfo':
     //   return <BasicInfo />;
     case 'changeEmail':
@@ -61,60 +59,17 @@ const Profile = () => {
     case 'owner-dashboard':
       return <OwnerDashboard />;
     default:
-      return <HomeFinderPage />;
+        return <BasicInfo />;
   }
 };
-renderSection();
+
 
 return (
 <div className="profile-container">
-  <ProfileHeader section={String(section)}/>
+  <ProfileHeader section={section || 'home'} user={user}/>
   {renderSection()}
 </div>
 );
-
-
-  // Validate section and redirect if invalid
-  useEffect(() => {
-    const validSections = ['home', 'properties', 'reviews', 'notifications', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword'];
-    
-    if (!section || !validSections.includes(section)) {
-      navigate('/profile/home', { replace: true });
-    }
-  }, [section, navigate]);
-
-
-  const renderSection = (user: TFullUser) => {
-    switch (section) {
-      case 'home':
-        return <BasicInfo />;
-      case 'properties':
-        return <UserProperties user={user} />;
-      case 'reviews':
-        return <UserReviews user={user} />;
-      case 'notifications':
-        return <UserNotifications user={user} />;
-      case 'purchases':
-        return <UserPurchases user={user} />;
-      case 'wishlist':
-        return <UserWishlist user={user} />;
-      case 'changeEmail':
-        return <ChangeEmail />;
-      case 'changePhone':
-        return <ChangePhone />;
-      case 'changePassword':
-        return <ChangePassword />;
-      default:
-        return <BasicInfo />;
-    }
-  };
-
-  return (
-    <div className="profile-container">
-      <ProfileHeader section={section || 'home'} user={user} />
-      {renderSection(user)}
-    </div>
-  );
 };
 
 export default Profile;
