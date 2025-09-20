@@ -1,6 +1,7 @@
 import HeroImage from "@components/Home/HeroImage";
 import FeatureListing from "../../components/Home/FeatureListing";
 import PopularCategories from "@components/Home/PopularCategories";
+import AllProperties from "@components/Home/AllProperties";
 
 const Home = () => {
   return (
@@ -8,6 +9,7 @@ const Home = () => {
       <HeroImage />
       <FeatureListing />
       <PopularCategories />
+      <AllProperties />
     </div>
   );
 };
