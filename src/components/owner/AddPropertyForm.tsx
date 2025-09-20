@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from "../../store";
 import api from "../../services/axios-global"; 
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import {generateDescription} from "../../services/ownerDashboard"
 import { string } from "zod";
 
 const AddPropertyForm: React.FC = () => {
@@ -345,7 +346,6 @@ const AddPropertyForm: React.FC = () => {
           </ul>
         </Alert>
       )}
-
       <Form onSubmit={handleSubmit}>
         {/* Title */}
         <Form.Group className="mb-3">
@@ -391,6 +391,50 @@ const AddPropertyForm: React.FC = () => {
             </div>
           )}
         </Form.Group>
+          <button
+            type="button"
+            disabled={isSubmitting}
+            className="generate-btn"
+            onClick={async () => {
+              if (!formData.title || !formData.bedrooms || !formData.size || !formData.selectedLocation) {
+                toast.error("Please fill in Title, Rooms, Size, and Location first");
+                return;
+              }
+              try {
+                setIsSubmitting(true);
+                const result = await generateDescription({
+                  title: formData.title,
+                  bedrooms: formData.bedrooms,
+                  bathrooms: formData.bathrooms,
+                  size: Number(formData.size),
+                  location: formData.selectedLocation.address
+                });
+                console.log('Generated description:', result);
+                const cleanDescription = typeof result === 'string'
+                ? result.substring(0, 500).trim()
+                : result;
+                setFormData(prev => ({ ...prev, description: cleanDescription }));
+                toast.success("Description generated successfully!");
+              } catch (error) {
+                console.error(error);
+                toast.error("Failed to generate description");
+              } finally {
+                setIsSubmitting(false);
+              }
+            }}
+          >
+            {isSubmitting && <div className="generate-btn-spinner"></div>}
+            {!isSubmitting && (
+              <>
+                <span className="generate-btn-icon">✨</span>
+                <div className="sparkle sparkle-1"></div>
+                <div className="sparkle sparkle-2"></div>
+              </>
+            )}
+            <span className="generate-btn-text">
+              {isSubmitting ? 'Generating...' : 'Generate Description'}
+            </span>
+          </button>
 
         <Row>
           <Col md={6}>

@@ -20,6 +20,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ResetPassword,ForgotPassword, OAuthCallback, Login, Register, } from "@pages/index";
 import Logout from "@pages/Logout/Logout";
+import Chatbot from "@components/Chatbot/Chatbot";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -149,6 +150,9 @@ function AppRouter() {
   <>
      <RouterProvider router={router} />;
      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
+     <div className="fixed bottom-4 right-4">
+        <Chatbot />
+      </div>
   </>
   ) 
 }
