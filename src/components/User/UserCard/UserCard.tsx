@@ -8,7 +8,8 @@ import { Mail, Phone, User, CheckCircle, XCircle } from 'lucide-react';
     email:string,
     phoneNumber:string,
     isEmailVerified:boolean,
-    isPhoneVerified:boolean
+    isPhoneVerified:boolean,
+    role: "user" | "agent" | "owner"
 }
 
 const UserCard = ({ user }:{user : TUserCardProps}) => {
@@ -18,7 +19,8 @@ const UserCard = ({ user }:{user : TUserCardProps}) => {
     email,
     phoneNumber,
     isEmailVerified,
-    isPhoneVerified
+    isPhoneVerified,
+    role
   } = user;
 
   
@@ -41,6 +43,7 @@ const UserCard = ({ user }:{user : TUserCardProps}) => {
               <Mail size={18} className="me-2" />
               <strong>Email:</strong> {email}
             </div>
+
             {isEmailVerified ? (
               <Badge bg="success" className="d-flex align-items-center">
                 <CheckCircle size={14} className="me-1" /> Verified
@@ -65,6 +68,9 @@ const UserCard = ({ user }:{user : TUserCardProps}) => {
                 <XCircle size={14} className="me-1" /> Not Verified
               </Badge>
             )}
+          </ListGroupItem>
+            <ListGroupItem>
+            <strong>Role:</strong> {role.charAt(0).toUpperCase() + role.slice(1)}
           </ListGroupItem>
         </ListGroup>
       </Card.Body>

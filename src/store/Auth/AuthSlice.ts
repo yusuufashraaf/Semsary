@@ -21,6 +21,18 @@ interface IAuthState {
   error: string | null;
   jwt: string | null;
   isInitialized: boolean;
+import { toast } from "react-toastify";
+import ActChangePassword from "./Act/ActChangePassword";
+import ActChangeEmail from "./Act/ActChangeEmail";
+import ActChangePhone from "./Act/ActChangePhone";
+
+
+interface IAuthState{
+    user:TFullUser | null,
+    loading:TLoading
+    error:string| null
+    jwt:string|null
+    isInitialized:boolean
 }
 
 const initialState: IAuthState = {
@@ -87,7 +99,7 @@ const AuthSlice = createSlice({
         } as TFullUser;
 
         if (state.jwt) {
-          initEcho(state.jwt); // 🔑 start Echo after login
+          initEcho(state.jwt); // start Echo after login
         }
       })
       .addCase(ActSignIn.rejected, (state, action) => {
@@ -247,6 +259,258 @@ const AuthSlice = createSlice({
       });
   },
 });
+    extraReducers:(builder)=>{
+        builder.addCase(ActSignUp.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActSignUp.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            
+        });
+        builder.addCase(ActSignUp.rejected,(state,action)=>{
+            state.loading = "failed";
+            
+           if (typeof action.payload === "string") {
+                state.error = action.payload;
+                 toast.error(action.payload)
+            }  
+            else {
+                state.error = "Something went wrong.";
+                toast.error("Something went wrong.")
+            }
+        });
+        builder.addCase(ActSignIn.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActSignIn.fulfilled,(state,action)=>{
+            state.loading = "succeeded";
+            state.jwt = action.payload.access_token;
+            const partialUser = action.payload.user; 
+            state.user = {
+    
+                ...(state.user || {}), 
+
+                ...partialUser,
+            } as TFullUser; 
+        });
+        builder.addCase(ActSignIn.rejected,(state,action)=>{
+            state.loading = "failed";
+
+            if (typeof action.payload === "string") {
+                    state.error = action.payload;
+                    toast.error(action.payload)
+                }  
+                else {
+                    state.error = "Something went wrong.";
+                    toast.error("Something went wrong.")
+                }
+        });
+        builder.addCase(ActLogout.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActLogout.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.user = null;
+            state.jwt = null;
+            state.error = null;
+        });
+        builder.addCase(ActLogout.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+        builder
+
+        .addCase(ActCheckAuth.pending, (state) => {
+            state.loading = 'pending';
+        })
+
+        .addCase(ActCheckAuth.fulfilled, (state, action) => {
+            state.user = action.payload.user;
+            state.jwt = action.payload.access_token; 
+
+            state.isInitialized = true;
+            state.loading = 'succeeded';
+        })
+
+        .addCase(ActCheckAuth.rejected, (state) => {
+            console.log(" AuthSlice: ActCheckAuth failed. Clearing auth state.");
+            state.user = null;
+            state.jwt = null;
+            state.isInitialized = true; 
+            state.loading = 'failed';
+        });
+
+        builder.addCase(ActSendOTP.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActSendOTP.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActSendOTP.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+        builder.addCase(ActReSendOTP.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActReSendOTP.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActReSendOTP.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+        builder.addCase(ActVerifyWhatsOTP.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActVerifyWhatsOTP.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActVerifyWhatsOTP.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+        builder.addCase(ActUploadId.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActUploadId.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActUploadId.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+
+        builder.addCase(ActforgetPass.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActforgetPass.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActforgetPass.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+        builder.addCase(ActResetPass.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActResetPass.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            state.error = null;
+        });
+        builder.addCase(ActResetPass.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+        builder.addCase(ActGetUsersData.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActGetUsersData.fulfilled,(state,action)=>{
+            state.loading = "succeeded";
+            
+            state.user= action.payload;
+
+            state.error = null;
+        });
+        builder.addCase(ActGetUsersData.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload ==="string"){
+                state.error = action.payload;
+            }
+        });
+        builder.addCase(ActChangePassword.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActChangePassword.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            toast.success("Password changed successfully");
+            state.error = null;
+        });
+        builder.addCase(ActChangePassword.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload === "string") {
+                state.error = action.payload;
+                 toast.error(action.payload)
+            }  
+            else {
+                state.error = "Something went wrong.";
+                toast.error("Something went wrong.")
+            }
+        });
+        builder.addCase(ActChangeEmail.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActChangeEmail.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            toast.success("Email changed successfully");
+            state.error = null;
+        });
+        builder.addCase(ActChangeEmail.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload === "string") {
+                state.error = action.payload;
+                 toast.error(action.payload)
+            }  
+            else {
+                state.error = "Something went wrong.";
+                toast.error("Something went wrong.")
+            }
+        });
+        builder.addCase(ActChangePhone.pending,(state)=>{
+            state.loading = "pending";
+            state.error = null;
+        });
+        builder.addCase(ActChangePhone.fulfilled,(state)=>{
+            state.loading = "succeeded";
+            toast.success("Phone changed successfully");
+            state.error = null;
+        });
+        builder.addCase(ActChangePhone.rejected,(state,action)=>{
+            state.loading = "failed";
+            if (typeof action.payload === "string") {
+                state.error = action.payload;
+                 toast.error(action.payload)
+            }  
+            else {
+                state.error = "Something went wrong.";
+                toast.error("Something went wrong.")
+            }
+        });
+
+
+    }
+})
 
 export default AuthSlice.reducer;
 export const { resetUI, Logout, setAccessToken, setUser } = AuthSlice.actions;

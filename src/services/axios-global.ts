@@ -137,6 +137,16 @@ export const fetchUserBookings = async (userId: number) => {
   }
 };
 
+export const fetchUserWishlists = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/wishlists`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
 // Attach interceptors
 api.interceptors.request.use(requestInterceptor);
 api.interceptors.response.use((response) => response, responseInterceptor);

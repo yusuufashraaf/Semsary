@@ -1,7 +1,3 @@
-
-import UserNotifications from "@components/Profile/UserNotifications";
-import UserPurchases from "@components/Profile/UserPurchases";
-import UserReviews from "@components/Profile/UserReviews";
 import MainLayout from "@layouts/MainLayout/MainLayout";
 import Home from "@pages/Home/Home";
 import Profile from "@pages/Profile/Profile";
@@ -21,7 +17,6 @@ import EditProperty from "@components/owner/EditProperty";
 import AboutUs from "@components/AboutUs/AboutUs";
 import ContactUs from "@components/ContactUs/ContactUs";
 import { ToastContainer } from "react-toastify";
-import UserProperties from "@components/Profile/UserProperty";
 import "react-toastify/dist/ReactToastify.css";
 import { ResetPassword,ForgotPassword, OAuthCallback, Login, Register, } from "@pages/index";
 import Logout from "@pages/Logout/Logout";
@@ -67,50 +62,38 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "profile/home",
+        path: "profile",
         element: <Profile />,
       },
       {
-        path: "profile/properties",
-        element: <UserProperties/>,
+        path: "profile/:section",
+        element: <Profile />,
       },
-      {
-        path: "profile/reviews",
-        element: <UserReviews />,
-      },
-     {
-      path: "profile",
-      element: <UserLayout />,
-      children: [
-        {
-          path: 'basicInfo',
-          element: <BasicInfo />,
-        },
-        {
-          path: 'changeEmail',
-          element: <ChangeEmail />,
-        },
-        {
-          path: 'changePassword',
-          element: <ChangePassword />,
-        },
-        {
-          path: 'changePhone',
-          element: <ChangePhone />,
-        }
-      ],
-    },
+    //  {
+    //   path: "profiles",
+    //   element: <UserLayout />,
+    //   children: [
+    //     {
+    //       path: 'basicInfo',
+    //       element: <BasicInfo />,
+    //     },
+    //     {
+    //       path: 'changeEmail',
+    //       element: <ChangeEmail />,
+    //     },
+    //     {
+    //       path: 'changePassword',
+    //       element: <ChangePassword />,
+    //     },
+    //     {
+    //       path: 'changePhone',
+    //       element: <ChangePhone />,
+    //     }
+    //   ],
+    // },
        {
         path: "logout",
         element: <Logout />,
-      },
-      {
-        path: "profile/notifications",
-        element: <UserNotifications />,
-      },
-      {
-        path: "profile/purchases",
-        element: <UserPurchases />,
       },
       {
         path: "property",

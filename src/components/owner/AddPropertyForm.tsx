@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from "../../store";
 import api from "../../services/axios-global"; 
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { string } from "zod";
 
 const AddPropertyForm: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -29,6 +30,8 @@ const AddPropertyForm: React.FC = () => {
     selectedFeatures: [] as number[],
     images: [] as File[],
     previewUrls: [] as string[],
+    contract: null as File | null, 
+     contractName: "" 
   });
 
   const [results, setResults] = useState<any[]>([]);
@@ -169,6 +172,28 @@ const AddPropertyForm: React.FC = () => {
     }));
   };
 
+  // Handle contract file
+  const handleContractChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        contract: file,
+        contractName: file.name,
+      }));
+    }
+  };
+
+  // Remove contract
+  const handleRemoveContract = () => {
+    setFormData((prev) => ({
+      ...prev,
+      contract: null,
+      contractName: "",
+    }));
+  };
+
+
   useEffect(() => {
     const fetchFeatures = async () => {
       try {
@@ -265,7 +290,9 @@ const AddPropertyForm: React.FC = () => {
       formData.images.forEach((file, i) => {
         data.append(`images[${i}]`, file);
       });
-
+      if (formData.contract) {
+        data.append("documents[]", formData.contract); 
+      }
       await dispatch(createProperty(data)).unwrap();
       
       toast.success("Property saved successfully");
@@ -289,6 +316,8 @@ const AddPropertyForm: React.FC = () => {
         selectedFeatures: [],
         images: [],
         previewUrls: [],
+        contract: null,
+        contractName: ""
       });
       setResults([]);
       setValidationErrors({});
@@ -572,59 +601,106 @@ const AddPropertyForm: React.FC = () => {
           )}
         </Form.Group>
 
-        {/* Images */}
         <Form.Group className="mb-4">
-          <Form.Label>Property Images <span className="text-danger">*</span></Form.Label>
-          <label htmlFor="file-upload" className="upload-box">
-            <p className="fw-bold mb-1">Upload Photos</p>
-            <span className="upload-btn">Upload</span>
-            <input type="file" id="file-upload" className="d-none" multiple accept="image/*" onChange={handleFileChange} />
-            <p className="text-muted small mb-0">
-              Drag and drop images here or click to browse<br/>
-              Maximum 10 images, 5MB each. Supported formats: JPG, PNG, GIF
-            </p>
-          </label>          
-          {/* Image Preview Grid */}
-          {formData.previewUrls.length > 0 && (
-            <div className="mt-3">
-              <div className="row g-3">
-                {formData.previewUrls.map((url, i) => (
-                  <div key={i} className="col-md-3 col-sm-4 col-6">
-                    <div className="position-relative">
-                      <img 
-                        src={url} 
-                        alt={`Preview ${i + 1}`}
-                        className="img-fluid rounded shadow-sm"
-                        style={{
-                          aspectRatio: '1',
-                          objectFit: 'cover',
-                          width: '100%',
-                          height: '150px'
-                        }}
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 rounded-circle p-0"
-                        onClick={() => handleRemoveImage(i)}
-                        disabled={isSubmitting}
-                        style={{width: '25px', height: '25px'}}
-                      >
-                        ×
-                      </button>
-                    </div>
+        <Form.Label>
+          Property Images <span className="text-danger">*</span>
+        </Form.Label>
+        <label htmlFor="file-upload" className="upload-box">
+          <p className="fw-bold mb-1">Upload Photos</p>
+          <span className="upload-btn">Upload</span>
+          <input
+            type="file"
+            id="file-upload"
+            className="d-none"
+            multiple
+            accept="image/*"
+            onChange={handleFileChange} // 👈 صور
+          />
+          <p className="text-muted small mb-0">
+            Drag and drop images here or click to browse<br />
+            Maximum 10 images, 5MB each. Supported formats: JPG, PNG, GIF
+          </p>
+        </label>
+
+        {/* Image Preview */}
+        {formData.previewUrls.length > 0 && (
+          <div className="mt-3">
+            <div className="row g-3">
+              {formData.previewUrls.map((url, i) => (
+                <div key={i} className="col-md-3 col-sm-4 col-6">
+                  <div className="position-relative">
+                    <img
+                      src={url}
+                      alt={`Preview ${i + 1}`}
+                      className="img-fluid rounded shadow-sm"
+                      style={{
+                        aspectRatio: "1",
+                        objectFit: "cover",
+                        width: "100%",
+                        height: "150px",
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 rounded-circle p-0"
+                      onClick={() => handleRemoveImage(i)}
+                      disabled={isSubmitting}
+                      style={{ width: "25px", height: "25px" }}
+                    >
+                      ×
+                    </button>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-          )}
-          
-          {validationErrors.images && (
-            <div className="text-danger small mt-2">{validationErrors.images}</div>
-          )}
-          {errors?.images && (
-            <div className="text-danger small mt-2">{errors.images[0]}</div>
-          )}
-        </Form.Group>
+          </div>
+        )}
+      </Form.Group>
+
+      {/* ✅ Section for contract / documents */}
+      <Form.Group className="mb-4">
+        <Form.Label>
+          Property Contract <span className="text-danger">*</span>
+        </Form.Label>
+        <label htmlFor="contract-upload" className="upload-box">
+          <p className="fw-bold mb-1">Upload Contract</p>
+          <span className="upload-btn">Upload</span>
+          <input
+            type="file"
+            id="contract-upload"
+            className="d-none"
+            accept=".pdf,.doc,.docx,.xls,.xlsx" // 👈 المستندات المسموحة
+            onChange={handleContractChange} // 👈 هنعمله تحت
+          />
+          <p className="text-muted small mb-0">
+            Supported formats: PDF, Word, Excel <br />
+            Max size: 10MB
+          </p>
+        </label>
+
+        {/* Preview for contract */}
+        {formData.contractName && (
+          <div className="mt-2 d-flex align-items-center">
+            <span className="me-2">{formData.contractName}</span>
+            <button
+              type="button"
+              className="btn btn-danger btn-sm"
+              onClick={handleRemoveContract}
+              disabled={isSubmitting}
+            >
+              Remove
+            </button>
+          </div>
+        )}
+
+        {validationErrors.contract && (
+          <div className="text-danger small mt-2">{validationErrors.contract}</div>
+        )}
+        {errors?.contract && (
+          <div className="text-danger small mt-2">{errors.contract[0]}</div>
+        )}
+      </Form.Group>
+
 
         <div className="d-flex gap-3">
           <Button 

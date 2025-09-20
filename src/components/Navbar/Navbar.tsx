@@ -63,7 +63,7 @@ export default function Navbar() {
 
           {/* Navigation links */}
           <ul className="navbar-nav me-auto ms-lg-5 mb-2 mb-lg-0">
-            {(user?.role === "user" || user?.role === "owner") && (
+            {(user?.role === "user" || user?.role === "Owner") && (
               <li className="nav-item me-2">
                 <span
                   className={`${styles.navLink} ${styles.highlight}`}
@@ -89,7 +89,7 @@ export default function Navbar() {
 
           {/* Desktop controls */}
           <div className="d-none d-lg-flex align-items-center ms-auto">
-            <button className={`me-3 ${styles.wishlistBtn}`}>
+            <button className={`me-3 ${styles.wishlistBtn}`} onClick={() => handleNavClick("/profile/wishlist")}>
               <FontAwesomeIcon icon={faHeart} />
             </button>
             <button className={`me-3 ${styles.notificationBtn}`}>

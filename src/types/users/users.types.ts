@@ -27,3 +27,13 @@ export type TFullUser = {
   created_at: string;
   updated_at: string;
 };
+export type ChangePasswordFormValues = {
+  current_password: string;
+  new_password: string;
+  new_password_confirmation: string;
+};
+export type ChangeEmailFormValues = {
+  current_email: string;
+  email: string;
+  password: string;
+};

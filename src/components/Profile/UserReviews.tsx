@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { fetchUserReviews } from '../../services/axios-global';
-import './UserReviews.css';
 import { Review } from 'src/types';
 
 const UserReviews = () => {
-  const [reviewsData, setReviewsData] = useState<Review[]>([]); // This will hold your JSON data
+  const [reviewsData, setReviewsData] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -12,9 +11,8 @@ const UserReviews = () => {
     const getReviewsData = async () => {
       try {
         setLoading(true);
-        // Replace 1 with the actual user ID you want to fetch
-        const data = await fetchUserReviews(5);
-        setReviewsData(data); // Store the JSON data in state
+        const data = await fetchUserReviews(4);
+        setReviewsData(data);
       } catch (err) {
         setError('Failed to fetch reviews');
         console.error(err);
@@ -35,26 +33,31 @@ const UserReviews = () => {
   };
 
   if (loading) {
-    return <div>Loading reviews...</div>;
+    return (
+      <div className="container">
+        <div className="loading">Loading reviews...</div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="container">
+        <div className="error">Error: {error}</div>
+      </div>
+    );
   }
 
-  // Now you can use reviewsData variable anywhere in your component
-  console.log('Fetched reviews data:', reviewsData);
-
   return (
-    <div className="user-reviews">
-      <h1 className="reviews-title">My Reviews</h1>
+    <div className="container">
+      <h1 className="heading-primary">My Reviews</h1>
       
-      <div className="reviews-list">
+      <div className="list">
         {reviewsData.map((review: Review) => (
-          <div key={review.id} className="review-card">
+          <div key={review.id} className="card card-hover">
             <div className="review-header">
               <div className="reviewer-info">
-                <h3 className="reviewer-name">Review for: {review.property.title}</h3>
+                <h3 className="heading-tertiary">Review for: {review.property.title}</h3>
                 <span className="review-time">
                   {new Date(review.created_at).toLocaleDateString()}
                 </span>

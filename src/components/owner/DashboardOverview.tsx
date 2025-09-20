@@ -156,7 +156,7 @@ const DashboardOverview: React.FC = () => {
               <div className="text-center mt-3">
                 <Button 
                   variant="outline-secondary"
-                  onClick={() => navigate('/manage-properties')}
+                  onClick={() => navigate('/owner-dashboard/manage-properties')}
                 >
                   View All Properties ({properties.length})
                 </Button>
