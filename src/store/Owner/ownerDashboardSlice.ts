@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchOwnerDashboard, fetchOwnerProperties, fetchPropertyById ,addProperty, deleteProperty, updateProperty } from "../../services/ownerDashboard";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { fetchOwnerDashboard, fetchOwnerProperties, fetchPropertyById ,addProperty, deleteProperty, updateProperty  } from "../../services/ownerDashboard";
 
 interface DashboardState {
   loading: boolean;
@@ -99,6 +99,7 @@ export const removeProperty = createAsyncThunk(
   }
 );
 
+
 const ownerDashboardSlice = createSlice({
   name: "ownerDashboard",
   initialState,
@@ -158,7 +159,7 @@ const ownerDashboardSlice = createSlice({
         if (action.payload) {
           state.errors = action.payload as Record<string, string[]>;
         }
-      });
+      })
       
   },
 });
