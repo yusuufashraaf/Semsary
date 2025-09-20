@@ -269,7 +269,6 @@ export interface BookingCardProps {
   subtotal: number;
   total: number;
   property_state?: string;
-  property_state: string;
 }
 
 export interface GuestOption {
