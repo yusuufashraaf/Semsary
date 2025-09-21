@@ -1,0 +1,127 @@
+.custom-tabs {
+  border-bottom: 1px solid var(--primary-border);
+  margin-bottom: 1.5rem;
+}
+
+.custom-tab {
+  color: var(--hover-color) !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0.5rem 1rem !important;
+  margin-right: 1.5rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  position: relative;
+  border-bottom: 2px solid transparent !important;
+}
+
+.custom-tab:hover {
+  color: var(--primary-color) !important;
+  background: transparent !important;
+  border-bottom: 2px solid var(--secondary-color) !important;
+}
+
+.custom-tab.active {
+  background: transparent !important;
+  color: var(--primary-color) !important;
+  font-weight: 600;
+  border-bottom: 2px solid var(--primary-color) !important;
+}
+
+.custom-tab::before {
+  display: none;
+}
+
+/* Tab Content */
+.tab-content-wrapper {
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  animation: fadeIn 0.4s ease;
+}
+
+.tab-content {
+  padding: 1.5rem 0;
+  min-height: 300px;
+}
+
+/* Tab Icons */
+.custom-tab i {
+  font-size: 0.85rem;
+  margin-right: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.custom-tab:hover i {
+  color: var(--accent-color);
+  transform: none;
+}
+
+.custom-tab.active i {
+  color: var(--accent-color);
+  animation: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .custom-tabs {
+    flex-direction: column;
+  }
+  
+  .custom-tab {
+    margin-right: 0 !important;
+    margin-bottom: 0.25rem;
+    border-radius: var(--radius-sm) !important;
+    text-align: center;
+  }
+  
+  .custom-tab.active::after {
+    display: none;
+  }
+  
+  .tab-content {
+    padding: 1.5rem;
+  }
+  
+  .tab-content h3 {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .custom-tab {
+    padding: 0.625rem 1rem !important;
+    font-size: 0.9rem;
+  }
+  
+  .tab-content {
+    padding: 1rem;
+  }
+  
+  .tab-content h3 {
+    font-size: 1.2rem;
+  }
+  
+  .custom-tab i {
+    font-size: 0.8rem;
+  }
+}
+
+/* Enhanced hover effects */
+.tab-content-wrapper:hover {
+  box-shadow: 0 6px 24px rgba(140, 92, 92, 0.15);
+  transform: translateY(-1px);
+}

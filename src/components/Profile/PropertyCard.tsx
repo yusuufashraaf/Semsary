@@ -1,6 +1,8 @@
 import React from 'react';
 import { Property } from '../../types';
 import './PropertyCard.css';
+import AddToWishlist from '@components/common/AddToWishlist/AddToWishlist';
+import UserWishlist from './UserWishlists';
 
 interface PropertyCardProps {
   property: Property;
@@ -23,9 +25,6 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSave, section, 
           }}
         />
         <div className="property-image-overlay">
-          <button className="favorite-btn" onClick={() => onSave(parseInt(property.id), section)}>
-            <i className={`fas fa-heart ${saved ? 'saved' : ''}`}></i>
-          </button>
         </div>
       </div>
       <div className="property-info">
