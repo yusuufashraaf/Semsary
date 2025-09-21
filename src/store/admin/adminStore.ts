@@ -2,7 +2,7 @@
 // src/stores/adminStore.ts
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { Notification } from "@app-types/admin/admin"; // User, Property, Transaction not used
+import { Notification, UserRole, UserStatus } from "@app-types/admin/admin"; // User, Property, Transaction not used
 
 // UI State Store
 interface UIState {
@@ -85,10 +85,13 @@ export const useUIStore = create<UIState>()(
 // Filter State Store
 interface FilterState {
   userFilters: {
-    role?: string;
-    status?: string;
+    role?: UserRole;
+    status?: UserStatus;
     search?: string;
-    dateRange?: [Date | null, Date | null];
+    date_from?: string;
+    date_to?: string;
+    sort_by?: string;
+    sort_order?: "asc" | "desc";
   };
   propertyFilters: {
     status?: string;
@@ -171,6 +174,9 @@ interface SelectionState {
   setSelectedUsers: (ids: number[]) => void;
   setSelectedProperties: (ids: number[]) => void;
   setSelectedTransactions: (ids: number[]) => void;
+  setSelectAllUsers: (selectAll: boolean) => void;
+  setSelectAllProperties: (selectAll: boolean) => void;
+  setSelectAllTransactions: (selectAll: boolean) => void;
   toggleUserSelection: (id: number) => void;
   togglePropertySelection: (id: number) => void;
   toggleTransactionSelection: (id: number) => void;
@@ -182,7 +188,7 @@ interface SelectionState {
 
 export const useSelectionStore = create<SelectionState>()(
   devtools(
-    (set ) => ({ // get not used
+    (set) => ({ // get not used
       selectedUsers: [],
       selectedProperties: [],
       selectedTransactions: [],
@@ -195,6 +201,12 @@ export const useSelectionStore = create<SelectionState>()(
         set({ selectedProperties: ids }, false, "setSelectedProperties"),
       setSelectedTransactions: (ids) =>
         set({ selectedTransactions: ids }, false, "setSelectedTransactions"),
+      setSelectAllUsers: (selectAll) =>
+        set({ selectAllUsers: selectAll }, false, "setSelectAllUsers"),
+      setSelectAllProperties: (selectAll) =>
+        set({ selectAllProperties: selectAll }, false, "setSelectAllProperties"),
+      setSelectAllTransactions: (selectAll) =>
+        set({ selectAllTransactions: selectAll }, false, "setSelectAllTransactions"),
       toggleUserSelection: (id) =>
         set(
           (state) => ({

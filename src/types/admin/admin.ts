@@ -65,7 +65,7 @@ export interface User {
 }
 
 export type UserRole = "user" | "owner" | "agent" | "admin";
-export type UserStatus = "active" | "inactive" | "pending" | "suspended";
+export type UserStatus = "active" | "pending" | "suspended";
 
 // Property Types
 export interface Property {
@@ -151,6 +151,9 @@ export interface UserFilters {
   search?: string;
   date_from?: string;
   date_to?: string;
+  sort_by?: string;
+  sort_order?: "asc" | "desc";
+  per_page?: any;
 }
 
 export interface PropertyFilters {
