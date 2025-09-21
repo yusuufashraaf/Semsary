@@ -1,8 +1,8 @@
 import React from 'react';
 import { Property } from '../../types';
 import './PropertyCard.css';
-import AddToWishlist from '@components/common/AddToWishlist/AddToWishlist';
-import UserWishlist from './UserWishlists';
+// import AddToWishlist from '@components/common/AddToWishlist/AddToWishlist';
+// import UserWishlist from './UserWishlists';
 
 interface PropertyCardProps {
   property: Property;
