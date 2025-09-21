@@ -153,26 +153,6 @@ const role = user?.role?.toLowerCase();
               </button>
             </div>
           </div>
-
-          {/* Quick Actions Section */}
-          <div className="nav-section">
-            <h4 className="section-heading">
-              <i className="fas fa-bolt section-icon"></i>
-              Quick Actions
-            </h4>
-            <div className="nav-links">
-              <button className="nav-link action-link">
-                <i className="fas fa-plus nav-icon"></i>
-                <span>Add Property</span>
-              </button>
-              
-              <button className="nav-link action-link">
-                <i className="fas fa-download nav-icon"></i>
-                <span>Export Data</span>
-              </button>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
