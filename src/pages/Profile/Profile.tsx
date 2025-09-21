@@ -12,6 +12,7 @@ import ChangePhone from '@components/User/ChangePhone/ChangePhone';
 import ChangePassword from '@components/User/ChangePassword/ChangePassword';
 import { useAppSelector } from '@store/hook';
 import { TFullUser } from 'src/types/users/users.types';
+import UserMessages from '@components/Profile/UserMessages';
 
 const Profile = () => {
   const { section } = useParams<{ section: string }>();
@@ -27,7 +28,7 @@ const Profile = () => {
 
   // Validate section and redirect if invalid
   useEffect(() => {
-    const validSections = ['home', 'properties', 'reviews', 'notifications', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword'];
+    const validSections = ['','home', 'properties', 'reviews', 'notifications', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword', 'messages'];
     
     if (!section || !validSections.includes(section)) {
       navigate('/profile/home', { replace: true });
@@ -49,6 +50,8 @@ const Profile = () => {
         return <UserPurchases user={user} />;
       case 'wishlist':
         return <UserWishlist user={user} />;
+        case 'messages':
+      return <UserMessages user={user} />;
       case 'changeEmail':
         return <ChangeEmail />;
       case 'changePhone':

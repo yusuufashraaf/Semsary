@@ -41,7 +41,7 @@ const ProfileHeader = ({ section, user }: { section: string|undefined, user: TFu
 
         <div className="nav-section">
           <h4 className="heading-tertiary">Account</h4>
-          <a href='#' className="btn btn-secondary">
+          <a href='messages' className="btn btn-secondary">
             <i className="fas fa-envelope"></i>
             <span>Messages</span>
             <span className="notification-badge">3</span>
