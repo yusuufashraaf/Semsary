@@ -5,6 +5,7 @@ import {dashboardApi, usersApi, propertiesApi, transactionsApi} from "@api/endpo
 import { QUERY_KEYS } from "@app-types/admin/admin";
 import { useNotifications } from "@store/admin/adminStore";
 import { handleQueryError } from "@lib/queryClient";
+import type { PaginatedResponse, User, UserFilters } from '@app-types/admin/admin';
 
 const STALE_TIME = 30 * 1000; // 30 seconds (dashboard stats change frequently)
 const REFRESH_INTERVAL = 60 * 1000; // Refetch every 1 minute
@@ -51,14 +52,12 @@ export const usePropertiesChart = () => {
 export const useUsers = (
   page: number = 1,
   limit: number = 10,
-  filters?: any
+  filters?: UserFilters
 ) => {
-  return useQuery({
+  return useQuery<PaginatedResponse<User>>({
     queryKey: QUERY_KEYS.USERS.LIST(filters),
     queryFn: () => usersApi.getUsers(page, limit, filters),
-    staleTime: STALE_TIME, // 30 seconds instead of 30 seconds (users list changes frequently)
-    // @ts-expect-error: keepPreviousData is not in the type but is supported by react-query for pagination
-    keepPreviousData: true, // For smooth pagination
+    staleTime: STALE_TIME,
   });
 };
 
