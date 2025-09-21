@@ -36,7 +36,7 @@ export const AdminLayout: React.FC = () => {
         
         {/* Page Content - Add padding top for sticky header */}
         <main className="p-4 sm:p-6 pb-20">
-          <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-fit">
             <Outlet />
           </div>
         </main>

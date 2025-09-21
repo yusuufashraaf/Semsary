@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/api/endpoints/admin.ts
+// src/api/endpoints/admin.ts - Fixed response structure mapping
 import api from "@services/axios-global";
 import {
   DashboardStats,
@@ -13,15 +13,130 @@ import {
   TransactionFilters,
 } from "@app-types/admin/admin";
 
-// Helper function to create URLSearchParams
+// Backend response structure (what the API actually returns)
+interface BackendPaginatedResponse<T> {
+  status: string;
+  message: string;
+  data: T[];
+  pagination: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+}
+
+// Safe filter serialization specifically for UserFilters
+const createUserFilterParams = (
+  page: number,
+  limit: number,
+  filters?: UserFilters
+): URLSearchParams => {
+  const params = new URLSearchParams();
+  
+  // Always include page and limit
+  params.append('page', page.toString());
+  params.append('limit', limit.toString());
+  
+  // Only include defined filter values
+  if (filters) {
+    if (filters.role && typeof filters.role === 'string') {
+      params.append('role', filters.role);
+    }
+    if (filters.status && typeof filters.status === 'string') {
+      params.append('status', filters.status);
+    }
+    if (filters.search && typeof filters.search === 'string') {
+      params.append('search', filters.search);
+    }
+    if (filters.date_from && typeof filters.date_from === 'string') {
+      params.append('date_from', filters.date_from);
+    }
+    if (filters.date_to && typeof filters.date_to === 'string') {
+      params.append('date_to', filters.date_to);
+    }
+    if (filters.sort_by && typeof filters.sort_by === 'string') {
+      params.append('sort_by', filters.sort_by);
+    }
+    if (filters.sort_order && typeof filters.sort_order === 'string') {
+      params.append('sort_order', filters.sort_order);
+    }
+    if (filters.per_page && (typeof filters.per_page === 'number' || typeof filters.per_page === 'string')) {
+      params.append('per_page', String(filters.per_page));
+    }
+  }
+  
+  return params;
+};
+
+// Safe helper function to create URLSearchParams with proper serialization
 const createSearchParams = (obj: Record<string, any>): URLSearchParams => {
   const params = new URLSearchParams();
+  
   Object.entries(obj).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) {
-      params.append(key, String(value));
+    // Skip undefined, null, and empty string values
+    if (value === undefined || value === null || value === '') {
+      return;
     }
+    
+    // Handle different types of values safely
+    let stringValue: string;
+    
+    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+      stringValue = String(value);
+    } else if (value instanceof Date) {
+      stringValue = value.toISOString();
+    } else if (Array.isArray(value)) {
+      // Convert arrays to comma-separated strings
+      stringValue = value.join(',');
+    } else if (typeof value === 'object') {
+      // For objects, only include primitive properties and avoid circular references
+      try {
+        // Only include primitive values from objects
+        const primitiveValue = Object.fromEntries(
+          Object.entries(value).filter(([_, v]) => 
+            typeof v === 'string' || 
+            typeof v === 'number' || 
+            typeof v === 'boolean' ||
+            v instanceof Date
+          )
+        );
+        stringValue = JSON.stringify(primitiveValue);
+      } catch (error) {
+        // If serialization fails, skip this parameter
+        console.warn(`Failed to serialize parameter ${key}:`, error);
+        return;
+      }
+    } else {
+      // For any other type, convert to string or skip
+      try {
+        stringValue = String(value);
+      } catch (error) {
+        console.warn(`Failed to convert parameter ${key} to string:`, error);
+        return;
+      }
+    }
+    
+    params.append(key, stringValue);
   });
+  
   return params;
+};
+
+// Helper function to transform backend pagination response to frontend format
+const transformPaginatedResponse = <T>(backendResponse: BackendPaginatedResponse<T>): PaginatedResponse<T> => {
+  return {
+    data: backendResponse.data,
+    current_page: backendResponse.pagination.current_page,
+    last_page: backendResponse.pagination.last_page,
+    per_page: backendResponse.pagination.per_page,
+    total: backendResponse.pagination.total,
+    from: ((backendResponse.pagination.current_page - 1) * backendResponse.pagination.per_page) + 1,
+    to: Math.min(
+      backendResponse.pagination.current_page * backendResponse.pagination.per_page, 
+      backendResponse.pagination.total
+    ),
+  };
 };
 
 // Dashboard API endpoints
@@ -55,22 +170,20 @@ export const dashboardApi = {
 
 // Users API endpoints
 export const usersApi = {
-  // Get paginated users list with filters
+  // Get paginated users list with filters - FIXED response structure mapping
   getUsers: async (
     page: number = 1,
     limit: number = 10,
     filters?: UserFilters
   ): Promise<PaginatedResponse<User>> => {
-    const params = new URLSearchParams({
-      page: page.toString(),
-      limit: limit.toString(),
-      ...filters,
-    });
+    const params = createUserFilterParams(page, limit, filters);
 
-    const response = await api.get<ApiResponse<PaginatedResponse<User>>>(
+    const response = await api.get<BackendPaginatedResponse<User>>(
       `/admin/users?${params}`
     );
-    return response.data.data;
+    
+    // Transform the backend response to match frontend expectations
+    return transformPaginatedResponse(response.data);
   },
 
   // Get single user details
@@ -156,10 +269,12 @@ export const propertiesApi = {
       ...filters,
     });
 
-    const response = await api.get<ApiResponse<PaginatedResponse<Property>>>(
+    const response = await api.get<BackendPaginatedResponse<Property>>(
       `/admin/properties?${params}`
     );
-    return response.data.data;
+    
+    // Transform the backend response to match frontend expectations
+    return transformPaginatedResponse(response.data);
   },
 
   // Get single property details
@@ -252,10 +367,12 @@ export const transactionsApi = {
       ...filters,
     });
 
-    const response = await api.get<ApiResponse<PaginatedResponse<Transaction>>>(
+    const response = await api.get<BackendPaginatedResponse<Transaction>>(
       `/admin/transactions?${params}`
     );
-    return response.data.data;
+    
+    // Transform the backend response to match frontend expectations
+    return transformPaginatedResponse(response.data);
   },
 
   // Get single transaction details
