@@ -494,3 +494,35 @@ export interface RequestStats {
   paidRequests: number;
   // Add other stats as needed
 }
+
+export interface Chat {
+  id: number;
+  property_id: number;
+  owner_id: number;
+  renter_id: number;
+  last_message_at: string;
+  created_at: string;
+  updated_at: string;
+  unread_count: number;
+  property: {
+    id: number;
+    title: string;
+    price: string;
+    price_type: string;
+    location: any;
+  };
+  owner: any;
+  renter: any;
+  latest_message?: Message;
+}
+
+export interface Message {
+  id: number;
+  chat_id: number;
+  sender_id: number;
+  content: string;
+  is_read: boolean;
+  created_at: string;
+  updated_at: string;
+  sender: any;
+}

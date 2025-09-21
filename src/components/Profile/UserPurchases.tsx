@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Use useNavigate from React Router
 import { fetchUserPurchases, fetchUserBookings } from '@services/axios-global';
 import { TFullUser } from 'src/types/users/users.types';
 
@@ -65,6 +66,7 @@ interface Booking {
 }
 
 const UserPurchases = ({ user }: {user: TFullUser })=> {
+  const navigate = useNavigate(); // Use useNavigate instead of useRouter
   const [activeTab, setActiveTab] = useState<TabType>('purchases');
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -104,6 +106,17 @@ const UserPurchases = ({ user }: {user: TFullUser })=> {
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
+  };
+
+  // Function to handle property click
+  const handlePropertyClick = (propertyId: number) => {
+    navigate(`/property/${propertyId}`);
+  };
+
+  // Function to handle "View details" button click
+  const handleViewDetailsClick = (e: React.MouseEvent, propertyId: number) => {
+    e.stopPropagation(); // Prevent the card click event from firing
+    navigate(`/property/${propertyId}`);
   };
 
   const formatDate = (dateString: string) => {
@@ -162,7 +175,12 @@ const UserPurchases = ({ user }: {user: TFullUser })=> {
           <div className="list">
             {purchases.length > 0 ? (
               purchases.map(purchase => (
-                <div key={purchase.purchase_id} className="card card-hover">
+                <div 
+                  key={purchase.purchase_id} 
+                  className="card card-hover"
+                  onClick={() => handlePropertyClick(purchase.property.id)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className="purchase-header">
                     <span className="order-date">
                       Order placed on {formatDate(purchase.created_at)}
@@ -199,7 +217,10 @@ const UserPurchases = ({ user }: {user: TFullUser })=> {
                     </span>
                   </div>
                   
-                  <button className="btn btn-primary">
+                  <button 
+                    className="btn btn-primary"
+                    onClick={(e) => handleViewDetailsClick(e, purchase.property.id)}
+                  >
                     View details
                   </button>
                 </div>
@@ -219,7 +240,12 @@ const UserPurchases = ({ user }: {user: TFullUser })=> {
           <div className="list">
             {bookings.length > 0 ? (
               bookings.map(booking => (
-                <div key={booking.id} className="card card-hover">
+                <div 
+                  key={booking.id} 
+                  className="card card-hover"
+                  onClick={() => handlePropertyClick(booking.property.id)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className="booking-header">
                     <span className="booking-dates">
                       {formatDate(booking.start_date)} - {formatDate(booking.end_date)}
@@ -256,7 +282,10 @@ const UserPurchases = ({ user }: {user: TFullUser })=> {
                     </span>
                   </div>
                   
-                  <button className="btn btn-primary">
+                  <button 
+                    className="btn btn-primary"
+                    onClick={(e) => handleViewDetailsClick(e, booking.property.id)}
+                  >
                     View details
                   </button>
                 </div>

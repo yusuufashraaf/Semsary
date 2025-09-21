@@ -2,6 +2,7 @@ import { AppStore } from "@store/index";
 import axios from "axios";
 import type { InternalAxiosRequestConfig } from "axios";
 import type { AxiosError } from "axios";
+import { Chat, Message } from "src/types";
 let store: AppStore; // Reference to the Redux store
 
 export const setStore = (s: AppStore) => {
@@ -154,6 +155,36 @@ export const markNotificationAsRead = async (userId:number,notificationId:number
   } catch (error) {
     console.error('Error marking notification as read:', error);
     throw error;
+  }
+};
+
+export const messageService = {
+  getUserChats: async (): Promise<{ chats: Chat[]; total_unread: number }> => {
+    const response = await api.get('user/chats');
+    return response.data;
+  },
+
+  getChatMessages: async (chatId: number): Promise<{ messages: Message[]; chat: Chat }> => {
+    const response = await api.get(`user/chats/${chatId}/messages`);
+    return response.data;
+  },
+
+  sendMessage: async (chatId: number, content: string): Promise<{ message: Message; chat: Chat }> => {
+    const response = await api.post(`user/chats/${chatId}/messages`, { content });
+    return response.data;
+  },
+
+  startChat: async (propertyId: number, ownerId: number, renterId: number): Promise<{ chat: Chat }> => {
+    const response = await api.post('user/chats/start', {
+      property_id: propertyId,
+      owner_id: ownerId,
+      renter_id: renterId
+    });
+    return response.data;
+  },
+
+  markAsRead: async (chatId: number): Promise<void> => {
+    await api.post(`user/chats/${chatId}/read`);
   }
 };
 

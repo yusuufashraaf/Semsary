@@ -12,12 +12,12 @@ import ChangePhone from '@components/User/ChangePhone/ChangePhone';
 import ChangePassword from '@components/User/ChangePassword/ChangePassword';
 import OwnerDashboard from '@components/owner/OwnerDashboard';
 import { useAppSelector } from '@store/hook';
-import { TFullUser } from 'src/types/users/users.types';
+import UserMessages from '@components/Profile/UserMessages';
 
 const Profile = () => {
   const { section } = useParams<{ section: string }>();
   const navigate = useNavigate();
-  const { user, loading } = useAppSelector(state => state.Authslice);
+  const { user } = useAppSelector(state => state.Authslice);
 // Redirect to login if user is null
   useEffect(() => {
     if (user === null) {
@@ -26,7 +26,7 @@ const Profile = () => {
   }, [user, navigate]);
     
   useEffect(() => {
-  const validSections = ['home', 'properties','owner-dashboard' ,'reviews', 'notifications', 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword'];
+  const validSections = ['home', 'properties','owner-dashboard' ,'reviews', 'notifications', 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword','messages'];
   
   if (!section || !validSections.includes(section)) {
     navigate('/profile/home', { replace: true });
@@ -50,6 +50,8 @@ const Profile = () => {
         return <UserWishlist user={user} />;
     // case 'basicInfo':
     //   return <BasicInfo />;
+    case 'messages':
+      return <UserMessages user={user} />;
     case 'changeEmail':
       return <ChangeEmail />;
     case 'changePhone':
