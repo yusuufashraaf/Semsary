@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  // content: ["./src/components/admin/**/*.{js,ts,jsx,tsx}"], // "./src/**/*.{js,ts,jsx,tsx}"],
+  content: ["./src/components/admin/**/*.{js,ts,jsx,tsx}", "./src/pages/admin/**/*.{js,ts,jsx,tsx}", "./src/components/dashboard/**/*.{js,ts,jsx,tsx}", "./src/components/ui/**/*.{js,ts,jsx,tsx}", "./src/styles/admin-tailwind.css"], // "./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class",
   theme: {
     extend: {
