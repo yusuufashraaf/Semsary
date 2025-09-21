@@ -3,7 +3,7 @@ import AppRouter from "@routes/AppRouter.tsx";
 
 // Styles - Keep Bootstrap and main website styles only
 import "@styles/themes.css";
-import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/global.css";
 import "./components/Profile/profile-components.css";
 import { Provider } from "react-redux";

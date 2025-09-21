@@ -23,6 +23,7 @@ import ProtectedRoute from "@components/common/ProtectedRoute/ProtectedRoute";
 import { AdminLayout } from "@components/admin/AdminLayout";
 import { DashboardPage } from "@pages/admin/DashboardPage";
 import { AdminProfilePage } from "@pages/admin/AdminProfilePage";
+import { UsersPage } from '@pages/admin/UsersPage';
 
 const router = createBrowserRouter([
   {
@@ -151,7 +152,7 @@ const router = createBrowserRouter([
       {
         path: "users",
         element: (
-          <div className="p-6 text-center">Users Page (Coming Soon)</div>
+          <UsersPage />
         ),
       },
       {
