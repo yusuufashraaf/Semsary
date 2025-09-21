@@ -120,6 +120,15 @@ const role = user?.role?.toLowerCase();
             </h4>
             <div className="nav-links">
               <button 
+                onClick={() => handleNavigation('messages')}
+                className={`nav-link ${isActive('messages') ? 'active' : ''}`}
+              >
+                <i className="fas fa-bell nav-icon"></i>
+                <span>Messages</span>
+                <span className="notification-badge">12</span>
+              </button>
+
+              <button 
                 onClick={() => handleNavigation('notifications')}
                 className={`nav-link ${isActive('notifications') ? 'active' : ''}`}
               >
