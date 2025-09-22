@@ -19,6 +19,8 @@ const OwnerRequests: React.FC<RequestsProps> = ({ userId }) => {
     rejectRequest,
     cancelConfirmedRequest,
     cancelRequest,
+    ownerPagination,
+    userPagination
   } = useRentRequests(userId);
 
   // Load both owner & user requests on mount
@@ -171,6 +173,32 @@ const OwnerRequests: React.FC<RequestsProps> = ({ userId }) => {
             </div>
           ))}
         </div>
+        <div className="pagination">
+          <button
+            className="page-btn"
+            disabled={(ownerPagination?.current_page ?? 1) === 1}
+            onClick={() =>
+              fetchOwnerRentRequests({ page: (ownerPagination?.current_page ?? 1) - 1 })
+            }
+          >
+            <i className="fas fa-chevron-left"></i> Prev
+          </button>
+
+          <span className="page-info">
+            Page {ownerPagination?.current_page ?? 1} of {ownerPagination?.last_page ?? 1}
+          </span>
+
+          <button
+            className="page-btn"
+            disabled={(ownerPagination?.current_page ?? 1) === (ownerPagination?.last_page ?? 1)}
+            onClick={() =>
+              fetchOwnerRentRequests({ page: (ownerPagination?.current_page ?? 1) + 1 })
+            }
+          >
+            Next <i className="fas fa-chevron-right"></i>
+          </button>
+        </div>
+
       </>
     )}
 
@@ -213,6 +241,33 @@ const OwnerRequests: React.FC<RequestsProps> = ({ userId }) => {
             </div>
           ))}
         </div>
+
+        <div className="pagination">
+          <button
+            className="page-btn"
+            disabled={(userPagination?.current_page ?? 1) === 1}
+            onClick={() =>
+              fetchOwnerRentRequests({ page: (userPagination?.current_page ?? 1) - 1 })
+            }
+          >
+            <i className="fas fa-chevron-left"></i> Prev
+          </button>
+
+          <span className="page-info">
+            Page {userPagination?.current_page ?? 1} of {userPagination?.last_page ?? 1}
+          </span>
+
+          <button
+            className="page-btn"
+            disabled={(userPagination?.current_page ?? 1) === (userPagination?.last_page ?? 1)}
+            onClick={() =>
+              fetchOwnerRentRequests({ page: (userPagination?.current_page ?? 1) + 1 })
+            }
+          >
+            Next <i className="fas fa-chevron-right"></i>
+          </button>
+        </div>
+
       </>
     )}
   </div>
