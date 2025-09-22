@@ -2,6 +2,7 @@ import { AppStore } from "@store/index";
 import axios from "axios";
 import type { InternalAxiosRequestConfig } from "axios";
 import type { AxiosError } from "axios";
+import { Chat, Message } from "src/types";
 let store: AppStore; // Reference to the Redux store
 
 export const setStore = (s: AppStore) => {
@@ -9,7 +10,7 @@ export const setStore = (s: AppStore) => {
 };
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/api",
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
 
@@ -59,7 +60,7 @@ const responseInterceptor = async (error: AxiosError) => {
       const refreshResponse = await api.post("/refresh");
 
       // In your Thunk, you used response.data, but here you might need to access the property directly
-      const newAccessToken = refreshResponse.data.accessToken;
+      const newAccessToken = refreshResponse.data.access_token;
 
       // Dispatch the action to update the token in Redux
       // Using imported actions is safer than string literals
@@ -85,6 +86,106 @@ const responseInterceptor = async (error: AxiosError) => {
 
   // If the error is not a 401, or if it's the refresh endpoint failing, just reject.
   return Promise.reject(error);
+};
+
+export const fetchUserReviews = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/reviews`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
+export const fetchUserProperties = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/properties`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
+export const fetchUserNotifications = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/notifications`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    throw error;
+  }
+};
+
+export const fetchUserPurchases = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/purchases`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
+export const fetchUserBookings = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/bookings`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
+export const fetchUserWishlists = async (userId: number) => {
+  try {
+    const response = await api.get(`/user/${userId}/wishlists`);
+    return response.data; // This will be your JSON data
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
+export const markNotificationAsRead = async (userId:number,notificationId:number) => {
+  try {
+    const response = await api.patch(`/user/${userId}/notifications/${notificationId}/read`);
+    return response.data;
+  } catch (error) {
+    console.error('Error marking notification as read:', error);
+    throw error;
+  }
+};
+
+export const messageService = {
+  getUserChats: async (): Promise<{ chats: Chat[]; total_unread: number }> => {
+    const response = await api.get('user/chats');
+    return response.data;
+  },
+
+  getChatMessages: async (chatId: number): Promise<{ messages: Message[]; chat: Chat }> => {
+    const response = await api.get(`user/chats/${chatId}/messages`);
+    return response.data;
+  },
+
+  sendMessage: async (chatId: number, content: string): Promise<{ message: Message; chat: Chat }> => {
+    const response = await api.post(`user/chats/${chatId}/messages`, { content });
+    return response.data;
+  },
+
+  startChat: async (propertyId: number, ownerId: number, renterId: number): Promise<{ chat: Chat }> => {
+    const response = await api.post('user/chats/start', {
+      property_id: propertyId,
+      owner_id: ownerId,
+      renter_id: renterId
+    });
+    return response.data;
+  },
+
+  markAsRead: async (chatId: number): Promise<void> => {
+    await api.post(`user/chats/${chatId}/read`);
+  }
 };
 
 // Attach interceptors

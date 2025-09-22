@@ -1,55 +1,204 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Button, Collapse } from 'react-bootstrap';
+import '../../styles/themes.css';
 import './ProfileHeader.css';
+import { TFullUser } from 'src/types/users/users.types';
 
-const ProfileHeader: React.FC = () => {
-  return (
-    <div className="profile-sidebar">
-      
+type ProfileHeaderProps = {
+  section: string;
+  user: TFullUser | null; 
+  unreadCount: number;
+};
 
-      <nav className="sidebar-nav">
-        <div className="nav-section">
-          <h4 className="nav-section-title">Navigation</h4>
-          <a href='#' className="nav-link">
-            <i className="fas fa-home"></i>
-            <span>Home</span>
-          </a>
-          <a href='#' className="nav-link">
-            <i className="fas fa-shopping-bag"></i>
-            <span>Buy</span>
-          </a>
-          <a href='#' className="nav-link">
-            <i className="fas fa-key"></i>
-            <span>Rent</span>
-          </a>
-          <a href='#' className="nav-link">
-            <i className="fas fa-dollar-sign"></i>
-            <span>Sell</span>
-          </a>
-          <a href='#' className="nav-link">
-            <i className="fas fa-house-user"></i>
-            <span>My Home</span>
-          </a>
-        </div>
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCount }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
-        <div className="nav-section">
-          <h4 className="nav-section-title">Account</h4>
-          <a href='#' className="nav-link">
-            <i className="fas fa-envelope"></i>
-            <span>Messages</span>
-            <span className="notification-badge">3</span>
-          </a>
-          <a href='#' className="nav-link">
-            <i className="fas fa-bell"></i>
+  const handleNavigation = (path: string) => {
+    navigate(`/profile/${path}`);
+  };
+
+  const isActive = (path: string) => {
+    return location.pathname.includes(path);
+  };
+
+  const getSectionTitle = (section: string) => {
+    const titles: { [key: string]: string } = {
+      userInfo: 'Your Info',
+      properties: 'My Properties',
+      'owner-dashboard': 'Dashboard',
+      reviews: 'Reviews & Ratings',
+      purchases: 'Purchase History',
+      wishlist: 'My Wishlist',
+      notifications: 'Notifications',
+      ownerNotification: 'Notifications',
+      ownerRequests: 'Requests',
+      changePhone: 'Change Phone Number',
+      changeEmail: 'Change Email Address',
+      changePassword: 'Change Password'
+    };
+    return titles[section] || 'Profile';
+  };
+
+  const role = user?.role?.toLowerCase();
+
+  const SidebarContent = () => (
+    <div className="sidebar-content">
+      {/* Main Navigation Section */}
+      <div className="nav-section">
+        <h4 className="section-heading">
+          <i className="fas fa-compass section-icon"></i>
+          Navigation
+        </h4>
+        <div className="nav-links">
+          <button 
+            onClick={() => handleNavigation('home')}
+            className={`nav-link ${isActive('home') ? 'active' : ''}`}
+          >
+            <i className="fas fa-home nav-icon"></i>
+            <span>Your Info</span>
+          </button>
+          
+          {role === 'user' && (
+            <button 
+              onClick={() => handleNavigation('properties')}
+              className={`nav-link ${isActive('properties') ? 'active' : ''}`}
+            >
+              <i className="fas fa-building nav-icon"></i>
+              <span>Properties</span>
+            </button>
+          )}
+          
+          {role === 'owner' && (
+            <>
+            <button
+              onClick={() => handleNavigation('owner-dashboard')}
+              className={`nav-link ${isActive('owner-dashboard') ? 'active' : ''}`}
+            >
+              <i className="fas fa-tachometer-alt nav-icon"></i>
+              <span>Dashboard</span>
+            </button>
+          <button 
+            onClick={() => handleNavigation('ownerRequests')}
+            className={`nav-link ${isActive('ownerRequests') ? 'active' : ''}`}
+          >
+            <i className="fas fa-envelope-open-text nav-icon"></i>
+            <span>Requests</span>
+          </button>
+
+          <button 
+            onClick={() => handleNavigation('notifications')}
+            className={`nav-link ${isActive('notifications') ? 'active' : ''}`}
+          >
+            <i className="fas fa-bell nav-icon"></i>
             <span>Notifications</span>
-            <span className="notification-badge">12</span>
-          </a>
-          <a href='#' className="nav-link active">
-            <i className="fas fa-user"></i>
-            <span>Profile</span>
-          </a>
+            {unreadCount > 0 && (
+              <span className="notification-badge">{unreadCount}</span>
+            )}
+          </button>
+          </>
+          )}
+          
+          <button 
+            onClick={() => handleNavigation('reviews')}
+            className={`nav-link ${isActive('reviews') ? 'active' : ''}`}
+          >
+            <i className="fas fa-star nav-icon"></i>
+            <span>Reviews</span>
+          </button>
+          
+          <button 
+            onClick={() => handleNavigation('purchases')}
+            className={`nav-link ${isActive('purchases') ? 'active' : ''}`}
+          >
+            <i className="fas fa-shopping-cart nav-icon"></i>
+            <span>Purchases</span>
+          </button>
+          
+          <button 
+            onClick={() => handleNavigation('wishlist')}
+            className={`nav-link ${isActive('wishlist') ? 'active' : ''}`}
+          >
+            <i className="fas fa-heart nav-icon"></i>
+            <span>Wishlist</span>
+          </button>
         </div>
-      </nav>
+      </div>
 
+      {/* Account Management Section */}
+      <div className="nav-section">
+        <h4 className="section-heading">
+          <i className="fas fa-cog section-icon"></i>
+          Account Settings
+        </h4>
+        <div className="nav-links">
+              <button 
+                onClick={() => handleNavigation('messages')}
+                className={`nav-link ${isActive('messages') ? 'active' : ''}`}
+              >
+                <i className="fas fa-bell nav-icon"></i>
+                <span>Messages</span>
+                <span className="notification-badge">12</span>
+              </button>
+
+          <button 
+            onClick={() => handleNavigation('changePhone')}
+            className={`nav-link ${isActive('changePhone') ? 'active' : ''}`}
+          >
+            <i className="fas fa-phone nav-icon"></i>
+            <span>Change Phone</span>
+          </button>
+          
+          <button 
+            onClick={() => handleNavigation('changeEmail')}
+            className={`nav-link ${isActive('changeEmail') ? 'active' : ''}`}
+          >
+            <i className="fas fa-envelope nav-icon"></i>
+            <span>Change Email</span>
+          </button>
+          
+          <button 
+            onClick={() => handleNavigation('changePassword')}
+            className={`nav-link ${isActive('changePassword') ? 'active' : ''}`}
+          >
+            <i className="fas fa-lock nav-icon"></i>
+            <span>Change Password</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="profile-wrapper">
+      {/* Top Bar with Toggle and Title */}
+      {/* <div className="profile-topbar">
+        <Button 
+          variant="link"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="sidebar-toggle"
+          aria-label="Toggle sidebar"
+        >
+          <i className={`fas ${sidebarOpen ? 'fa-times' : 'fa-bars'}`}></i>
+        </Button>
+        <h1 className="page-title">{getSectionTitle(section)}</h1>
+      </div> */}
+
+      <div className="profile-layout">
+        {/* Collapsible Sidebar */}
+        <Collapse in={sidebarOpen} dimension="width">
+          <div className="profile-sidebar">
+            <SidebarContent />
+          </div>
+        </Collapse>
+
+        {/* Main Content Area */}
+        <div className={`profile-content ${sidebarOpen ? 'with-sidebar' : 'full-width'}`}>
+          {/* Content will be rendered here by the parent component */}
+        </div>
+      </div>
     </div>
   );
 };

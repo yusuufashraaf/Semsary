@@ -1,11 +1,12 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
-import path from 'path'
+import path from "path";
 
 export default defineConfig({
   resolve: {
     alias: {
+      "@": path.resolve(__dirname, "src"),
       "@assets": path.resolve(__dirname, "src/assets"),
       "@components": path.resolve(__dirname, "src/components"),
       "@hooks": path.resolve(__dirname, "src/hooks"),
@@ -17,7 +18,27 @@ export default defineConfig({
       "@utils": path.resolve(__dirname, "src/utils"),
       "@services": path.resolve(__dirname, "src/services"),
       "@validations": path.resolve(__dirname, "src/validations"),
-    }
+      "@api": path.resolve(__dirname, "src/api"),
+      "@lib": path.resolve(__dirname, "src/lib"),
+      "@app-types": path.resolve(__dirname, "src/types"),
+    },
   },
-  plugins: [react(),svgr()],
-})
+  plugins: [react(), svgr()],
+  // server: {
+  //   proxy: {
+  //     "/api": {
+  //       target: "http://localhost:8000",
+  //       changeOrigin: true,
+  //       secure: false,
+  //     },
+  //   },
+  // },
+  optimizeDeps: {
+    include: [
+      "@tanstack/react-query",
+      "zustand",
+      "chart.js",
+      "react-chartjs-2",
+    ],
+  },
+});

@@ -14,9 +14,16 @@ const ActSignUp =createAsyncThunk('Auth/SignUp',
             return fulfillWithValue(response.data)
 
         } catch (error) {
-            console.error("SignUp error:", error);
             if (isAxiosError(error)) {
-                return rejectWithValue(error.response?.data.message || error.message);
+                const serverData = error.response?.data;
+
+              if (serverData?.errors) {
+                const flatErrors = Object.values(serverData.errors)
+                    .flat()
+                    .join(", ");
+                return rejectWithValue(flatErrors); // always a string
+                }
+                return rejectWithValue(serverData?.message || error.message);
             } else {
                 return rejectWithValue("An unexpected error");
             }

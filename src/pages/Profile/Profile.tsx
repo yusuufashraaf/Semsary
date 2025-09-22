@@ -1,12 +1,82 @@
-//port './Profile.css'; // You'll need to create this CSS file  
-import HomeFinderPage from '@components/Profile/HomeFinderPage';
+import UserNotifications from '@components/Profile/UserNotifications';
+import UserProperties from '@components/Profile/UserProperties';
+import UserReviews from '@components/Profile/UserReviews';
+import { use, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import UserPurchases from '@components/Profile/UserPurchases';
+import ProfileHeader from '@components/Profile/ProfileHeader';
+import UserWishlist from '@components/Profile/UserWishlists';
+import BasicInfo from '@components/User/BasicInfo/BasicInfo';
+import ChangeEmail from '@components/User/ChangeEmail/ChangeEmail';
+import ChangePhone from '@components/User/ChangePhone/ChangePhone';
+import ChangePassword from '@components/User/ChangePassword/ChangePassword';
+import OwnerDashboard from '@components/owner/OwnerDashboard';
+import OwnerRequests from '@components/owner/OwnerRequests';
+import { useAppSelector } from '@store/hook';
+import UserMessages from '@components/Profile/UserMessages';
 
 const Profile = () => {
-  return (
-    <div className="profile-container">
-      <HomeFinderPage />
-    </div>
-  );
+  const { section } = useParams<{ section: string }>();
+  const navigate = useNavigate();
+  const { user } = useAppSelector(state => state.Authslice);
+  const [unreadCount, setUnreadCount] = useState(0);
+// Redirect to login if user is null
+  useEffect(() => {
+    if (user === null) {
+      navigate('/login', { replace: true });
+    }
+  }, [user, navigate]);
+    
+  useEffect(() => {
+  const validSections = ['home', 'properties','owner-dashboard' ,'reviews', 
+    'notifications', 'ownerNotification', 'ownerRequests' , 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword'];
+  
+  if (!section || !validSections.includes(section)) {
+    navigate('/profile/home', { replace: true });
+  }
+}, [section, navigate]); // Add dependencies
+
+  const renderSection = () => {
+    if (!user) return null; 
+  switch (section) {
+    case 'home':
+      return <BasicInfo />;
+     case 'properties':
+        return <UserProperties user={user} />;
+      case 'reviews':
+        return <UserReviews user={user} />;
+      case 'notifications':
+        return <UserNotifications user={user} onUnreadCountChange={setUnreadCount}/>;
+      case 'ownerRequests':
+        return <OwnerRequests userId={user.id}/>;
+      case 'purchases':
+        return <UserPurchases user={user} />;
+      case 'wishlist':
+        return <UserWishlist user={user} />;
+    // case 'basicInfo':
+    //   return <BasicInfo />;
+    case 'messages':
+      return <UserMessages user={user} />;
+    case 'changeEmail':
+      return <ChangeEmail />;
+    case 'changePhone':
+      return <ChangePhone />;
+    case 'changePassword':
+      return <ChangePassword />;
+    case 'owner-dashboard':
+      return <OwnerDashboard />;
+    default:
+        return <BasicInfo />;
+  }
+};
+
+
+return (
+<div className="profile-container">
+  <ProfileHeader section={section || 'home'} user={user} unreadCount={unreadCount}/>
+  {renderSection()}
+</div>
+);
 };
 
 export default Profile;

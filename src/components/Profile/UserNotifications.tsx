@@ -1,73 +1,48 @@
-import React, { useState } from 'react';
+import  { useState, useEffect } from "react";
+import { fetchUserNotifications, markNotificationAsRead } from "@services/axios-global";
+import { useNotifications } from "@hooks/useNotifications";
+import { TFullUser } from "src/types/users/users.types";
 import './UserNotifications.css';
 
-type NotificationType = 'all' | 'unread' | 'archived';
+type NotificationType = 'all' | 'unread';
 
 interface Notification {
   id: number;
-  type: string;
+  user_id: number;
   title: string;
-  time: string;
-  action: string;
-  content: string;
-  unread: boolean;
-  archived: boolean;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+  updated_at: string;
+  property_id?: number;
 }
 
-const UserNotifications: React.FC = () => {
+const UserNotifications = ({ user, onUnreadCountChange }: {user: TFullUser, onUnreadCountChange?: (count: number) => void }) => {
   const [activeTab, setActiveTab] = useState<NotificationType>('all');
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: 1,
-      type: 'offer',
-      title: 'New Offer',
-      time: '2h ago',
-      action: 'View Offer',
-      content: 'Offer received for 123 Oak Street',
-      unread: true,
-      archived: false
-    },
-    {
-      id: 2,
-      type: 'booking',
-      title: 'Booking Confirmation',
-      time: '1d ago',
-      action: 'View Booking',
-      content: 'Your booking for 456 Maple Avenue has been confirmed.',
-      unread: true,
-      archived: false
-    },
-    {
-      id: 3,
-      type: 'update',
-      title: 'Listing Update',
-      time: '3d ago',
-      action: 'View Update',
-      content: 'Important update regarding your property listing at 789 Pine Lane.',
-      unread: false,
-      archived: false
-    },
-    {
-      id: 4,
-      type: 'offer',
-      title: 'Offer Declined',
-      time: '5d ago',
-      action: 'View Details',
-      content: 'Your offer for 101 Cedar Road has been declined.',
-      unread: false,
-      archived: false
-    },
-    {
-      id: 5,
-      type: 'viewing',
-      title: 'New Viewing',
-      time: '1w ago',
-      action: 'View Schedule',
-      content: 'Your property at 222 Birch Avenue has a new viewing scheduled.',
-      unread: false,
-      archived: true
-    }
-  ]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // 🔌 Subscribe to WebSocket
+  useNotifications(user?.id ?? null);
+
+  useEffect(() => {
+    const getNotificationsData = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchUserNotifications(user.id);
+        setNotifications(data); // API loads history
+      } catch (err) {
+        setError("Failed to fetch notifications");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getNotificationsData();
+  }, [user.id]);
+  }, [user.id]);
 
   const handleTabChange = (tab: NotificationType) => {
     setActiveTab(tab);
@@ -75,118 +50,137 @@ const UserNotifications: React.FC = () => {
 
   const markAsRead = (id: number) => {
     setNotifications(notifications.map(notification => 
-      notification.id === id ? { ...notification, unread: false } : notification
+      notification.id === id ? { ...notification, is_read: true } : notification
     ));
+    markNotificationAsRead(user.id, id);
   };
 
-  const archiveNotification = (id: number) => {
-    setNotifications(notifications.map(notification => 
-      notification.id === id ? { ...notification, archived: true, unread: false } : notification
-    ));
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const getNotificationIcon = (title: string) => {
+    const lower = title.toLowerCase();
+    if (lower.includes("booking")) return "fas fa-calendar-check";
+    if (lower.includes("payment")) return "fas fa-credit-card";
+    if (lower.includes("rent")) return "fas fa-home";
+    if (lower.includes("offer")) return "fas fa-file-contract";
+    return "fas fa-bell";
   };
 
   const filteredNotifications = notifications.filter(notification => {
-    if (activeTab === 'unread') return notification.unread;
-    if (activeTab === 'archived') return notification.archived;
-    return !notification.archived; // For 'all' tab, show non-archived
+    if (activeTab === 'unread') return !notification.is_read;
+    return true;
   });
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'offer':
-        return 'fas fa-file-contract';
-      case 'booking':
-        return 'fas fa-calendar-check';
-      case 'update':
-        return 'fas fa-bell';
-      case 'viewing':
-        return 'fas fa-eye';
-      default:
-        return 'fas fa-bell';
+  const unreadCount = notifications.filter(n => !n.is_read).length;
+  
+  useEffect(() => {
+    if (onUnreadCountChange) {
+      onUnreadCountChange(unreadCount);
     }
-  };
+  }, [unreadCount, onUnreadCountChange]);
+
+  if (loading) {
+    return (
+      <div className="notifications-container">
+        <div className="loading-state">
+          <div className="loading-spinner"></div>
+          <p>Loading notifications...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="notifications-container">
+        <div className="error-state">
+          <i className="fas fa-exclamation-triangle"></i>
+          <p>Error: {error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="notifications">
-      <h1 className="notifications-title">Notifications</h1>
+    <div className="notifications-container">
+      <div className="notifications-header">
+        <h2 className="notifications-title">Notifications</h2>
+        {unreadCount > 0 && (
+          <span className="total-unread-badge">{unreadCount} unread</span>
+        )}
+      </div>
       
       <div className="notifications-tabs">
         <button 
-          className={`tab ${activeTab === 'all' ? 'active' : ''}`}
+          className={`notification-tab ${activeTab === 'all' ? 'active' : ''}`}
           onClick={() => handleTabChange('all')}
         >
-          All
+          All Notifications
         </button>
         <button 
-          className={`tab ${activeTab === 'unread' ? 'active' : ''}`}
+          className={`notification-tab ${activeTab === 'unread' ? 'active' : ''}`}
           onClick={() => handleTabChange('unread')}
         >
           Unread
-          {notifications.filter(n => n.unread).length > 0 && (
-            <span className="unread-count">
-              {notifications.filter(n => n.unread).length}
-            </span>
+          {unreadCount > 0 && (
+            <span className="tab-badge">{unreadCount}</span>
           )}
-        </button>
-        <button 
-          className={`tab ${activeTab === 'archived' ? 'active' : ''}`}
-          onClick={() => handleTabChange('archived')}
-        >
-          Archived
         </button>
       </div>
       
       <div className="notifications-list">
         {filteredNotifications.length === 0 ? (
-          <div className="empty-state">
+          <div className="empty-notifications">
             <i className="fas fa-bell-slash"></i>
-            <p>No notifications found</p>
+            <h4>No notifications</h4>
+            <p>
+              {activeTab === 'unread' 
+                ? 'All caught up! No unread notifications.' 
+                : 'You have no notifications at the moment.'
+              }
+            </p>
           </div>
         ) : (
           filteredNotifications.map(notification => (
             <div 
               key={notification.id} 
-              className={`notification-card ${notification.unread ? 'unread' : ''}`}
+              className={`notification-item ${!notification.is_read ? 'unread' : ''}`}
             >
-              <div className="notification-header">
-                <div className="notification-icon">
-                  <i className={getNotificationIcon(notification.type)}></i>
-                </div>
-                <div className="notification-info">
-                  <h3 className="notification-title">{notification.title}</h3>
-                  <span className="notification-time">{notification.time}</span>
-                </div>
-                {notification.unread && (
-                  <div className="notification-badge"></div>
-                )}
-              </div>
+              {/* <div className="notification-icon">
+                <i className={getNotificationIcon(notification.title)}></i>
+              </div> */}
               
-              <div className="notification-content">
-                <p>{notification.content}</p>
-              </div>
-              
-              <div className="notification-actions">
-                <button className="action-btn primary">
-                  {notification.action}
-                </button>
-                <div className="secondary-actions">
-                  {notification.unread && (
+              <div className="notification-body">
+                <div className="notification-header-content">
+                  <h4 className="notification-title">{notification.title}</h4>
+                  <span className="notification-time">
+                    {formatDate(notification.created_at)}
+                  </span>
+                  {!notification.is_read && (
+                    <div className="unread-dot"></div>
+                  )}
+                </div>
+                
+                <p className="notification-message">{notification.message}</p>
+                
+                {!notification.is_read && (
+                  <div className="notification-actions">
                     <button 
-                      className="action-btn secondary"
+                      className="mark-read-btn"
                       onClick={() => markAsRead(notification.id)}
                     >
                       Mark as read
                     </button>
-                  )}
-                  {!notification.archived && (
-                    <button 
-                      className="action-btn secondary"
-                      onClick={() => archiveNotification(notification.id)}
-                    >
-                      Archive
-                    </button>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           ))

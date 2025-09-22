@@ -26,5 +26,7 @@ export function mapListingToProperty(listing: any): Property {
         ? `Joined in ${listing.host.joinDate}`
         : "Unknown",
     },
+        status: listing.status,              
+
   };
 }

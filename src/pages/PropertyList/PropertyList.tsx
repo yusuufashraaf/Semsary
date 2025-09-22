@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import debounce from "lodash.debounce";
+import { toast } from "react-toastify";
 
 import Search from "../../components/PropertyList/Search";
 import Filters from "../../components/PropertyList/Filters";
@@ -16,6 +17,7 @@ import { formatActiveFilters } from "@utils/HelperFunctions";
 import { useFilterOptions } from "@hooks/useFilterOptions";
 import { getProperties } from "@services/PropertyListServices";
 import ErrorMessage from "@components/common/ErrorMessage/ErrorMessage";
+import Loader from "@components/common/Loader/Loader";
 
 export default function PropertyList() {
   // ---------------------- State ----------------------
@@ -174,14 +176,21 @@ export default function PropertyList() {
     scrollToTop();
   };
 
-  // Toggle Saved Properties
+  // ---------------------- Wishlist ----------------------
   const toggleSavedProperty = (id: number) => {
-    setSavedProperties((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+    setSavedProperties((prev) => {
+      const isSaved = prev.includes(id);
+      const updated = isSaved ? prev.filter((i) => i !== id) : [...prev, id];
+
+      // Toast feedback
+      if (isSaved) toast.info("Removed from wishlist");
+      else toast.success("Added to wishlist");
+
+      return updated;
+    });
   };
 
-  // Clear / Apply Filters
+  // ---------------------- Filters helpers ----------------------
   const clearFilters = () => {
     const clearedFilters = {
       location: "",
@@ -303,7 +312,7 @@ export default function PropertyList() {
         <div className="col-xxl-3 col-xl-3 col-lg-4 d-none d-lg-block">
           <div className="sticky-top" style={{ top: "20px" }}>
             {filtersLoading ? (
-              <p>Loading filters...</p>
+              <Loader message="Loading filters..." />
             ) : filtersError ? (
               <p className="text-danger">{filtersError}</p>
             ) : (
