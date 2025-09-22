@@ -112,7 +112,7 @@ export const fetchUserNotifications = async (userId: number) => {
     const response = await api.get(`/user/${userId}/notifications`);
     return response.data; // This will be your JSON data
   } catch (error) {
-    console.error('Error fetching reviews:', error);
+    console.error('Error fetching notifications:', error);
     throw error;
   }
 };
