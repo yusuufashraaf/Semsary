@@ -87,7 +87,7 @@ const EditProperty: React.FC = () => {
       } catch (err) {
         console.error('Error fetching property:', err);
         toast.error("Failed to fetch property details");
-        navigate('/owner-dashboard');
+        navigate('/profile/owner-dashboard');
       } finally {
         setLoading(false);
       }
@@ -109,7 +109,7 @@ const EditProperty: React.FC = () => {
     } else {
       setLoading(false);
       toast.error("Property ID is missing");
-      navigate('/owner-dashboard');
+      navigate('/profile/owner-dashboard');
     }
   }, [id, navigate]);
 
@@ -352,7 +352,7 @@ const EditProperty: React.FC = () => {
         }
       });
       
-      navigate('/owner-dashboard');
+      navigate('/profile/owner-dashboard');
       
     } catch (error) {
       toast.error("Failed to update property. Please check the form for errors.");
@@ -376,7 +376,7 @@ const EditProperty: React.FC = () => {
     return (
       <div className="text-center mt-5">
         <h4>Property not found</h4>
-        <Button variant="primary" onClick={() => navigate('/owner-dashboard')}>
+        <Button variant="primary" onClick={() => navigate('/profile/owner-dashboard')}>
           Back to Dashboard
         </Button>
       </div>
@@ -658,7 +658,8 @@ const EditProperty: React.FC = () => {
         {/* Images */}
         <Form.Group className="mb-4">
           <Form.Label>Property Images <span className="text-danger">*</span></Form.Label>
-          <div className="border border-dashed border-2 p-4 text-center rounded bg-light">
+          {/* <div className="border border-dashed border-2 p-4 text-center rounded bg-light"> */}
+          <div className="border-dashed border-2 p-4 text-center rounded bg-light">
             <input 
               type="file" 
               id="file-upload" 

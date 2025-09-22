@@ -11,7 +11,7 @@ import ChangeEmail from '@components/User/ChangeEmail/ChangeEmail';
 import ChangePhone from '@components/User/ChangePhone/ChangePhone';
 import ChangePassword from '@components/User/ChangePassword/ChangePassword';
 import OwnerDashboard from '@components/owner/OwnerDashboard';
-import OwnerRequests from '@components/owner/OwnerRequests';
+import RentRequests from '@components/owner/RentRequests';
 import { useAppSelector } from '@store/hook';
 import UserMessages from '@components/Profile/UserMessages';
 
@@ -29,7 +29,11 @@ const Profile = () => {
     
   useEffect(() => {
   const validSections = ['home', 'properties','owner-dashboard' ,'reviews', 
+<<<<<<< HEAD
     'notifications', 'ownerNotification', 'ownerRequests' , 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword', 'messages'];
+=======
+    'notifications', 'rentRequests' , 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword'];
+>>>>>>> a0af3c59872a429b434e10bb5ae4b915be4b64ba
   
   if (!section || !validSections.includes(section)) {
     navigate('/profile/home', { replace: true });
@@ -47,8 +51,8 @@ const Profile = () => {
         return <UserReviews user={user} />;
       case 'notifications':
         return <UserNotifications user={user} onUnreadCountChange={setUnreadCount}/>;
-      case 'ownerRequests':
-        return <OwnerRequests userId={user.id}/>;
+      case 'rentRequests':
+        return <RentRequests userId={user.id}/>;
       case 'purchases':
         return <UserPurchases user={user} />;
       case 'wishlist':

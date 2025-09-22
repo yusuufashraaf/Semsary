@@ -24,6 +24,27 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, unreadCount }) => {
     return location.pathname.includes(path);
   };
 
+<<<<<<< HEAD
+=======
+  const getSectionTitle = (section: string) => {
+    const titles: { [key: string]: string } = {
+      userInfo: 'Your Info',
+      properties: 'My Properties',
+      'owner-dashboard': 'Dashboard',
+      reviews: 'Reviews & Ratings',
+      purchases: 'Purchase History',
+      wishlist: 'My Wishlist',
+      notifications: 'Notifications',
+      ownerNotification: 'Notifications',
+      rentRequests: 'Requests',
+      changePhone: 'Change Phone Number',
+      changeEmail: 'Change Email Address',
+      changePassword: 'Change Password'
+    };
+    return titles[section] || 'Profile';
+  };
+
+>>>>>>> a0af3c59872a429b434e10bb5ae4b915be4b64ba
   const role = user?.role?.toLowerCase();
 
   const SidebarContent = () => (
@@ -43,7 +64,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, unreadCount }) => {
             <span>Your Info</span>
           </button>
           
-          {role === 'user' && (
+          {/* {role === 'user' && ( */}
             <button 
               onClick={() => handleNavigation('properties')}
               className={`nav-link ${isActive('properties') ? 'active' : ''}`}
@@ -51,10 +72,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, unreadCount }) => {
               <i className="fas fa-building nav-icon"></i>
               <span>Properties</span>
             </button>
-          )}
+          {/* )} */}
           
-          {role === 'owner' && (
-            <>
+          {/* {role === 'owner' && ( */}
+            {/* <> */}
             <button
               onClick={() => handleNavigation('owner-dashboard')}
               className={`nav-link ${isActive('owner-dashboard') ? 'active' : ''}`}
@@ -63,8 +84,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, unreadCount }) => {
               <span>Dashboard</span>
             </button>
           <button 
-            onClick={() => handleNavigation('ownerRequests')}
-            className={`nav-link ${isActive('ownerRequests') ? 'active' : ''}`}
+            onClick={() => handleNavigation('rentRequests')}
+            className={`nav-link ${isActive('rentRequests') ? 'active' : ''}`}
           >
             <i className="fas fa-envelope-open-text nav-icon"></i>
             <span>Requests</span>
@@ -80,8 +101,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, unreadCount }) => {
               <span className="notification-badge">{unreadCount}</span>
             )}
           </button>
-          </>
-          )}
+          {/* </> */}
+          {/* )} */}
           
           <button 
             onClick={() => handleNavigation('reviews')}
