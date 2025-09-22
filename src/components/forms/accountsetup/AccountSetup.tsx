@@ -1,4 +1,4 @@
-import { Button, Form, Spinner } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import Input from "../input/Input";
 import { useAppDispatch, useAppSelector } from "@store/hook";
 import { useForm } from "react-hook-form";
@@ -12,6 +12,7 @@ import styles from "./AccountSetup.module.css";
 import useCheckEmailForAvailability from "@hooks/useCheckEmailForAvailability";
 import useCheckPhoneForAvailability from "@hooks/useCheckPhoneForAvailability";
 import { toast } from "react-toastify";
+import Loader from "@components/common/Loader/Loader";
 
 type StepStatus = "pending" | "completed" | "skipped";
 interface IAccountSetupProps {
@@ -170,8 +171,7 @@ const phoneOnBlurHandler = async (e: React.FocusEvent<HTMLInputElement>) => {
         >
           {loading === "pending" ? (
             <>
-              <Spinner animation="border" size="sm" />
-              Loading...
+<Loader message="Loading" />
             </>
           ) : (
             "Next"

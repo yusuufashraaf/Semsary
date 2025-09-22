@@ -3,6 +3,7 @@ import { useRentRequests } from "@hooks/useRentRequest";
 import { RentRequest } from "src/types";
 import './OwnerRequests.css';
 import { Col, Row } from "react-bootstrap";
+import Loader from "@components/common/Loader/Loader";
 
 type OwnerRequestsProps = {
   userId: number;
@@ -140,7 +141,7 @@ const OwnerRequests: React.FC<OwnerRequestsProps> = ({ userId }) => {
       <div className="requests-container">
         <div className="loading-state">
           <div className="loading-spinner"></div>
-          <p>Loading requests...</p>
+<Loader message="Loading requests..." />
         </div>
       </div>
     );

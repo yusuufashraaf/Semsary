@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserReviews } from '../../services/axios-global';
 import { Review } from 'src/types';
 import { TFullUser } from 'src/types/users/users.types';
+import Loader from '@components/common/Loader/Loader';
 
 const UserReviews = ({ user }: { user: TFullUser }) => {
   const [reviewsData, setReviewsData] = useState<Review[]>([]);
@@ -55,7 +56,7 @@ const UserReviews = ({ user }: { user: TFullUser }) => {
   if (loading) {
     return (
       <div className="container">
-        <div className="loading">Loading reviews...</div>
+        <div className="loading"><Loader message='Loading reviews...' /></div>
       </div>
     );
   }

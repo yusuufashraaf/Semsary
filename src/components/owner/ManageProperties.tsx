@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { getProperties, removeProperty } from "../../store/Owner/ownerDashboardSlice";
 import { RootState, AppDispatch } from "../../store";
 import { useNavigate } from "react-router-dom";
-import { Card, Button, Spinner, Badge, Modal } from "react-bootstrap";
+import { Card, Button,  Badge, Modal } from "react-bootstrap";
 import { toast } from "react-toastify";
+import Loader from "@components/common/Loader/Loader";
+import { formatCurrency } from "@utils/HelperFunctions";
 
 const ManageProperties: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,9 +23,7 @@ const ManageProperties: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{minHeight: '400px'}}>
-        <Spinner animation="border" variant="primary" />
-      </div>
+        <Loader />
     );
   }
 
@@ -179,7 +179,7 @@ const ManageProperties: React.FC = () => {
                     </td>
                     <td>{getStatusBadge(property.property_state)}</td>
                     <td>
-                      <strong>${property.price?.toLocaleString()}</strong>
+                      <strong>{formatCurrency(property.price?.toLocaleString())}</strong>
                       <br />
                       <small className="text-muted">{property.price_type}</small>
                     </td>

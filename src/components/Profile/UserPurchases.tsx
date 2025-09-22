@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Use useNavigate from React Router
 import { fetchUserPurchases, fetchUserBookings } from '@services/axios-global';
 import { TFullUser } from 'src/types/users/users.types';
+import Loader from '@components/common/Loader/Loader';
 
 type TabType = 'purchases' | 'bookings';
 
@@ -127,7 +128,7 @@ const UserPurchases = ({ user }: {user: TFullUser })=> {
     });
   };
 
-  const formatCurrency = (amount: string, currency: string = 'USD') => {
+  const formatCurrency = (amount: string, currency: string = 'EGP') => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency
@@ -137,7 +138,7 @@ const UserPurchases = ({ user }: {user: TFullUser })=> {
   if (loading) {
     return (
       <div className="container">
-        <div className="loading">Loading...</div>
+        <div className="loading"><Loader message='Loading...' /></div>
       </div>
     );
   }
@@ -210,7 +211,7 @@ const UserPurchases = ({ user }: {user: TFullUser })=> {
                   
                   <div className="property-actions">
                     <span className="property-price">
-                      {formatCurrency(purchase.amount, purchase.payment_details.currency)}
+                      {formatCurrency(purchase.amount)}
                     </span>
                     <span>
                       Paid via {purchase.payment_gateway}

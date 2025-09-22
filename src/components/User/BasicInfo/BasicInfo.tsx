@@ -3,6 +3,7 @@ import UserCard from '../UserCard/UserCard';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@store/hook';
 import ActGetUsersData from '@store/Auth/Act/ActGetUsersData';
+import Loader from '@components/common/Loader/Loader';
 // Assuming UserCard is in the same directory
 
 const BasicInfo = () => {
@@ -15,7 +16,7 @@ const BasicInfo = () => {
     },[dispatch])
 
     if (loading === "pending") {
-    return <div>Loading...</div>; 
+    return <div><Loader message='Loading...'/></div>; 
   }
 
   if (!user) {

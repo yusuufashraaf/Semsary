@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TFullUser } from 'src/types/users/users.types';
 import { Chat as ApiChat, Message as ApiMessage } from 'src/types';
+import Loader from '@components/common/Loader/Loader';
 
 interface Conversation {
   user: { id: number; first_name: string; last_name: string; avatar?: string };
@@ -101,7 +102,7 @@ const UserMessages = ({ user }: { user: TFullUser }) => {
     }
   };
 
-  if (loading && !conversations.length) return <div className="container loading">Loading messages...</div>;
+  if (loading && !conversations.length) return <div className="container loading"><Loader message='Loading messages...' /></div>;
 
   return (
     <div className="container">
@@ -275,7 +276,7 @@ const UserMessages = ({ user }: { user: TFullUser }) => {
                 gap: 'var(--spacing-md)'
               }}>
                 {loading ? (
-                  <div className="loading">Loading messages...</div>
+                  <div className="loading"> <Loader message='Loading messages...' /> </div>
                 ) : messages.length > 0 ? (
                   messages.map(message => (
                     <div
