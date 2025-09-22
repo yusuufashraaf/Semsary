@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Collapse } from 'react-bootstrap';
+import { Collapse } from 'react-bootstrap';
 import '../../styles/themes.css';
 import './ProfileHeader.css';
 import { TFullUser } from 'src/types/users/users.types';
@@ -11,7 +11,7 @@ type ProfileHeaderProps = {
   unreadCount: number;
 };
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCount }) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, unreadCount }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -24,6 +24,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
     return location.pathname.includes(path);
   };
 
+<<<<<<< HEAD
+=======
   const getSectionTitle = (section: string) => {
     const titles: { [key: string]: string } = {
       userInfo: 'Your Info',
@@ -42,6 +44,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
     return titles[section] || 'Profile';
   };
 
+>>>>>>> a0af3c59872a429b434e10bb5ae4b915be4b64ba
   const role = user?.role?.toLowerCase();
 
   const SidebarContent = () => (

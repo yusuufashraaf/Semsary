@@ -2,7 +2,7 @@ import { AppStore } from "@store/index";
 import axios from "axios";
 import type { InternalAxiosRequestConfig } from "axios";
 import type { AxiosError } from "axios";
-import { Chat, Message } from "src/types";
+import { Chat, CreateReviewData, Message, Property, Review } from "src/types";
 let store: AppStore; // Reference to the Redux store
 
 export const setStore = (s: AppStore) => {
@@ -186,6 +186,46 @@ export const messageService = {
   markAsRead: async (chatId: number): Promise<void> => {
     await api.post(`user/chats/${chatId}/read`);
   }
+};
+
+export const reviewService = {
+  // Create a new review
+  createReview: async (reviewData: CreateReviewData): Promise<{ review: Review }> => {
+    const response = await api.post('/reviews', reviewData);
+    return response.data;
+  },
+  getReviewableProperties: async (): Promise<{ properties: Property[] }> => {
+    const response = await api.get('/user/reviewable-properties');
+    console.log('Fetched reviewable properties:', response);
+    return response.data;
+  },
+
+  // Get reviews for a property
+  getPropertyReviews: async (propertyId: number): Promise<{ reviews: Review[] }> => {
+    const response = await api.get(`/properties/${propertyId}/reviews`);
+    return response.data;
+  },
+
+  // Get reviews by user
+  getUserReviews: async (userId: number): Promise<{ reviews: Review[] }> => {
+    const response = await api.get(`/users/${userId}/reviews`);
+    return response.data;
+  },
+
+  deleteReview: (reviewId: number): Promise<void> => {
+    return api.delete(`/reviews/${reviewId}`);
+  },
+
+  // Update a review
+  updateReview: async (reviewId: number, reviewData: Partial<Review>): Promise<{ review: Review }> => {
+    const response = await api.put(`/reviews/${reviewId}`, reviewData);
+    return response.data;
+  },
+
+  // // Delete a review
+  // deleteReview: async (reviewId: number): Promise<void> => {
+  //   await api.delete(`/reviews/${reviewId}`);
+  // }
 };
 
 // Attach interceptors
