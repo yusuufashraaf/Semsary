@@ -64,15 +64,6 @@ const UserNotifications = ({ user, onUnreadCountChange }: {user: TFullUser, onUn
     });
   };
 
-  const getNotificationIcon = (title: string) => {
-    const lower = title.toLowerCase();
-    if (lower.includes("booking")) return "fas fa-calendar-check";
-    if (lower.includes("payment")) return "fas fa-credit-card";
-    if (lower.includes("rent")) return "fas fa-home";
-    if (lower.includes("offer")) return "fas fa-file-contract";
-    return "fas fa-bell";
-  };
-
   const filteredNotifications = notifications.filter(notification => {
     if (activeTab === 'unread') return !notification.is_read;
     return true;
