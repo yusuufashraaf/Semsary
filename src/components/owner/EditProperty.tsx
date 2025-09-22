@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from "../../store";
 import api from "../../services/axios-global"; 
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
+import Loader from "@components/common/Loader/Loader";
 
 const EditProperty: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -366,7 +367,7 @@ const EditProperty: React.FC = () => {
       <div className="d-flex justify-content-center align-items-center" style={{minHeight: '400px'}}>
         <div className="text-center">
           <div className="spinner-border text-primary mb-3"></div>
-          <p>Loading property details...</p>
+<Loader message="Loading property details..." />
         </div>
       </div>
     );

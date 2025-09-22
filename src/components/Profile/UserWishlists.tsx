@@ -5,6 +5,7 @@ import { TFullUser } from 'src/types/users/users.types';
 import PropertyCard from '@components/PropertyList/PropertCard';
 import { toast } from 'react-toastify';
 import { Listing } from 'src/types';
+import Loader from '@components/common/Loader/Loader';
 
 interface WishlistItem {
   id: number;
@@ -99,7 +100,7 @@ const UserWishlist = ({ user }: {user: TFullUser })=> {
   if (loading) {
     return (
       <div className="container">
-        <div className="loading">Loading wishlist...</div>
+        <div className="loading"><Loader message='Loading wishlist...' /></div>
       </div>
     );
   }

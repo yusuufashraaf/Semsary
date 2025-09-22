@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchUserReviews, reviewService } from '../../services/axios-global';
 import { Review } from 'src/types';
 import { TFullUser } from 'src/types/users/users.types';
+import Loader from '@components/common/Loader/Loader';
 import UserAddReview from './UserAddReview';
 
 const UserReviews = ({ user }: { user: TFullUser }) => {
@@ -97,7 +98,7 @@ const UserReviews = ({ user }: { user: TFullUser }) => {
   if (loading && !refreshing) {
     return (
       <div className="container">
-        <div className="loading">Loading reviews...</div>
+        <div className="loading"><Loader message='Loading reviews...' /></div>
       </div>
     );
   }

@@ -4,6 +4,7 @@ import { fetchUserProperties } from '@services/axios-global';
 import { Listing } from '../../types';
 import { TFullUser } from 'src/types/users/users.types';
 import { toast } from 'react-toastify';
+import Loader from '@components/common/Loader/Loader';
 
 const UserProperties = ({ user }: {user: TFullUser })=> {
   const [properties, setProperties] = useState<Listing[]>([]);
@@ -38,7 +39,7 @@ const UserProperties = ({ user }: {user: TFullUser })=> {
   if (loading) {
     return (
       <div className="container">
-        <div className="loading">Loading properties...</div>
+        <div className="loading"><Loader message='Loading properties...' /></div>
       </div>
     );
   }

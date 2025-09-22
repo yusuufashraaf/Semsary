@@ -6,11 +6,11 @@ interface BookingSectionProps {
   property: Property;
   booking: {
     checkIn: string;
-    setCheckIn: Dispatch<SetStateAction<string>>; // Fixed type
+    setCheckIn: Dispatch<SetStateAction<string>>;
     checkOut: string;
-    setCheckOut: Dispatch<SetStateAction<string>>; // Fixed type
+    setCheckOut: Dispatch<SetStateAction<string>>;
     guests: string;
-    setGuests: Dispatch<SetStateAction<string>>; // Fixed type
+    setGuests: Dispatch<SetStateAction<string>>;
     nights: number;
     subtotal: number;
     total: number;
@@ -18,8 +18,12 @@ interface BookingSectionProps {
   };
   guestOptions: GuestOption[];
   onReserve: () => void;
+  onBuy: () => void;
+  onCancel: () => void;
+  hasActivePurchase: boolean;
   rentRequestLoading: boolean;
   errorMessages: string;
+  unavailableDates: Date[]; // ✅ added
 }
 
 function BookingSection({
@@ -27,27 +31,25 @@ function BookingSection({
   booking,
   guestOptions,
   onReserve,
+  onBuy,
+  onCancel,
+  hasActivePurchase,
   rentRequestLoading,
   errorMessages,
+  unavailableDates,
 }: BookingSectionProps) {
   return (
     <BookingCard
-      price={property.price}
-      isSell={property.status === "Sold"}
-      checkIn={booking.checkIn}
-      setCheckIn={booking.setCheckIn}
-      checkOut={booking.checkOut}
-      setCheckOut={booking.setCheckOut}
-      guests={booking.guests}
-      setGuests={booking.setGuests}
+      property={property}
+      booking={booking}
       guestOptions={guestOptions}
       onReserve={onReserve}
+      onBuy={onBuy}
+      onCancel={onCancel}
+      hasActivePurchase={hasActivePurchase}
       loading={rentRequestLoading || booking.loading}
       errorMessage={errorMessages}
-      nights={booking.nights}
-      subtotal={booking.subtotal}
-      total={booking.total}
-      property_state={property.status}
+      unavailableDates={unavailableDates} // ✅ pass down
     />
   );
 }

@@ -5,11 +5,12 @@ import { resetUI } from "@store/Auth/AuthSlice";
 import { useAppDispatch, useAppSelector } from "@store/hook";
 import { signInSchema, signInType } from "@validations/signInSchema";
 import { useEffect } from "react";
-import { Alert, Button, Col, Form, Row, Spinner } from "react-bootstrap";
+import { Alert, Button, Col, Form, Row } from "react-bootstrap";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import styles from "./login.module.css";
 import ActCheckAuth from "@store/Auth/Act/ActCheckAuth";
+import Loader from "@components/common/Loader/Loader";
 
 function Login() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -102,8 +103,7 @@ function Login() {
             >
               {loading === "pending" ? (
                 <>
-                  <Spinner animation="border" size="sm" />
-                  Loading...
+                  <Loader message=" Loading..." />
                 </>
               ) : (
                 "Submit"
