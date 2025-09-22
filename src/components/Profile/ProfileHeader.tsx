@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Collapse } from 'react-bootstrap';
+import { Collapse } from 'react-bootstrap';
 import '../../styles/themes.css';
 import './ProfileHeader.css';
 import { TFullUser } from 'src/types/users/users.types';
@@ -11,7 +11,7 @@ type ProfileHeaderProps = {
   unreadCount: number;
 };
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCount }) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, unreadCount }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -24,6 +24,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
     return location.pathname.includes(path);
   };
 
+<<<<<<< HEAD
+=======
   const getSectionTitle = (section: string) => {
     const titles: { [key: string]: string } = {
       userInfo: 'Your Info',
@@ -34,7 +36,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
       wishlist: 'My Wishlist',
       notifications: 'Notifications',
       ownerNotification: 'Notifications',
-      ownerRequests: 'Requests',
+      rentRequests: 'Requests',
       changePhone: 'Change Phone Number',
       changeEmail: 'Change Email Address',
       changePassword: 'Change Password'
@@ -42,6 +44,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
     return titles[section] || 'Profile';
   };
 
+>>>>>>> a0af3c59872a429b434e10bb5ae4b915be4b64ba
   const role = user?.role?.toLowerCase();
 
   const SidebarContent = () => (
@@ -61,7 +64,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
             <span>Your Info</span>
           </button>
           
-          {role === 'user' && (
+          {/* {role === 'user' && ( */}
             <button 
               onClick={() => handleNavigation('properties')}
               className={`nav-link ${isActive('properties') ? 'active' : ''}`}
@@ -69,10 +72,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
               <i className="fas fa-building nav-icon"></i>
               <span>Properties</span>
             </button>
-          )}
+          {/* )} */}
           
-          {role === 'owner' && (
-            <>
+          {/* {role === 'owner' && ( */}
+            {/* <> */}
             <button
               onClick={() => handleNavigation('owner-dashboard')}
               className={`nav-link ${isActive('owner-dashboard') ? 'active' : ''}`}
@@ -81,8 +84,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
               <span>Dashboard</span>
             </button>
           <button 
-            onClick={() => handleNavigation('ownerRequests')}
-            className={`nav-link ${isActive('ownerRequests') ? 'active' : ''}`}
+            onClick={() => handleNavigation('rentRequests')}
+            className={`nav-link ${isActive('rentRequests') ? 'active' : ''}`}
           >
             <i className="fas fa-envelope-open-text nav-icon"></i>
             <span>Requests</span>
@@ -98,8 +101,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
               <span className="notification-badge">{unreadCount}</span>
             )}
           </button>
-          </>
-          )}
+          {/* </> */}
+          {/* )} */}
           
           <button 
             onClick={() => handleNavigation('reviews')}
