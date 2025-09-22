@@ -42,7 +42,6 @@ const UserNotifications = ({ user, onUnreadCountChange }: {user: TFullUser, onUn
 
     getNotificationsData();
   }, [user.id]);
-  }, [user.id]);
 
   const handleTabChange = (tab: NotificationType) => {
     setActiveTab(tab);
