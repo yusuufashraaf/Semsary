@@ -87,15 +87,15 @@ const UserWishlist = ({ user }: {user: TFullUser })=> {
     getWishlistData();
   }, []);
 
-
-  // Calculate average rating safely
-  const calculateAverageRating = () => {
-    if (!Array.isArray(wishlistItems) || wishlistItems.length === 0) return 0;
+  // the calculateAverageRating function is NOT used anywhere in the Semsary codebase.
+  // // Calculate average rating safely
+  // const calculateAverageRating = () => {
+  //   if (!Array.isArray(wishlistItems) || wishlistItems.length === 0) return 0;
     
-    // Since your response doesn't include ratings, we'll use a placeholder
-    // If you have ratings in your actual data, update this calculation
-    return 4.5; // Placeholder average rating
-  };
+  //   // Since your response doesn't include ratings, we'll use a placeholder
+  //   // If you have ratings in your actual data, update this calculation
+  //   return 4.5; // Placeholder average rating
+  // };
 
   if (loading) {
     return (
@@ -150,9 +150,6 @@ const toggleSavedProperty = (id: number) => {
             <i className="fas fa-heart empty-state-icon"></i>
             <h3>Your wishlist is empty</h3>
             <p>Start saving properties you love to see them here.</p>
-            <button className="btn btn-primary">
-              Browse Properties
-            </button>
           </div>
         ) : (
           wishlistItems.map(wishlistItem => (

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, Suspense } from "react";
+import  { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import styles from "./PropertyDetails.module.css";
@@ -7,13 +7,11 @@ import BreadCrumb from "@components/PropertyDetails/BreadCrumb";
 import ImageCarousel from "@components/PropertyDetails/ImageCarousel";
 import LoadingScreen from "@components/common/LoaderScreen/LoadingScreen";
 import ErrorScreen from "@components/common/ErrorScreen/ErrorScreen";
-import ActionButtons from "@components/PropertyDetails/ActionButtons";
 
 import { Property, GuestOption } from "src/types";
 import { RootState } from "@store/index";
 import { useReviews } from "@hooks/useReviews";
 import { useBooking } from "@hooks/useBooking";
-import { useSimilarProperties } from "@hooks/useSimilarProperties";
 import { usePropertyDetails } from "@hooks/usePropertyDetails";
 import { useRentRequests } from "@hooks/useRentRequest";
 import PropertyContent from "./PropertyContent";
@@ -21,9 +19,7 @@ import BookingSection from "./BookingSection";
 import { mapListingToProperty } from "@utils/propertyMapper";
 import { useWishlist } from "@hooks/useWishlist";
 import { toast } from "react-toastify";
-
-// Lazy-load SimilarSection for performance
-const SimilarSection = React.lazy(() => import("./SimilarSection"));
+import { getUnavailableDates } from "@services/rentRequest"; 
 
 // Guest dropdown options
 const guestOptions: GuestOption[] = [
@@ -40,6 +36,9 @@ function PropertyListing() {
 
   // Get current user from Redux
   const user = useSelector((state: RootState) => state.Authslice.user);
+
+  // State for unavailable dates
+  const [unavailableDates, setUnavailableDates] = useState<Date[]>([]);
 
   // Property details
   const {
@@ -64,14 +63,47 @@ function PropertyListing() {
     fetchReviews,
   } = useReviews(propertyId);
 
-  // Similar properties
-  const { data: similarProperties, loading: similarLoading } = useSimilarProperties();
-
   // Rent requests hook
   const { createRequest, loading: rentRequestLoading } = useRentRequests(user?.id || null);
 
   // Booking
   const booking = useBooking(property);
+const { jwt } = useSelector((state: RootState) => state.Authslice);
+  // Fetch unavailable dates
+  useEffect(() => {
+    const fetchUnavailableDates = async () => {
+      if (propertyId) {
+        try {
+          const dates = await getUnavailableDates(
+            propertyId,
+            jwt! // Pass JWT if user is logged in, otherwise undefined
+          );
+          
+          // Convert string dates to Date objects
+          const dateObjects = dates.flatMap(dateRange => {
+            const checkIn = new Date(dateRange.check_in);
+            const checkOut = new Date(dateRange.check_out);
+            const dates: Date[] = [];
+            
+            // Create array of all dates between check_in and check_out (inclusive)
+            for (let d = new Date(checkIn); d <= checkOut; d.setDate(d.getDate() + 1)) {
+              dates.push(new Date(d));
+            }
+            
+            return dates;
+          });
+          
+          setUnavailableDates(dateObjects);
+        } catch (error) {
+          console.error("Failed to fetch unavailable dates:", error);
+          // Set empty array on error (handled in API function)
+          setUnavailableDates([]);
+        }
+      }
+    };
+
+    fetchUnavailableDates();
+  }, [propertyId, jwt]);
 
   // Enhanced reserve handler that creates rent request
   const handleReserveWithRentRequest = async () => {
@@ -187,25 +219,14 @@ function PropertyListing() {
           booking={booking}
           guestOptions={guestOptions}
           onReserve={handleReserveWithRentRequest}
+          onBuy={() => {}} // Add your buy handler here
+          onCancel={() => {}} // Add your cancel handler here
+          hasActivePurchase={false} // Add your active purchase logic here
           rentRequestLoading={rentRequestLoading}
           errorMessages={errorMessage}
+          unavailableDates={unavailableDates} // ✅ Pass the unavailable dates
         />
       </div>
-
-      <div className="row mt-4">
-        <Suspense fallback={<LoadingScreen />}>
-          <SimilarSection
-            properties={similarProperties}
-            loading={similarLoading}
-          />
-        </Suspense>
-      </div>
-
-      <ActionButtons
-        onContact={() => alert("Contact clicked")}
-        onViewMore={() => alert("View More clicked")}
-        disabledButton={null}
-      />
     </div>
   );
 }

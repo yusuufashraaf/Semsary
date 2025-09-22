@@ -7,6 +7,7 @@ import AddToWishlist from "@components/common/AddToWishlist/AddToWishlist";
 export default function PropertyCard({ property, viewMode }: PropertyCardProps) {
   // Use the hook for wishlist
   const { isSaved, toggleWishlist, loading } = useWishlist(Number(property.id));
+console.log(property);
 
   return (
     <Link
@@ -15,7 +16,7 @@ export default function PropertyCard({ property, viewMode }: PropertyCardProps) 
     >
       {/* Property image, status, price, and wishlist button */}
       <div className={styles.propertyImage}>
-        {<img src={property.image} alt={property.title} loading="lazy" />}
+        {<img src={property.image!} alt={property.title} loading="lazy" />}
 
         <div className={styles.propertyStatus}>
           {property.status && (
@@ -33,7 +34,7 @@ export default function PropertyCard({ property, viewMode }: PropertyCardProps) 
             style: "currency",
             currency: "EGP",
             maximumFractionDigits: 0,
-          }).format(property.price)}
+          }).format(property.price)}/{property.price_type}
         </div>
 
         <AddToWishlist

@@ -1,6 +1,6 @@
-import { combineReducers,configureStore } from "@reduxjs/toolkit";
-import Authslice from './Auth/AuthSlice';
-import FormSlice from './FormConfirm/FormSlice'
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import Authslice from "./Auth/AuthSlice";
+import FormSlice from "./FormConfirm/FormSlice";
 import ownerDashboardReducer from "./Owner/ownerDashboardSlice";
 import { setStore } from '@services/axios-global';
 import { persistStore, persistReducer, FLUSH,REHYDRATE,PAUSE,PERSIST,PURGE,REGISTER, } from 'redux-persist'
@@ -12,34 +12,32 @@ export type RootState = ReturnType<typeof store.getState>;
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;
 
-
 const rootReducer = combineReducers({
-    Authslice: Authslice,
-    form: FormSlice,
-    ownerDashboard: ownerDashboardReducer,
-    notifications: notificationsReducer,
+  Authslice: Authslice,
+  form: FormSlice,
+  ownerDashboard: ownerDashboardReducer,
+  notifications: notificationsReducer,
 
 });
 
-const persistConfig ={
-    key: 'roor',
-    storage,
-    whitelist: ['form']
-}   
+const persistConfig = {
+  key: "roor",
+  storage,
+  whitelist: ["form"],
+};
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-    reducer: persistedReducer, 
-    middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware({
-            serializableCheck: {
-                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-            },
-        }),
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
 
 export const persistor = persistStore(store);
 setStore(store);
 export type AppStore = typeof store;
-

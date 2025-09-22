@@ -4,11 +4,13 @@ import api from '@services/axios-global';
 import { setAccessToken, setUser } from '@store/Auth/AuthSlice';
 import ActCheckAuth from '@store/Auth/Act/ActCheckAuth';
 import { useAppDispatch } from '@store/hook';
+import { useRoleBasedNavigation } from '@hooks/useRoleBasedNavigation';
 
 const OAuthCallback = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const { navigateByRole } = useRoleBasedNavigation();
 
     useEffect(() => {
         const handleCallback = async () => {
@@ -36,7 +38,8 @@ const OAuthCallback = () => {
                 dispatch(ActCheckAuth()); 
                 dispatch(setAccessToken(response.data.access_token)) ;
                 dispatch(setUser(response.data.user))   
-                navigate('/');
+                // navigate('/');
+                navigateByRole(response.data.user);
 
             } catch (error) {
                 console.error('Token exchange failed:', error);
@@ -45,7 +48,7 @@ const OAuthCallback = () => {
         };
 
         handleCallback();
-    }, [searchParams, navigate, dispatch]);
+    }, [searchParams, navigate, dispatch, navigateByRole]);
 
     return (
         <div className="flex items-center justify-center min-h-screen">

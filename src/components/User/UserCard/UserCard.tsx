@@ -1,18 +1,17 @@
+import { Card, ListGroup, ListGroupItem, Badge } from "react-bootstrap";
+import { Mail, Phone, User, CheckCircle, XCircle } from "lucide-react";
 
-import { Card, ListGroup, ListGroupItem, Badge } from 'react-bootstrap';
-import { Mail, Phone, User, CheckCircle, XCircle } from 'lucide-react';
+type TUserCardProps = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  isEmailVerified: boolean;
+  isPhoneVerified: boolean;
+  role: "user" | "agent" | "owner";
+};
 
- type TUserCardProps={
-    firstName:string,
-    lastName:string,
-    email:string,
-    phoneNumber:string,
-    isEmailVerified:boolean,
-    isPhoneVerified:boolean,
-    role: "user" | "agent" | "owner"
-}
-
-const UserCard = ({ user }:{user : TUserCardProps}) => {
+const UserCard = ({ user }: { user: TUserCardProps }) => {
   const {
     firstName,
     lastName,
@@ -20,10 +19,9 @@ const UserCard = ({ user }:{user : TUserCardProps}) => {
     phoneNumber,
     isEmailVerified,
     isPhoneVerified,
-    role
+    role,
   } = user;
 
-  
   return (
     <Card className="shadow-sm">
       <Card.Header as="h5" className="d-flex align-items-center">
@@ -69,8 +67,9 @@ const UserCard = ({ user }:{user : TUserCardProps}) => {
               </Badge>
             )}
           </ListGroupItem>
-            <ListGroupItem>
-            <strong>Role:</strong> {role.charAt(0).toUpperCase() + role.slice(1)}
+          <ListGroupItem>
+            <strong>Role:</strong>{" "}
+            {role ? role.charAt(0).toUpperCase() + role.slice(1) : "N/A"}
           </ListGroupItem>
         </ListGroup>
       </Card.Body>
