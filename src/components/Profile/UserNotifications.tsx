@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { fetchUserNotifications, markNotificationAsRead } from '@services/axios-global';
-import { TFullUser } from 'src/types/users/users.types';
+import  { useState, useEffect } from "react";
+import { fetchUserNotifications, markNotificationAsRead } from "@services/axios-global";
+import { useNotifications } from "@hooks/useNotifications";
+import { TFullUser } from "src/types/users/users.types";
 import './UserNotifications.css';
 
 type NotificationType = 'all' | 'unread';
@@ -13,6 +14,7 @@ interface Notification {
   is_read: boolean;
   created_at: string;
   updated_at: string;
+  property_id?: number;
 }
 
 const UserNotifications = ({ user, onUnreadCountChange }: {user: TFullUser, onUnreadCountChange?: (count: number) => void }) => {
@@ -21,14 +23,17 @@ const UserNotifications = ({ user, onUnreadCountChange }: {user: TFullUser, onUn
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // 🔌 Subscribe to WebSocket
+  useNotifications(user?.id ?? null);
+
   useEffect(() => {
     const getNotificationsData = async () => {
       try {
         setLoading(true);
         const data = await fetchUserNotifications(user.id);
-        setNotifications(data);
+        setNotifications(data); // API loads history
       } catch (err) {
-        setError('Failed to fetch notifications');
+        setError("Failed to fetch notifications");
         console.error(err);
       } finally {
         setLoading(false);
@@ -36,6 +41,7 @@ const UserNotifications = ({ user, onUnreadCountChange }: {user: TFullUser, onUn
     };
 
     getNotificationsData();
+  }, [user.id]);
   }, [user.id]);
 
   const handleTabChange = (tab: NotificationType) => {
@@ -51,29 +57,21 @@ const UserNotifications = ({ user, onUnreadCountChange }: {user: TFullUser, onUn
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffHours < 1) return 'Just now';
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
+    return date.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const getNotificationIcon = (title: string) => {
-    const lowerTitle = title.toLowerCase();
-    if (lowerTitle.includes('booking')) return 'fas fa-calendar-check';
-    if (lowerTitle.includes('payment')) return 'fas fa-credit-card';
-    if (lowerTitle.includes('welcome')) return 'fas fa-user-plus';
-    if (lowerTitle.includes('offer')) return 'fas fa-handshake';
-    if (lowerTitle.includes('update')) return 'fas fa-sync-alt';
-    return 'fas fa-bell';
+    const lower = title.toLowerCase();
+    if (lower.includes("booking")) return "fas fa-calendar-check";
+    if (lower.includes("payment")) return "fas fa-credit-card";
+    if (lower.includes("rent")) return "fas fa-home";
+    if (lower.includes("offer")) return "fas fa-file-contract";
+    return "fas fa-bell";
   };
 
   const filteredNotifications = notifications.filter(notification => {

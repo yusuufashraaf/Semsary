@@ -13,7 +13,7 @@ import ChangePassword from '@components/User/ChangePassword/ChangePassword';
 import OwnerDashboard from '@components/owner/OwnerDashboard';
 import OwnerRequests from '@components/owner/OwnerRequests';
 import { useAppSelector } from '@store/hook';
-import { TFullUser } from 'src/types/users/users.types';
+import UserMessages from '@components/Profile/UserMessages';
 
 const Profile = () => {
   const { section } = useParams<{ section: string }>();
@@ -55,6 +55,8 @@ const Profile = () => {
         return <UserWishlist user={user} />;
     // case 'basicInfo':
     //   return <BasicInfo />;
+    case 'messages':
+      return <UserMessages user={user} />;
     case 'changeEmail':
       return <ChangeEmail />;
     case 'changePhone':

@@ -506,3 +506,161 @@ export interface RequestStats {
   paidRequests: number;
   // Add other stats as needed
 }
+
+export interface Chat {
+  id: number;
+  property_id: number;
+  owner_id: number;
+  renter_id: number;
+  last_message_at: string;
+  created_at: string;
+  updated_at: string;
+  unread_count: number;
+  property: {
+    id: number;
+    title: string;
+    price: string;
+    price_type: string;
+    location: any;
+  };
+  owner: any;
+  renter: any;
+  latest_message?: Message;
+}
+
+export interface Message {
+  id: number;
+  chat_id: number;
+  sender_id: number;
+  content: string;
+  is_read: boolean;
+  created_at: string;
+  updated_at: string;
+  sender: any;
+}
+// ---------------- Checkout related types ----------------
+
+export interface Checkout {
+  id: number;
+  rent_request_id: number;
+  requester_id: number;
+  requested_at: string;
+  status: 'pending' | 'confirmed' | 'rejected' | 'auto_confirmed';
+  type: 'before_checkin' | 'within_1_day' | 'after_1_day' | 'monthly_mid_contract';
+  reason?: string;
+  owner_confirmation: 'pending' | 'confirmed' | 'rejected' | 'not_required' | 'auto_confirmed';
+  deposit_return_percent?: number;
+  agent_notes?: string;
+  owner_notes?: string;
+  admin_note?: string;
+  agent_decision?: AgentDecision;
+  processed_at?: string;
+  transaction_ref?: string;
+  final_refund_amount?: string;
+  final_payout_amount?: string;
+  refund_purchase_id?: number;
+  payout_purchase_id?: number;
+  created_at: string;
+  updated_at: string;
+  
+  // Relationships
+  rentRequest?: RentRequest;
+}
+
+export interface AgentDecision {
+  deposit_return_percent: number;
+  rent_returned: boolean;
+  notes?: string;
+  decided_by: number | string;
+  decided_at: string;
+  override?: boolean;
+}
+
+export interface CheckoutAction {
+  action: 'request_checkout' | 'agent_decision' | 'owner_confirm' | 'owner_reject' | 'admin_override';
+  reason?: string;
+  deposit_return_percent?: number;
+  rent_returned?: boolean;
+  notes?: string;
+  damage_notes?: string;
+  admin_note?: string;
+}
+
+export interface CheckoutStats {
+  as_renter: {
+    pending: number;
+    confirmed: number;
+    rejected: number;
+    total: number;
+  };
+  as_owner: {
+    pending: number;
+    confirmed: number;
+    rejected: number;
+    total: number;
+  };
+}
+
+export interface CheckoutResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    checkout: Checkout;
+    can_act: string[];
+    message: string;
+    refund_amount?: string;
+    payout_amount?: string;
+    transaction_ref?: string;
+  };
+  errors?: any;
+}
+
+export interface CheckoutQuery {
+  page?: number;
+  per_page?: number;
+  status?: string;
+  type?: string;
+  from?: string;
+  to?: string;
+  phone_number?: string;
+}
+
+export interface Transaction {
+  id: number;
+  rent_request_id: number;
+  user_id: number;
+  property_id: number;
+  amount: string;
+  payment_type: 'payment' | 'refund' | 'payout';
+  status: 'pending' | 'successful' | 'failed';
+  payment_gateway: string;
+  transaction_ref: string;
+  idempotency_key: string;
+  metadata?: {
+    checkout_id?: number;
+    deposit_refund?: string;
+    rent_refund?: string;
+    deposit_payout?: string;
+    rent_payout?: string;
+    deposit_return_percent?: number;
+  };
+  created_at: string;
+  updated_at: string;
+  
+  // Relationships
+  rentRequest?: {
+    id: number;
+    property: {
+      id: number;
+      title: string;
+      location: string;
+      owner_id: number;
+    };
+    user: {
+      id: number;
+      first_name: string;
+      last_name: string;
+      phone_number: string;
+    };
+  };
+}

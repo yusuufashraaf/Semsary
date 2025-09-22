@@ -139,7 +139,7 @@ const UserProperties = ({ user }: {user: TFullUser })=> {
         ) : (
           filteredProperties.map(property => (
             
-            <PropertyCard
+            <PropertyCard key={property.id}
                                               property={property}
                                               viewMode={"list"}
                                               savedProperties={savedProperties}

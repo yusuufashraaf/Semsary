@@ -134,6 +134,15 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
           Account Settings
         </h4>
         <div className="nav-links">
+              <button 
+                onClick={() => handleNavigation('messages')}
+                className={`nav-link ${isActive('messages') ? 'active' : ''}`}
+              >
+                <i className="fas fa-bell nav-icon"></i>
+                <span>Messages</span>
+                <span className="notification-badge">12</span>
+              </button>
+
           <button 
             onClick={() => handleNavigation('changePhone')}
             className={`nav-link ${isActive('changePhone') ? 'active' : ''}`}

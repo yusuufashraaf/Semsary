@@ -68,7 +68,7 @@ export default function Navbar() {
                 <span
                   className={`${styles.navLink} ${styles.highlight}`}
                   style={{ cursor: "pointer" }}
-                  onClick={() => handleNavClick("/owner-dashboard/add-property")}
+                  onClick={() => handleNavClick("/profile/owner-dashboard")}
                 >
                   Add Property
                 </span>
@@ -92,7 +92,7 @@ export default function Navbar() {
             <button className={`me-3 ${styles.wishlistBtn}`} onClick={() => handleNavClick("/profile/wishlist")}>
               <FontAwesomeIcon icon={faHeart} />
             </button>
-            <button className={`me-3 ${styles.notificationBtn}`}>
+            <button className={`me-3 ${styles.notificationBtn}`} onClick={() => handleNavClick("/profile/notifications")}>
               <FontAwesomeIcon icon={faBell} />
             </button>
 
