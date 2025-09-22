@@ -46,7 +46,7 @@ export type Amenities = string[];
 // ---------------- Core Property Models ----------------
 
 export interface BaseProperty {
-  id: string;
+  id: string|number;
   title?: string;
   address?: string;
   price: number;
@@ -201,6 +201,12 @@ export interface Review {
     created_at: string;
     updated_at: string;
   };
+}
+
+export interface CreateReviewData {
+  property_id: number;
+  comment: string;
+  rating: number;
 }
 
 export interface ReviewsListProps {

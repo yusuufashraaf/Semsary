@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Collapse } from 'react-bootstrap';
+import { Collapse } from 'react-bootstrap';
 import '../../styles/themes.css';
 import './ProfileHeader.css';
 import { TFullUser } from 'src/types/users/users.types';
@@ -11,7 +11,7 @@ type ProfileHeaderProps = {
   unreadCount: number;
 };
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCount }) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, unreadCount }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -22,24 +22,6 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
 
   const isActive = (path: string) => {
     return location.pathname.includes(path);
-  };
-
-  const getSectionTitle = (section: string) => {
-    const titles: { [key: string]: string } = {
-      userInfo: 'Your Info',
-      properties: 'My Properties',
-      'owner-dashboard': 'Dashboard',
-      reviews: 'Reviews & Ratings',
-      purchases: 'Purchase History',
-      wishlist: 'My Wishlist',
-      notifications: 'Notifications',
-      ownerNotification: 'Notifications',
-      ownerRequests: 'Requests',
-      changePhone: 'Change Phone Number',
-      changeEmail: 'Change Email Address',
-      changePassword: 'Change Password'
-    };
-    return titles[section] || 'Profile';
   };
 
   const role = user?.role?.toLowerCase();

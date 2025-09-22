@@ -1,7 +1,7 @@
 import UserNotifications from '@components/Profile/UserNotifications';
 import UserProperties from '@components/Profile/UserProperties';
 import UserReviews from '@components/Profile/UserReviews';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import UserPurchases from '@components/Profile/UserPurchases';
 import ProfileHeader from '@components/Profile/ProfileHeader';
@@ -29,7 +29,7 @@ const Profile = () => {
     
   useEffect(() => {
   const validSections = ['home', 'properties','owner-dashboard' ,'reviews', 
-    'notifications', 'ownerNotification', 'ownerRequests' , 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword'];
+    'notifications', 'ownerNotification', 'ownerRequests' , 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword', 'messages'];
   
   if (!section || !validSections.includes(section)) {
     navigate('/profile/home', { replace: true });
@@ -53,8 +53,6 @@ const Profile = () => {
         return <UserPurchases user={user} />;
       case 'wishlist':
         return <UserWishlist user={user} />;
-    // case 'basicInfo':
-    //   return <BasicInfo />;
     case 'messages':
       return <UserMessages user={user} />;
     case 'changeEmail':
