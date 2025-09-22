@@ -26,6 +26,7 @@ import { AdminProfilePage } from "@pages/admin/AdminProfilePage";
 import { UsersPage } from '@pages/admin/UsersPage';
 import { PropertiesPage } from '@pages/admin/PropertiesPage';
 import { PropertyDetailPage } from "@components/admin/properties/PropertyDetailPage";
+import PaymentCallback from "@pages/PaymentCallback/PaymentCallback";
 
 const router = createBrowserRouter([
   {
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
       {
         path: "home",
         element: <Home />,
+      },
+      {
+        path:"payment/callback",
+        element:<PaymentCallback />
       },
       {
         path: "profile",
