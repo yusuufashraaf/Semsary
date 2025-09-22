@@ -149,9 +149,6 @@ const toggleSavedProperty = (id: number) => {
             <i className="fas fa-heart empty-state-icon"></i>
             <h3>Your wishlist is empty</h3>
             <p>Start saving properties you love to see them here.</p>
-            <button className="btn btn-primary">
-              Browse Properties
-            </button>
           </div>
         ) : (
           wishlistItems.map(wishlistItem => (

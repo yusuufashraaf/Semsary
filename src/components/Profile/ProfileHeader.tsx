@@ -24,27 +24,6 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, unreadCount }) => {
     return location.pathname.includes(path);
   };
 
-<<<<<<< HEAD
-=======
-  const getSectionTitle = (section: string) => {
-    const titles: { [key: string]: string } = {
-      userInfo: 'Your Info',
-      properties: 'My Properties',
-      'owner-dashboard': 'Dashboard',
-      reviews: 'Reviews & Ratings',
-      purchases: 'Purchase History',
-      wishlist: 'My Wishlist',
-      notifications: 'Notifications',
-      ownerNotification: 'Notifications',
-      rentRequests: 'Requests',
-      changePhone: 'Change Phone Number',
-      changeEmail: 'Change Email Address',
-      changePassword: 'Change Password'
-    };
-    return titles[section] || 'Profile';
-  };
-
->>>>>>> a0af3c59872a429b434e10bb5ae4b915be4b64ba
   const role = user?.role?.toLowerCase();
 
   const SidebarContent = () => (
@@ -62,18 +41,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, unreadCount }) => {
           >
             <i className="fas fa-home nav-icon"></i>
             <span>Your Info</span>
-          </button>
-          
-          {/* {role === 'user' && ( */}
-            <button 
-              onClick={() => handleNavigation('properties')}
-              className={`nav-link ${isActive('properties') ? 'active' : ''}`}
-            >
-              <i className="fas fa-building nav-icon"></i>
-              <span>Properties</span>
-            </button>
-          {/* )} */}
-          
+          </button>         
           {/* {role === 'owner' && ( */}
             {/* <> */}
             <button
@@ -176,20 +144,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, unreadCount }) => {
 
   return (
     <div className="profile-wrapper">
-      {/* Top Bar with Toggle and Title */}
-      {/* <div className="profile-topbar">
-        <Button 
-          variant="link"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="sidebar-toggle"
-          aria-label="Toggle sidebar"
-        >
-          <i className={`fas ${sidebarOpen ? 'fa-times' : 'fa-bars'}`}></i>
-        </Button>
-        <h1 className="page-title">{getSectionTitle(section)}</h1>
-      </div> */}
-
-      <div className="profile-layout">
+    <div className="profile-layout">
         {/* Collapsible Sidebar */}
         <Collapse in={sidebarOpen} dimension="width">
           <div className="profile-sidebar">

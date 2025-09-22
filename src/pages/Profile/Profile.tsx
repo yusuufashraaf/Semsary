@@ -1,5 +1,4 @@
 import UserNotifications from '@components/Profile/UserNotifications';
-import UserProperties from '@components/Profile/UserProperties';
 import UserReviews from '@components/Profile/UserReviews';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -28,12 +27,8 @@ const Profile = () => {
   }, [user, navigate]);
     
   useEffect(() => {
-  const validSections = ['home', 'properties','owner-dashboard' ,'reviews', 
-<<<<<<< HEAD
-    'notifications', 'ownerNotification', 'ownerRequests' , 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword', 'messages'];
-=======
-    'notifications', 'rentRequests' , 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword'];
->>>>>>> a0af3c59872a429b434e10bb5ae4b915be4b64ba
+  const validSections = ['home','owner-dashboard' ,'reviews', 
+    'notifications', 'rentRequests' , 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword', 'messages'];
   
   if (!section || !validSections.includes(section)) {
     navigate('/profile/home', { replace: true });
@@ -45,8 +40,6 @@ const Profile = () => {
   switch (section) {
     case 'home':
       return <BasicInfo />;
-     case 'properties':
-        return <UserProperties user={user} />;
       case 'reviews':
         return <UserReviews user={user} />;
       case 'notifications':

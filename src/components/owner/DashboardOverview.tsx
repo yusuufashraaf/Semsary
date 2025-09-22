@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Row, Col, Card, Spinner, Button } from "react-bootstrap";
 import { getDashboardData, getProperties } from "../../store/Owner/ownerDashboardSlice";
 import { RootState, AppDispatch } from "../../store";
+import UserProperties from "@components/Profile/UserProperties";
+import { useAppSelector } from '@store/hook';
 import { useNavigate } from "react-router-dom";
 import './DashboardOverview.css';
 import { Building, Calendar, DollarSign, Home, Eye } from 'lucide-react';
@@ -13,7 +15,7 @@ const DashboardOverview: React.FC = () => {
   const { overview, loading, properties } = useSelector(
     (state: RootState) => state.ownerDashboard
   );
-
+  const { user } = useAppSelector(state => state.Authslice);  
   useEffect(() => {
     dispatch(getDashboardData());
     dispatch(getProperties());
@@ -94,7 +96,6 @@ const DashboardOverview: React.FC = () => {
       {/* Properties Section */}
       <div className="properties-section">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h6 className="section-title">Recent Properties</h6>
           {properties.length > 0 && (
             <Button 
               size="sm"
@@ -107,7 +108,7 @@ const DashboardOverview: React.FC = () => {
           )}
         </div>
 
-        {properties.length === 0 ? (
+        {/* {properties.length === 0 ? (
           <Card className="empty-state-card">
             <Card.Body>
               <EmptyPropertiesState />
@@ -176,7 +177,8 @@ const DashboardOverview: React.FC = () => {
               </div>
             </Card.Body>
           </Card>
-        )}
+        )} */}
+        {user && <UserProperties user={user} />}
       </div>
     </>
   );
