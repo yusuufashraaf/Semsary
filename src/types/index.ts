@@ -300,7 +300,8 @@ export type BookingHookReturn = {
     guests?: string;
   };
   apiError: string | null;
-  handleReserve: (propertyId: string) => Promise<void>;
+    handleReserve: () => Promise<boolean>; 
+
 };
 
 
@@ -674,5 +675,65 @@ export interface Transaction {
       last_name: string;
       phone_number: string;
     };
+  };
+}
+
+// -------------------- NEW ADDITIONS --------------------
+
+// Purchase
+export interface PropertyPurchase {
+  id: number;
+  property_id: number;
+  buyer_id: number;
+  seller_id: number;
+  amount: string;
+  status: "pending" | "paid" | "cancelled" | "refunded";
+  payment_gateway: string;
+  transaction_ref: string;
+  idempotency_key: string;
+  cancellation_deadline: string;
+  metadata: {
+    wallet_used?: string;
+    gateway_charged?: number;
+  };
+  created_at: string;
+  updated_at: string;
+  property?: Property & { owner?: any };
+}
+
+// Escrow
+export interface PropertyEscrow {
+  id: number;
+  property_purchase_id: number;
+  property_id: number;
+  buyer_id: number;
+  seller_id: number;
+  amount: string;
+  status: "locked" | "released" | "refunded";
+  locked_at: string;
+  scheduled_release_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Wallet
+export interface Wallet {
+  id: number;
+  user_id: number;
+  balance: string;
+  currency: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// API Response for purchase
+export interface PurchaseResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    purchase: PropertyPurchase;
+    escrow: PropertyEscrow;
+    property: Property;
+    seller: any;
   };
 }

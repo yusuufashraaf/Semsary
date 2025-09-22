@@ -235,3 +235,23 @@ export const payForRequest = async (
     throw error;
   }
 };
+export const getUnavailableDates = async (
+  propertyId: number,
+  jwt?: string,
+  signal?: AbortSignal
+): Promise<{ check_in: string; check_out: string }[]> => {
+  try {
+    const response = await API.get<{
+      success: boolean;
+      data: { check_in: string; check_out: string }[];
+    }>(`/properties/${propertyId}/unavailable-dates`, {
+      headers: jwt ? { Authorization: `Bearer ${jwt}` } : undefined,
+      signal,
+    });
+
+    return response.data.data;
+  } catch (error) {
+    handleError(error);
+    return [];
+  }
+};

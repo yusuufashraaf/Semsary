@@ -27,6 +27,8 @@ import { UsersPage } from '@pages/admin/UsersPage';
 import { PropertiesPage } from '@pages/admin/PropertiesPage';
 import { PropertyDetailPage } from "@components/admin/properties/PropertyDetailPage";
 import PaymentCallback from "@pages/PaymentCallback/PaymentCallback";
+import TermsAndConditions from "@components/TermsAndConditions/TermsAndCondition";
+import PrivacyPolicy from "@components/PrivacyPolicy/PrivacyPolicy";
 
 const router = createBrowserRouter([
   {
@@ -136,6 +138,14 @@ const router = createBrowserRouter([
         path: "/contact",
         element: <ContactUs />,
       },
+       {
+        path: "/terms-and-conditions",
+        element: <TermsAndConditions />
+      },
+      {
+        path: "/privacy-policy",
+        element: <PrivacyPolicy />
+      },
     ],
   },
   // ADMIN ROUTES AS SEPARATE ROUTE GROUP WITH PROTECTION
@@ -188,10 +198,13 @@ const router = createBrowserRouter([
           <div className="p-6 text-center">Settings Page (Coming Soon)</div>
         ),
       },
+     
+
       {
         path: "profile",
         element: <AdminProfilePage />,
       },
+      
     ],
   },
 ]);

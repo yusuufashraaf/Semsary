@@ -7,7 +7,6 @@ import AddToWishlist from "@components/common/AddToWishlist/AddToWishlist";
 export default function PropertyCard({ property, viewMode }: PropertyCardProps) {
   // Use the hook for wishlist
   const { isSaved, toggleWishlist, loading } = useWishlist(Number(property.id));
-console.log(property);
 
   return (
     <Link
