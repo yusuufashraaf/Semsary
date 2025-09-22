@@ -1,0 +1,111 @@
+/* PrivacyPolicy.module.css */
+
+.privacyContainer {
+  min-height: 100vh;
+  background-color: var(--primary-bg);
+  font-family: "Public Sans", sans-serif;
+}
+
+/* Header */
+.headerSection {
+  padding: 80px 0;
+  background: var(--background-dark);
+  text-align: center;
+  border-bottom: 2px solid var(--secondary-color);
+}
+
+.title {
+  font-size: 2.8rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: #6c757d;
+  max-width: 700px;
+  margin: 0 auto 1rem;
+  line-height: 1.7;
+}
+
+.lastUpdated {
+  font-size: 0.95rem;
+  color: #999;
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+
+/* Policy Section */
+.policySection {
+  padding: 80px 0;
+  background: var(--white);
+}
+
+.policyCard {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  height: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+}
+
+.policyCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+.policyIcon {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+.policyTitle {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.policyDescription {
+  font-size: var(--font-size-base);
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.2rem;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+  }
+
+  .policyCard {
+    padding: 1.5rem;
+  }
+
+  .policyTitle {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .policyIcon {
+    font-size: 2rem;
+  }
+}

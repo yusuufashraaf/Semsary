@@ -114,7 +114,7 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
 
       try {
         const response = await getOwnerRentRequests(jwt!, query);
-        setOwnerRentRequests(response.data);
+        setOwnerRentRequests(Array.isArray(response.data) ? response.data : []);
         setOwnerPagination(response);
       } catch (err: any) {
         handleError(err, "Error fetching owner rent requests.");
