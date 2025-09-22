@@ -446,6 +446,18 @@ export type RentRequest = {
   property_id: number;
   user_id: number;
   status: string;
+  property?: {
+    id: number;
+    title: string;
+    location: {
+      address: string;
+    };
+  };
+  user_info: {
+    first_name: string;
+    last_name: string;
+    phone_number: string;
+  }
 };
 
 // Laravel paginator response

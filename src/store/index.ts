@@ -17,7 +17,7 @@ const rootReducer = combineReducers({
     Authslice: Authslice,
     form: FormSlice,
     ownerDashboard: ownerDashboardReducer,
-        notifications: notificationsReducer,
+    notifications: notificationsReducer,
 
 });
 

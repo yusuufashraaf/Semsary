@@ -1,7 +1,7 @@
 import UserNotifications from '@components/Profile/UserNotifications';
 import UserProperties from '@components/Profile/UserProperties';
 import UserReviews from '@components/Profile/UserReviews';
-import { useEffect } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import UserPurchases from '@components/Profile/UserPurchases';
 import ProfileHeader from '@components/Profile/ProfileHeader';
@@ -11,6 +11,7 @@ import ChangeEmail from '@components/User/ChangeEmail/ChangeEmail';
 import ChangePhone from '@components/User/ChangePhone/ChangePhone';
 import ChangePassword from '@components/User/ChangePassword/ChangePassword';
 import OwnerDashboard from '@components/owner/OwnerDashboard';
+import OwnerRequests from '@components/owner/OwnerRequests';
 import { useAppSelector } from '@store/hook';
 import UserMessages from '@components/Profile/UserMessages';
 
@@ -18,6 +19,7 @@ const Profile = () => {
   const { section } = useParams<{ section: string }>();
   const navigate = useNavigate();
   const { user } = useAppSelector(state => state.Authslice);
+  const [unreadCount, setUnreadCount] = useState(0);
 // Redirect to login if user is null
   useEffect(() => {
     if (user === null) {
@@ -26,7 +28,8 @@ const Profile = () => {
   }, [user, navigate]);
     
   useEffect(() => {
-  const validSections = ['home', 'properties','owner-dashboard' ,'reviews', 'notifications', 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword','messages'];
+  const validSections = ['home', 'properties','owner-dashboard' ,'reviews', 
+    'notifications', 'ownerNotification', 'ownerRequests' , 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword'];
   
   if (!section || !validSections.includes(section)) {
     navigate('/profile/home', { replace: true });
@@ -43,7 +46,9 @@ const Profile = () => {
       case 'reviews':
         return <UserReviews user={user} />;
       case 'notifications':
-        return <UserNotifications user={user} />;
+        return <UserNotifications user={user} onUnreadCountChange={setUnreadCount}/>;
+      case 'ownerRequests':
+        return <OwnerRequests userId={user.id}/>;
       case 'purchases':
         return <UserPurchases user={user} />;
       case 'wishlist':
@@ -68,7 +73,7 @@ const Profile = () => {
 
 return (
 <div className="profile-container">
-  <ProfileHeader section={section || 'home'} user={user}/>
+  <ProfileHeader section={section || 'home'} user={user} unreadCount={unreadCount}/>
   {renderSection()}
 </div>
 );

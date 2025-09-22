@@ -2,8 +2,9 @@ import  { useState, useEffect } from "react";
 import { fetchUserNotifications, markNotificationAsRead } from "@services/axios-global";
 import { useNotifications } from "@hooks/useNotifications";
 import { TFullUser } from "src/types/users/users.types";
+import './UserNotifications.css';
 
-type NotificationType = "all" | "unread";
+type NotificationType = 'all' | 'unread';
 
 interface Notification {
   id: number;
@@ -16,8 +17,8 @@ interface Notification {
   property_id?: number;
 }
 
-const UserNotifications = ({ user }: { user: TFullUser }) => {
-  const [activeTab, setActiveTab] = useState<NotificationType>("all");
+const UserNotifications = ({ user, onUnreadCountChange }: {user: TFullUser, onUnreadCountChange?: (count: number) => void }) => {
+  const [activeTab, setActiveTab] = useState<NotificationType>('all');
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,17 +42,16 @@ const UserNotifications = ({ user }: { user: TFullUser }) => {
 
     getNotificationsData();
   }, [user.id]);
+  }, [user.id]);
 
   const handleTabChange = (tab: NotificationType) => {
     setActiveTab(tab);
   };
 
   const markAsRead = (id: number) => {
-    setNotifications((prev) =>
-      prev.map((n) =>
-        n.id === id ? { ...n, is_read: true } : n
-      )
-    );
+    setNotifications(notifications.map(notification => 
+      notification.id === id ? { ...notification, is_read: true } : notification
+    ));
     markNotificationAsRead(user.id, id);
   };
 
@@ -74,65 +74,118 @@ const UserNotifications = ({ user }: { user: TFullUser }) => {
     return "fas fa-bell";
   };
 
-  const filtered = notifications.filter((n) =>
-    activeTab === "unread" ? !n.is_read : true
-  );
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
+  const filteredNotifications = notifications.filter(notification => {
+    if (activeTab === 'unread') return !notification.is_read;
+    return true;
+  });
 
-  if (loading) return <p>Loading notifications...</p>;
-  if (error) return <p>{error}</p>;
+  const unreadCount = notifications.filter(n => !n.is_read).length;
+  
+  useEffect(() => {
+    if (onUnreadCountChange) {
+      onUnreadCountChange(unreadCount);
+    }
+  }, [unreadCount, onUnreadCountChange]);
+
+  if (loading) {
+    return (
+      <div className="notifications-container">
+        <div className="loading-state">
+          <div className="loading-spinner"></div>
+          <p>Loading notifications...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="notifications-container">
+        <div className="error-state">
+          <i className="fas fa-exclamation-triangle"></i>
+          <p>Error: {error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container max-w-2xl mx-auto p-4">
-      <h1 className="text-xl font-bold mb-4">Notifications</h1>
-
-      <div className="flex space-x-4 mb-4">
-        <button
-          className={`px-3 py-1 rounded ${activeTab === "all" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          onClick={() => handleTabChange("all")}
+    <div className="notifications-container">
+      <div className="notifications-header">
+        <h2 className="notifications-title">Notifications</h2>
+        {unreadCount > 0 && (
+          <span className="total-unread-badge">{unreadCount} unread</span>
+        )}
+      </div>
+      
+      <div className="notifications-tabs">
+        <button 
+          className={`notification-tab ${activeTab === 'all' ? 'active' : ''}`}
+          onClick={() => handleTabChange('all')}
         >
-          All
+          All Notifications
         </button>
-        <button
-          className={`px-3 py-1 rounded ${activeTab === "unread" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          onClick={() => handleTabChange("unread")}
+        <button 
+          className={`notification-tab ${activeTab === 'unread' ? 'active' : ''}`}
+          onClick={() => handleTabChange('unread')}
         >
-          Unread {unreadCount > 0 && <span>({unreadCount})</span>}
+          Unread
+          {unreadCount > 0 && (
+            <span className="tab-badge">{unreadCount}</span>
+          )}
         </button>
       </div>
-
-      {filtered.length === 0 ? (
-        <p className="text-gray-500">No notifications found.</p>
-      ) : (
-        <ul className="space-y-3">
-          {filtered.map((n) => (
-            <li
-              key={n.id}
-              className={`p-3 rounded-lg border ${!n.is_read ? "bg-blue-50 border-blue-300" : "bg-white border-gray-200"}`}
+      
+      <div className="notifications-list">
+        {filteredNotifications.length === 0 ? (
+          <div className="empty-notifications">
+            <i className="fas fa-bell-slash"></i>
+            <h4>No notifications</h4>
+            <p>
+              {activeTab === 'unread' 
+                ? 'All caught up! No unread notifications.' 
+                : 'You have no notifications at the moment.'
+              }
+            </p>
+          </div>
+        ) : (
+          filteredNotifications.map(notification => (
+            <div 
+              key={notification.id} 
+              className={`notification-item ${!notification.is_read ? 'unread' : ''}`}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <i className={`${getNotificationIcon(n.title)} text-blue-600`} />
-                  <div>
-                    <h3 className="font-medium">{n.title}</h3>
-                    <p className="text-sm text-gray-600">{n.message}</p>
-                  </div>
+              {/* <div className="notification-icon">
+                <i className={getNotificationIcon(notification.title)}></i>
+              </div> */}
+              
+              <div className="notification-body">
+                <div className="notification-header-content">
+                  <h4 className="notification-title">{notification.title}</h4>
+                  <span className="notification-time">
+                    {formatDate(notification.created_at)}
+                  </span>
+                  {!notification.is_read && (
+                    <div className="unread-dot"></div>
+                  )}
                 </div>
-                <span className="text-xs text-gray-400">{formatDate(n.created_at)}</span>
+                
+                <p className="notification-message">{notification.message}</p>
+                
+                {!notification.is_read && (
+                  <div className="notification-actions">
+                    <button 
+                      className="mark-read-btn"
+                      onClick={() => markAsRead(notification.id)}
+                    >
+                      Mark as read
+                    </button>
+                  </div>
+                )}
               </div>
-
-              {!n.is_read && (
-                <button
-                  onClick={() => markAsRead(n.id)}
-                  className="mt-2 text-sm text-blue-600 underline"
-                >
-                  Mark as read
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };

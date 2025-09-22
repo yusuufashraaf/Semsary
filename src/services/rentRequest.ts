@@ -55,7 +55,11 @@ export const getOwnerRentRequests = async (
   signal?: AbortSignal
 ): Promise<LaravelPaginatedResponse<RentRequest>> => {
   try {
-    const response = await API.get<LaravelPaginatedResponse<RentRequest>>(
+    const response = await API.get<{
+      success: boolean;
+      message: string;
+      data: LaravelPaginatedResponse<RentRequest>;
+    }>(
       "/rent-requests/owner",
       {
         params: query,
@@ -65,7 +69,7 @@ export const getOwnerRentRequests = async (
         signal,
       }
     );
-    return response.data;
+    return response.data.data;
   } catch (error) {
     handleError(error);
     throw error;
