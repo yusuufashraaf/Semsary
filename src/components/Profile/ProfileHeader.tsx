@@ -34,7 +34,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
       wishlist: 'My Wishlist',
       notifications: 'Notifications',
       ownerNotification: 'Notifications',
-      ownerRequests: 'Requests',
+      rentRequests: 'Requests',
       changePhone: 'Change Phone Number',
       changeEmail: 'Change Email Address',
       changePassword: 'Change Password'
@@ -61,7 +61,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
             <span>Your Info</span>
           </button>
           
-          {role === 'user' && (
+          {/* {role === 'user' && ( */}
             <button 
               onClick={() => handleNavigation('properties')}
               className={`nav-link ${isActive('properties') ? 'active' : ''}`}
@@ -69,10 +69,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
               <i className="fas fa-building nav-icon"></i>
               <span>Properties</span>
             </button>
-          )}
+          {/* )} */}
           
-          {role === 'owner' && (
-            <>
+          {/* {role === 'owner' && ( */}
+            {/* <> */}
             <button
               onClick={() => handleNavigation('owner-dashboard')}
               className={`nav-link ${isActive('owner-dashboard') ? 'active' : ''}`}
@@ -81,8 +81,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
               <span>Dashboard</span>
             </button>
           <button 
-            onClick={() => handleNavigation('ownerRequests')}
-            className={`nav-link ${isActive('ownerRequests') ? 'active' : ''}`}
+            onClick={() => handleNavigation('rentRequests')}
+            className={`nav-link ${isActive('rentRequests') ? 'active' : ''}`}
           >
             <i className="fas fa-envelope-open-text nav-icon"></i>
             <span>Requests</span>
@@ -98,8 +98,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
               <span className="notification-badge">{unreadCount}</span>
             )}
           </button>
-          </>
-          )}
+          {/* </> */}
+          {/* )} */}
           
           <button 
             onClick={() => handleNavigation('reviews')}
