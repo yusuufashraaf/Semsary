@@ -658,7 +658,8 @@ const EditProperty: React.FC = () => {
         {/* Images */}
         <Form.Group className="mb-4">
           <Form.Label>Property Images <span className="text-danger">*</span></Form.Label>
-          <div className="border border-dashed border-2 p-4 text-center rounded bg-light">
+          {/* <div className="border border-dashed border-2 p-4 text-center rounded bg-light"> */}
+          <div className="border-dashed border-2 p-4 text-center rounded bg-light">
             <input 
               type="file" 
               id="file-upload" 

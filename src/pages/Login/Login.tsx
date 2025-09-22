@@ -45,8 +45,16 @@ function Login() {
     dispatch(ActSignIn(data))
       .unwrap()
       .then(() => {
-        dispatch(ActCheckAuth()).unwrap().then(() => {
-          navigate("/");
+        dispatch(ActCheckAuth()).unwrap().then((result) => {
+          // Use role-based navigation instead of always going to "/"
+          const user = result.user;
+          if (user?.role === 'admin') {
+            navigate("/admin/dashboard");
+          } else if (user?.role === 'owner') {
+            navigate("/owner-dashboard");
+          } else {
+            navigate("/");
+          }
         });
       });
   };

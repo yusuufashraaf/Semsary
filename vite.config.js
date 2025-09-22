@@ -15,6 +15,9 @@ export default defineConfig({
             "@utils": path.resolve(__dirname, "src/utils"),
             "@services": path.resolve(__dirname, "src/services"),
             "@validations": path.resolve(__dirname, "src/validations"),
+            "@api": path.resolve(__dirname, "src/api"),
+            "@lib": path.resolve(__dirname, "src/lib"),
+            "@app-types": path.resolve(__dirname, "src/types"),
         }
     },
     plugins: [react()],
