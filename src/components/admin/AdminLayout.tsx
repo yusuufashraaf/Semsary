@@ -8,6 +8,8 @@ import { cn } from '@utils/classNames';
 
 // Import admin-specific Tailwind CSS
 import '@styles/admin-tailwind.css';
+// Import admin improvements CSS
+import '@styles/admin-improvements.css';
 
 export const AdminLayout: React.FC = () => {
   const { sidebarCollapsed, darkMode } = useUIStore();

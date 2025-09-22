@@ -24,6 +24,8 @@ import { AdminLayout } from "@components/admin/AdminLayout";
 import { DashboardPage } from "@pages/admin/DashboardPage";
 import { AdminProfilePage } from "@pages/admin/AdminProfilePage";
 import { UsersPage } from '@pages/admin/UsersPage';
+import { PropertiesPage } from '@pages/admin/PropertiesPage';
+import { PropertyDetailPage } from "@components/admin/properties/PropertyDetailPage";
 
 const router = createBrowserRouter([
   {
@@ -157,9 +159,11 @@ const router = createBrowserRouter([
       },
       {
         path: "properties",
-        element: (
-          <div className="p-6 text-center">Properties Page (Coming Soon)</div>
-        ),
+        element: <PropertiesPage />,
+      },
+      {
+        path: "properties/:id",
+        element: <PropertyDetailPage />,
       },
       {
         path: "transactions",

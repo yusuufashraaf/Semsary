@@ -1,5 +1,6 @@
-// src/types/admin/admin.ts
+// C:\laragon\www\Semsary\src\types\admin\admin.ts
 
+// Notification Types
 export interface Notification {
   id: string;
   type: "success" | "error" | "warning" | "info";
@@ -22,6 +23,9 @@ export interface DashboardStats {
   recentTransactions: Transaction[];
   topProperties: Property[];
   userGrowth: Record<string, number>;
+  propertyGrowth?: Record<string, number>;
+  transactionGrowth?: Record<string, number>;
+  revenueGrowth?: Record<string, number>;
 }
 
 export interface UsersByRole {
@@ -33,9 +37,12 @@ export interface UsersByRole {
 
 export interface PropertiesByStatus {
   Valid: number;
+  Invalid: number;
   Pending: number;
   Rented: number;
   Sold: number;
+  Approved: number;
+  Rejected: number;
 }
 
 export interface TransactionsByType {
@@ -62,10 +69,35 @@ export interface User {
   whatsapp_otp_expires_at: string | null;
   created_at: string;
   updated_at: string;
+  full_name?: string; // Computed property
+  avatar?: string; // Profile image URL
+  last_login_at?: string;
+  properties_count?: number;
+  transactions_count?: number;
 }
 
 export type UserRole = "user" | "owner" | "agent" | "admin";
-export type UserStatus = "active" | "pending" | "suspended";
+export type UserStatus = "active" | "pending" | "suspended" | "blocked";
+
+// Agent Types - Updated for the new API structure
+export interface Agent {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  status: string;
+  active_assignments: number;
+  completed_assignments: number;
+  workload_status: 'low' | 'medium' | 'high';
+  created_at: string;
+  profile_image?: string;
+}
+
+export interface ProcessedAgent extends Agent {
+  current_property_count: number;
+  max_property_capacity: number;
+  status: 'active' | 'busy' | 'offline';
+}
 
 // Property Types
 export interface Property {
@@ -86,6 +118,16 @@ export interface Property {
   bathrooms: number;
   is_in_wishlist: boolean;
   transactions_count?: number;
+  owner?: User;
+  images?: PropertyImage[];
+  amenities?: PropertyAmenity[];
+  view_count?: number;
+  favorite_count?: number;
+  is_featured?: boolean;
+  featured_until?: string | null;
+  commission?: number;
+  commission_type?: "percentage" | "fixed";
+  assigned_cs_agent?: number | null; // Added for assignment status
 }
 
 export interface PropertyLocation {
@@ -93,8 +135,28 @@ export interface PropertyLocation {
   state: string;
   address: string;
   latitude: number;
-  zip_code: string;
   longitude: number;
+  country?: string;
+  zip_code?: string;
+  neighborhood?: string;
+}
+
+export interface PropertyImage {
+  id: number;
+  property_id: number;
+  url: string;
+  alt_text?: string;
+  is_primary: boolean;
+  order: number;
+  created_at: string;
+}
+
+export interface PropertyAmenity {
+  id: number;
+  name: string;
+  icon?: string;
+  category?: string;
+  is_active: boolean;
 }
 
 export type PropertyType =
@@ -102,9 +164,31 @@ export type PropertyType =
   | "House"
   | "Commercial"
   | "Land"
-  | "Duplex";
-export type PriceType = "Daily" | "Monthly" | "FullPay";
-export type PropertyState = "Valid" | "Pending" | "Rented" | "Sold";
+  | "Duplex"
+  | "Villa"
+  | "Roof"
+  | "Studio"
+  | "Penthouse"
+  | "Townhouse"
+  | "Office"
+  | "Retail"
+  | "Warehouse";
+
+export type PriceType = "Daily" | "Monthly" | "FullPay" | "Yearly";
+
+// UPDATED PropertyState to include all possible values
+export type PropertyState = 
+  | "Valid" 
+  | "Invalid" 
+  | "Pending" 
+  | "Rented" 
+  | "Sold" 
+  | "Approved" 
+  | "Rejected"
+  | "Draft"
+  | "Expired"
+  | "Archived";
+
 export type PropertyStatus = "sale" | "rent" | "both";
 
 // Transaction Types
@@ -121,17 +205,212 @@ export interface Transaction {
   updated_at: string;
   user: User;
   property: Property;
+  reference_number?: string;
+  notes?: string;
+  payment_date?: string;
+  refund_amount?: string;
+  refund_date?: string;
+  commission_amount?: string;
+  commission_paid?: boolean;
+  contract_start_date?: string;
+  contract_end_date?: string;
 }
 
 export type TransactionType = "rent" | "buy";
-export type TransactionStatus = "pending" | "success" | "failed" | "refunded";
-export type PaymentGateway = "PayMob" | "PayPal" | "Fawry" | "Wallet";
+export type TransactionStatus = "pending" | "success" | "failed" | "refunded" | "cancelled" | "expired";
+export type PaymentGateway = "PayMob" | "PayPal" | "Fawry" | "Wallet" | "Bank Transfer" | "Cash";
+
+export interface UserFilters {
+  search?: string;
+  role?: UserRole[];
+  status?: UserStatus[];
+  email_verified?: boolean;
+  phone_verified?: boolean;
+  date_from?: string;
+  date_to?: string;
+  date_range?: {
+    start: string;
+    end: string;
+  };
+  sort_by?: "first_name" | "last_name" | "email" | "created_at" | "updated_at";
+  sort_order?: "asc" | "desc";
+  per_page?: number;
+}
+
+export interface PropertyFilters {
+  search?: string;
+  type?: PropertyType[];
+  property_state?: PropertyState[];
+  status?: PropertyStatus[];
+  price_range?: {
+    min: number;
+    max: number;
+  };
+  price_type?: PriceType[];
+  location?: string;
+  bedrooms?: number[];
+  bathrooms?: number[];
+  size_range?: {
+    min: number;
+    max: number;
+  };
+  owner_id?: number;
+  is_featured?: boolean;
+  date_range?: {
+    start: string;
+    end: string;
+  };
+  sort_by?: "title" | "price" | "size" | "created_at" | "updated_at" | "view_count";
+  sort_order?: "asc" | "desc";
+  per_page?: number;
+}
+
+export interface TransactionFilters {
+  search?: string;
+  type?: TransactionType[];
+  status?: TransactionStatus[];
+  payment_gateway?: PaymentGateway[];
+  amount_range?: {
+    min: number;
+    max: number;
+  };
+  user_id?: number;
+  property_id?: number;
+  date_range?: {
+    start: string;
+    end: string;
+  };
+  sort_by?: "amount" | "created_at" | "updated_at" | "payment_date";
+  sort_order?: "asc" | "desc";
+}
+
+// Bulk Action Types
+export interface BulkAction {
+  action: BulkActionType;
+  ids: number[];
+  data?: Record<string, any>;
+}
+
+export type BulkActionType = 
+  | "activate"
+  | "suspend" 
+  | "block"
+  | "delete"
+  | "approve"
+  | "reject"
+  | "feature"
+  | "unfeature"
+  | "archive"
+  | "restore";
+
+// Form Data Types
+export interface UserFormData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  role: UserRole;
+  status?: UserStatus;
+  password?: string;
+  confirm_password?: string;
+  id_image?: File;
+  send_welcome_email?: boolean;
+}
+
+export interface PropertyFormData {
+  title: string;
+  description: string;
+  type: PropertyType;
+  price: string;
+  price_type: PriceType;
+  status: PropertyStatus;
+  bedrooms: number;
+  bathrooms: number;
+  size: number;
+  location: {
+    address: string;
+    city: string;
+    state: string;
+    country?: string;
+    zip_code?: string;
+    latitude?: number;
+    longitude?: number;
+  };
+  owner_id?: number;
+  amenities?: number[];
+  images?: File[];
+  is_featured?: boolean;
+  commission?: number;
+  commission_type?: "percentage" | "fixed";
+}
+
+// Activity Log Types
+export interface ActivityLog {
+  id: number;
+  user_id?: number;
+  admin_id?: number;
+  action: ActivityAction;
+  target_type: ActivityTargetType;
+  target_id: number;
+  description: string;
+  metadata?: Record<string, any>;
+  ip_address?: string;
+  user_agent?: string;
+  created_at: string;
+  user?: User;
+  admin?: User;
+}
+
+export type ActivityAction = 
+  | "created"
+  | "updated" 
+  | "deleted"
+  | "approved"
+  | "rejected"
+  | "activated"
+  | "suspended"
+  | "blocked"
+  | "featured"
+  | "unfeatured"
+  | "login"
+  | "logout"
+  | "password_reset"
+  | "email_verified"
+  | "phone_verified";
+
+export type ActivityTargetType = "user" | "property" | "transaction" | "system";
+
+// Settings Types
+export interface SystemSettings {
+  id: number;
+  key: string;
+  value: string;
+  type: SettingType;
+  group: SettingGroup;
+  description?: string;
+  is_public: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export type SettingType = "string" | "number" | "boolean" | "json" | "text";
+export type SettingGroup = 
+  | "general"
+  | "email"
+  | "sms" 
+  | "payment"
+  | "property"
+  | "user"
+  | "security"
+  | "features";
 
 // API Response Types
 export interface ApiResponse<T> {
   status: "success" | "error";
   data: T;
   message?: string;
+  errors?: Record<string, string[]>;
+  meta?: Record<string, any>;
 }
 
 export interface PaginatedResponse<T> {
@@ -142,41 +421,24 @@ export interface PaginatedResponse<T> {
   total: number;
   from: number;
   to: number;
+  path?: string;
+  first_page_url?: string;
+  last_page_url?: string;
+  next_page_url?: string | null;
+  prev_page_url?: string | null;
 }
 
-// Filter Types
-export interface UserFilters {
-  role?: UserRole;
-  status?: UserStatus;
-  search?: string;
-  date_from?: string;
-  date_to?: string;
-  sort_by?: string;
-  sort_order?: "asc" | "desc";
-  per_page?: any;
+// Validation Types
+export interface ValidationError {
+  field: string;
+  message: string;
+  code?: string;
 }
 
-export interface PropertyFilters {
-  status?: PropertyState;
-  type?: PropertyType;
-  price_min?: number;
-  price_max?: number;
-  location?: string;
-  date_from?: string;
-  date_to?: string;
-  search?: string;
-}
-
-export interface TransactionFilters {
-  status?: TransactionStatus;
-  type?: TransactionType;
-  payment_gateway?: PaymentGateway;
-  amount_min?: number;
-  amount_max?: number;
-  date_from?: string;
-  date_to?: string;
-  user_id?: number;
-  property_id?: number;
+export interface FormValidation {
+  isValid: boolean;
+  errors: ValidationError[];
+  warnings?: ValidationError[];
 }
 
 // Chart Data Types
@@ -184,131 +446,157 @@ export interface ChartDataPoint {
   label: string;
   value: number;
   color?: string;
+  percentage?: number;
 }
 
-export interface LineChartData {
-  labels: string[];
-  datasets: {
-    label: string;
-    data: number[];
-    borderColor: string;
-    backgroundColor: string;
-    tension?: number;
-  }[];
+export interface TimeSeriesDataPoint {
+  date: string;
+  value: number;
+  label?: string;
 }
 
-export interface BarChartData {
-  labels: string[];
-  datasets: {
-    label: string;
-    data: number[];
-    backgroundColor: string[];
-    borderColor?: string[];
-    borderWidth?: number;
-  }[];
+export interface ComparisonDataPoint {
+  category: string;
+  current: number;
+  previous: number;
+  change?: number;
+  changePercentage?: number;
 }
 
-// Component Props Types
-export interface KPICardProps {
-  title: string;
-  value: string | number;
-  change?: {
-    value: number;
-    type: "increase" | "decrease";
-    period: string;
+// Report Types
+export interface ReportConfig {
+  id: string;
+  name: string;
+  type: ReportType;
+  filters: Record<string, any>;
+  date_range: {
+    start: string;
+    end: string;
   };
-  icon?: React.ReactNode;
-  variant?: "default" | "success" | "warning" | "danger";
-  loading?: boolean;
+  format: ReportFormat;
+  schedule?: ReportSchedule;
+  recipients?: string[];
+  created_by: number;
+  created_at: string;
 }
 
-export interface StatusBadgeProps {
-  status: UserStatus | PropertyState | TransactionStatus;
-  size?: "sm" | "md" | "lg";
+export type ReportType = 
+  | "users"
+  | "properties" 
+  | "transactions"
+  | "revenue"
+  | "analytics"
+  | "performance"
+  | "activity";
+
+export type ReportFormat = "pdf" | "excel" | "csv" | "json";
+
+export interface ReportSchedule {
+  frequency: "daily" | "weekly" | "monthly" | "quarterly" | "yearly";
+  day_of_week?: number; // 0-6 (Sunday-Saturday)
+  day_of_month?: number; // 1-31
+  time?: string; // HH:MM format
+  timezone?: string;
+  is_active: boolean;
 }
 
-export interface TableColumn<T> {
+// Export utility types
+export type ApiEndpoint = string;
+export type QueryKey = string[];
+export type MutationKey = string;
+
+// Table configuration types
+export interface TableColumn<T = any> {
   key: keyof T | string;
   label: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  render?: (value: any, item: T) => React.ReactNode;
   sortable?: boolean;
+  filterable?: boolean;
   width?: string;
+  align?: "left" | "center" | "right";
+  render?: (value: any, row: T) => React.ReactNode;
+  hidden?: boolean;
 }
 
-export interface TableProps<T> {
-  data: T[];
+export interface TableConfig<T = any> {
   columns: TableColumn<T>[];
-  loading?: boolean;
-  pagination?: {
-    current: number;
-    total: number;
-    pageSize: number;
-    onChange: (page: number) => void;
-  };
-  onRowClick?: (item: T) => void;
-  selectedRows?: number[];
-  onRowSelect?: (ids: number[]) => void;
+  sortable?: boolean;
+  filterable?: boolean;
+  selectable?: boolean;
+  pagination?: boolean;
+  pageSize?: number;
+  showTotal?: boolean;
+  stickyHeader?: boolean;
 }
 
-// Form Types
-export interface UserFormData {
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone_number: string;
-  role: UserRole;
-  status: UserStatus;
+// Permission Types
+export interface Permission {
+  id: number;
+  name: string;
+  guard_name: string;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface PropertyApprovalData {
-  property_id: number;
-  action: "approve" | "reject";
-  notes?: string;
-  reason?: string;
+export interface Role {
+  id: number;
+  name: string;
+  guard_name: string;
+  permissions: Permission[];
+  created_at: string;
+  updated_at: string;
 }
 
-export interface TransactionRefundData {
-  transaction_id: number;
-  amount: number;
-  reason: string;
-  partial: boolean;
+// Cache Types
+export interface CacheStats {
+  total_keys: number;
+  memory_usage: string;
+  hit_rate: number;
+  miss_rate: number;
+  evictions: number;
+  connections: number;
 }
 
-// Error Types
-export interface ApiError {
-  message: string;
-  errors?: Record<string, string[]>;
-  status?: number;
+// System Health Types
+export interface SystemHealth {
+  status: "healthy" | "degraded" | "unhealthy";
+  checks: HealthCheck[];
+  timestamp: string;
 }
 
-// Query Keys for TanStack Query
+export interface HealthCheck {
+  name: string;
+  status: "pass" | "fail" | "warn";
+  message?: string;
+  duration?: number;
+  details?: Record<string, any>;
+}
+
+// Query Keys for React Query
 export const QUERY_KEYS = {
   DASHBOARD: {
-    STATS: ["dashboard", "stats"] as const,
-    REVENUE_CHART: ["dashboard", "revenue-chart"] as const,
-    USER_CHART: ["dashboard", "user-chart"] as const,
-    PROPERTY_CHART: ["dashboard", "property-chart"] as const,
+    STATS: ['dashboard', 'stats'] as const,
+    REVENUE_CHART: ['dashboard', 'revenue-chart'] as const,
+    USER_CHART: ['dashboard', 'user-chart'] as const,
+    PROPERTY_CHART: ['dashboard', 'property-chart'] as const,
   },
   USERS: {
-    LIST: (filters?: UserFilters) => ["users", "list", filters] as const,
-    DETAIL: (id: number) => ["users", "detail", id] as const,
-    TRANSACTIONS: (id: number) => ["users", "transactions", id] as const,
-    PROPERTIES: (id: number) => ["users", "properties", id] as const,
+    LIST: (filters?: any) => ['users', 'list', filters] as const,
+    DETAIL: (id: number) => ['users', 'detail', id] as const,
+    TRANSACTIONS: (id: number) => ['users', 'transactions', id] as const,
+    PROPERTIES: (id: number) => ['users', 'properties', id] as const,
   },
   PROPERTIES: {
-    LIST: (filters?: PropertyFilters) =>
-      ["properties", "list", filters] as const,
-    DETAIL: (id: number) => ["properties", "detail", id] as const,
-    PENDING_VERIFICATION: ["properties", "pending-verification"] as const,
-  },
-  TRANSACTIONS: {
-    LIST: (filters?: TransactionFilters) =>
-      ["transactions", "list", filters] as const,
-    DETAIL: (id: number) => ["transactions", "detail", id] as const,
-    SUMMARY: ["transactions", "summary"] as const,
+    LIST: (filters?: any) => ['properties', 'list', filters] as const,
+    DETAIL: (id: number) => ['properties', 'detail', id] as const,
+    PENDING_VERIFICATION: ['properties', 'pending-verification'] as const,
+    STATISTICS: ['properties', 'statistics'] as const,
   },
   AGENTS: {
-    LIST: ["agents", "list"] as const,
+    LIST: ['agents', 'list'] as const,
+  },
+  TRANSACTIONS: {
+    LIST: (filters?: any) => ['transactions', 'list', filters] as const,
+    DETAIL: (id: number) => ['transactions', 'detail', id] as const,
+    SUMMARY: ['transactions', 'summary'] as const,
   },
 } as const;

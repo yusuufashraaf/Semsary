@@ -494,3 +494,6 @@ export interface RequestStats {
   paidRequests: number;
   // Add other stats as needed
 }
+
+// Re-export admin types
+export * from './admin/admin';
