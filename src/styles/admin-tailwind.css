@@ -1,0 +1,219 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* Base layer - custom CSS reset and global styles */
+@layer base {
+  * {
+    @apply border-gray-200 dark:border-gray-700;
+  }
+
+  .admin-layout {
+    @apply bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 font-sans antialiased;
+  }
+
+  html {
+    @apply scroll-smooth;
+    /* Smooth scrolling enhancement */
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar styles */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-500;
+  }
+}
+
+/* Components layer - reusable component styles */
+@layer components {
+  /* Button variants */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary-100 text-secondary-900 hover:bg-secondary-200 dark:bg-secondary-800 dark:text-secondary-100 dark:hover:bg-secondary-700;
+  }
+
+  .btn-success {
+    @apply bg-success-600 text-white hover:bg-success-700;
+  }
+
+  .btn-warning {
+    @apply bg-warning-600 text-white hover:bg-warning-700;
+  }
+
+  .btn-danger {
+    @apply bg-danger-600 text-white hover:bg-danger-700;
+  }
+
+  .btn-ghost {
+    @apply hover:bg-secondary-100 dark:hover:bg-secondary-800;
+  }
+
+  .btn-outline {
+    @apply border border-secondary-300 bg-transparent hover:bg-secondary-100 dark:border-secondary-700 dark:hover:bg-secondary-800;
+  }
+
+  /* Card component */
+  .card {
+    @apply rounded-xl border bg-white shadow-soft dark:bg-gray-800 dark:border-gray-700;
+  }
+
+  .card-header {
+    @apply px-6 py-4 border-b border-secondary-200 dark:border-gray-700;
+  }
+
+  .card-body {
+    @apply px-6 py-4;
+  }
+
+  .card-footer {
+    @apply px-6 py-4 border-t border-secondary-200 dark:border-gray-700;
+  }
+
+  /* Input styles */
+  .input {
+    @apply block w-full rounded-lg border border-secondary-300 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-secondary-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-secondary-700 dark:bg-secondary-800 dark:text-white dark:placeholder:text-secondary-500 dark:focus:border-primary-500;
+  }
+
+  /* Badge styles - IMPROVED CONTRAST */
+  .admin-layout .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .admin-layout .badge-primary {
+    @apply bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200;
+  }
+
+  .admin-layout .badge-success {
+    @apply bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-200;
+  }
+
+  .admin-layout .badge-warning {
+    @apply bg-warning-100 text-warning-800 dark:bg-warning-900 dark:text-warning-200;
+  }
+
+  .admin-layout .badge-danger {
+    @apply bg-danger-100 text-danger-800 dark:bg-danger-900 dark:text-danger-200;
+  }
+
+  /* FIXED: Better contrast for secondary badges */
+  .admin-layout .badge-secondary {
+    @apply bg-secondary-200 text-secondary-900 dark:bg-secondary-700 dark:text-secondary-100;
+  }
+
+  /* Sidebar styles */
+  .admin-layout .sidebar {
+    @apply fixed left-0 top-0 z-40 h-screen w-64 transform border-r border-secondary-200 bg-white transition-transform dark:border-secondary-700 dark:bg-secondary-800;
+  }
+
+  .admin-layout .sidebar-link {
+    @apply flex items-center w-full px-4 py-3 text-sm font-medium text-secondary-700 rounded-lg hover:bg-secondary-100 dark:text-secondary-300 dark:hover:bg-secondary-700 transition-colors;
+  }
+
+  .admin-layout .sidebar-link.active {
+    @apply bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-200;
+  }
+
+  /* Table styles */
+  .table {
+    @apply min-w-full divide-y divide-secondary-200 dark:divide-secondary-700;
+  }
+
+  .table-header {
+    @apply bg-secondary-50 dark:bg-secondary-800;
+  }
+
+  .table-header-cell {
+    @apply px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400;
+  }
+
+  .table-body {
+    @apply bg-white divide-y divide-secondary-200 dark:bg-secondary-800 dark:divide-secondary-700;
+  }
+
+  .table-cell {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-secondary-900 dark:text-secondary-100;
+  }
+
+  /* Loading animations */
+  .loading-skeleton {
+    @apply animate-pulse bg-secondary-200 dark:bg-secondary-700 rounded;
+  }
+
+  .loading-spinner {
+    @apply animate-spin rounded-full border-2 border-secondary-300 border-t-primary-600;
+  }
+
+  /* Sticky header transition */
+  .sticky-header-enter {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  .sticky-header-enter-active {
+    transform: translateY(0);
+    opacity: 1;
+    transition: transform 300ms ease-out, opacity 300ms ease-out;
+  }
+
+  .sticky-header-exit {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .sticky-header-exit-active {
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform 300ms ease-out, opacity 300ms ease-out;
+  }
+
+  /* Profile dropdown animation */
+  @keyframes dropdown-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .profile-dropdown {
+    animation: dropdown-fade-in 200ms ease-out;
+  }
+}
+
+/* Utilities layer - custom utility classes */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}

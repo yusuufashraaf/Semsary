@@ -10,7 +10,7 @@ export const setStore = (s: AppStore) => {
 };
 
 const api = axios.create({
-  baseURL: "http://localhost:8000/api",
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
 
@@ -60,7 +60,7 @@ const responseInterceptor = async (error: AxiosError) => {
       const refreshResponse = await api.post("/refresh");
 
       // In your Thunk, you used response.data, but here you might need to access the property directly
-      const newAccessToken = refreshResponse.data.accessToken;
+      const newAccessToken = refreshResponse.data.access_token;
 
       // Dispatch the action to update the token in Redux
       // Using imported actions is safer than string literals

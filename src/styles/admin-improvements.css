@@ -1,0 +1,229 @@
+/* src/styles/admin-improvements.css */
+
+/* Shimmer animation for skeleton loading */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Button hover transitions for improved UX */
+.action-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.action-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.action-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Loading spinner for buttons */
+.loading-spinner {
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Skeleton loading animations */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Pulse animation alternative */
+.pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Smooth transitions for modal and overlay */
+.modal-overlay {
+  transition: opacity 0.3s ease-out;
+}
+
+.modal-content {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* Filter loading overlay */
+.filter-loading-overlay {
+  backdrop-filter: blur(2px);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* Workload progress bar animations */
+.workload-bar {
+  transition: width 0.5s ease-in-out;
+}
+
+/* Agent selection hover effects */
+.agent-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.agent-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.agent-card.selected {
+  animation: selectGlow 0.3s ease-out;
+}
+
+@keyframes selectGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+/* Status badge animations */
+.status-badge {
+  transition: all 0.2s ease-in-out;
+}
+
+.status-badge:hover {
+  transform: scale(1.05);
+}
+
+/* Table row hover effects */
+.table-row {
+  transition: all 0.15s ease-in-out;
+}
+
+.table-row:hover {
+  background-color: rgba(249, 250, 251, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Loading dots animation */
+.loading-dots {
+  display: inline-block;
+}
+
+.loading-dots::after {
+  content: '';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { 
+    content: '';
+  }
+  40% { 
+    content: '.';
+  }
+  60% { 
+    content: '..';
+  }
+  80%, 100% { 
+    content: '...';
+  }
+}
+
+/* Success notification styles for SweetAlert2 customization */
+.swal2-popup.swal2-toast .swal2-success {
+  background-color: #10B981 !important;
+}
+
+.swal2-popup.swal2-toast .swal2-error {
+  background-color: #EF4444 !important;
+}
+
+.swal2-popup.swal2-toast .swal2-warning {
+  background-color: #F59E0B !important;
+}
+
+/* Custom focus styles for better accessibility */
+.focus-ring:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: rgba(59, 130, 246, 0.5);
+  ring-offset: 2px;
+}
+
+/* Improved checkbox and radio button styles */
+.custom-checkbox:checked {
+  background-color: #3B82F6;
+  border-color: #3B82F6;
+}
+
+.custom-radio:checked {
+  background-color: #3B82F6;
+  border-color: #3B82F6;
+}
+
+/* Responsive table improvements */
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .action-button {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Dark mode support (if needed) */
+@media (prefers-color-scheme: dark) {
+  .skeleton {
+    background: linear-gradient(90deg, #374151 25%, #4B5563 50%, #374151 75%);
+  }
+  
+  .filter-loading-overlay {
+    background: rgba(17, 24, 39, 0.8);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .action-button {
+    border-width: 2px;
+  }
+  
+  .status-badge {
+    border: 2px solid currentColor;
+  }
+}
