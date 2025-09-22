@@ -4,7 +4,6 @@ import "./OwnerDashboard.css";
 import Overview from "./DashboardOverview";
 import ManageProperties from "./ManageProperties";
 import AddProperty from "./AddPropertyForm";
-
 const OwnerDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState("overview");
 
