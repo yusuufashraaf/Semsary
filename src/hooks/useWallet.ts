@@ -14,7 +14,7 @@ export function useWallet() {
         setError(null);
       })
       .catch((err) => {
-        setError("Login Please...");
+        setError("Login Please... ");
         setWallet(null);
       })
       .finally(() => setLoading(false));
