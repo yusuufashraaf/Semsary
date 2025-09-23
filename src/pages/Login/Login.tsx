@@ -42,22 +42,25 @@ function Login() {
   const submitForm: SubmitHandler<signInType> = (data) => {
     if (searchParams.get("message")) {
       setSearchParams("");
-    }
+    };
     dispatch(ActSignIn(data))
-      .unwrap()
-      .then(() => {
-        dispatch(ActCheckAuth()).unwrap().then((result) => {
-          // Use role-based navigation instead of always going to "/"
-          const user = result.user;
-          if (user?.role === 'admin') {
-            navigate("/admin/dashboard");
-          } else if (user?.role === 'owner') {
-            navigate("/owner-dashboard");
-          } else {
-            navigate("/");
-          }
-        });
-      });
+    .unwrap()
+    .then(() => {
+      return dispatch(ActCheckAuth()).unwrap();
+    })
+    .then((result) => {
+      const user = result.user;
+      if (user?.role === "admin") navigate("/admin/dashboard");
+      else if (user?.role === "owner") navigate("/owner-dashboard");
+      else navigate("/");
+    })
+    .catch((err) => {
+      // catches BOTH ActSignIn and ActCheckAuth errors
+      // console.log("Login failed:", err); // optional
+      // UI already shows toast from extraReducers
+    });
+   
+      
   };
   if (jwt) {
     return <Navigate to="/" />;

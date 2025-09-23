@@ -11,8 +11,6 @@ import { resetUI } from "@store/Auth/AuthSlice";
 import styles from "./AccountSetup.module.css";
 import useCheckEmailForAvailability from "@hooks/useCheckEmailForAvailability";
 import useCheckPhoneForAvailability from "@hooks/useCheckPhoneForAvailability";
-import { toast } from "react-toastify";
-import Loader from "@components/common/Loader/Loader";
 
 type StepStatus = "pending" | "completed" | "skipped";
 interface IAccountSetupProps {
@@ -49,7 +47,6 @@ const AccountSetup = ({
       .then(() => {
         dispatch(updateFormData(data));
         setStepStatus("completed");
-        toast.success("Account setup completed successfully. And you can log In");
         setCurrentStep((prev) => prev + 1);
       });
   };

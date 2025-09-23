@@ -124,7 +124,6 @@ const AuthSlice = createSlice({
         if (state.jwt) initEcho(state.jwt);
       })
       .addCase(ActCheckAuth.rejected, (state) => {
-        console.log("AuthSlice: ActCheckAuth failed. Clearing auth state.");
         state.user = null;
         state.jwt = null;
         state.isInitialized = true;
