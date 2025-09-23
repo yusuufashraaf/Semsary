@@ -4,6 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { TFullUser } from 'src/types/users/users.types';
 import { Chat as ApiChat, Message as ApiMessage } from 'src/types';
 import Loader from '@components/common/Loader/Loader';
+import Pusher from 'pusher-js';
+import { useAppSelector } from '@store/hook';
+import axios from 'axios';
+import UserMessagesOrigin from './UserMessagesOrigin';
 
 interface Conversation {
   user: { id: number; first_name: string; last_name: string; avatar?: string };
@@ -20,7 +24,236 @@ const UserMessages = ({ user }: { user: TFullUser }) => {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const pusherRef = React.useRef<Pusher | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const { jwt } = useAppSelector(state => state.Authslice);
 
+  // WebSocket setup for real-time messaging with custom axios authenticator
+  // WebSocket setup for real-time messaging with custom axios authenticator
+useEffect(() => {
+  const token = jwt;
+  
+  if (!token) {
+    console.error('❌ No auth token found in Redux store!');
+    return;
+  }
+
+  // Function that creates an authorizer with the current token
+  const createAuthorizer = (currentToken) => {
+    return (channel, options) => ({
+      authorize: (socketId, callback) => {
+        console.log('🔐 Authorizing channel:', channel.name);
+        
+        const authApi = axios.create({
+          baseURL: import.meta.env.VITE_API_URL,
+          headers: {
+            'Authorization': `Bearer ${currentToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        authApi.post('/user/broadcasting/auth', {
+          socket_id: socketId,
+          channel_name: channel.name
+        })
+        .then(response => {
+          console.log('✅ Channel authorized successfully');
+          callback(false, response.data);
+        })
+        .catch(error => {
+          console.error('❌ Channel authorization failed:', error.response?.data);
+          callback(true, error);
+        });
+      }
+    });
+  };
+
+  const pusher = new Pusher(import.meta.env.VITE_REVERB_APP_KEY, {
+    wsHost: import.meta.env.VITE_REVERB_HOST,
+    wsPort: import.meta.env.VITE_REVERB_PORT,
+    forceTLS: false,
+    enabledTransports: ['ws'],
+    cluster: 'mt1',
+    authorizer: createAuthorizer(token),
+  });
+
+  // Add connection event listeners with better error handling
+  pusher.connection.bind('connected', () => {
+    console.log('✅ WebSocket connected successfully!');
+    setIsConnected(true);
+  });
+
+  pusher.connection.bind('error', (error) => {
+    // Only log real errors, not normal disconnections
+    if (error.type !== 'WebSocketError' && !error.message?.includes('disconnect')) {
+      console.error('❌ WebSocket connection error:', error);
+    }
+    setIsConnected(false);
+  });
+
+  pusher.connection.bind('disconnected', () => {
+    console.log('🔌 WebSocket disconnected (normal)');
+    setIsConnected(false);
+  });
+
+  // Monitor connection states for debugging
+  pusher.connection.bind('state_change', (states) => {
+    console.log('🔄 Connection state change:', states);
+    // Update connection status based on state
+    if (states.current === 'connected') {
+      setIsConnected(true);
+    } else if (states.current === 'disconnected' || states.current === 'failed') {
+      setIsConnected(false);
+    }
+  });
+
+  // Handle subscription events
+  pusher.connection.bind('subscription_error', (error) => {
+    console.error('❌ Subscription error:', error);
+  });
+
+  pusherRef.current = pusher;
+
+  return () => {
+    if (pusherRef.current) {
+      console.log('🧹 Cleaning up WebSocket connection...');
+      pusherRef.current.disconnect();
+    }
+  };
+}, [jwt]);
+
+  // Test authentication separately
+  useEffect(() => {
+    if (jwt) {
+      // Test the auth endpoint directly using the same axios configuration
+      const testAuth = async () => {
+        try {
+          const testApi = axios.create({
+            baseURL: import.meta.env.VITE_API_URL,
+            headers: {
+              'Authorization': `Bearer ${jwt}`,
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const response = await testApi.post('/user/broadcasting/auth', {
+            socket_id: 'test_socket_id_123',
+            channel_name: 'private-chat.1'
+          });
+          console.log('🔐 Auth test successful:', response.data);
+        } catch (error) {
+          console.error('🔐 Auth test failed:', error.response?.data || error.message);
+        }
+      };
+
+      testAuth();
+    }
+  }, [jwt]);
+
+  useEffect(() => {
+    // Check if messageService can get chats (proves token works)
+    messageService.getUserChats().then(response => {
+      console.log('✅ Token is valid - fetched chats successfully');
+      console.log('Number of chats:', response.chats.length);
+    }).catch(error => {
+      console.error('❌ Token might be invalid - failed to fetch chats:', error);
+    });
+  }, []);
+
+  // Subscribe to chat channels when conversations are loaded
+  // Subscribe to chat channels when conversations are loaded
+useEffect(() => {
+  if (!pusherRef.current || conversations.length === 0) {
+    console.log('⏳ Waiting for Pusher instance or conversations...');
+    return;
+  }
+
+  console.log(`📡 Attempting to subscribe to ${conversations.length} chat channels`);
+
+  conversations.forEach(conversation => {
+    if (conversation.chat_id) {
+      const channelName = `private-chat.${conversation.chat_id}`;
+      
+      console.log(`🔔 Subscribing to channel: ${channelName}`);
+      
+      try {
+        const channel = pusherRef.current!.subscribe(channelName);
+        
+        // Add subscription event listeners
+        channel.bind('pusher:subscription_succeeded', () => {
+          console.log(`✅ Successfully subscribed to ${channelName}`);
+        });
+
+        channel.bind('pusher:subscription_error', (error: any) => {
+          console.error(`❌ Failed to subscribe to ${channelName}:`, error);
+        });
+
+        // Listen for your actual application events
+        channel.bind('new.message', (data: any) => {
+          console.log('📨 New message received via WebSocket:', data);
+          handleNewMessage(data);
+        });
+
+        channel.bind('MessageRead', (data: any) => {
+          console.log('👀 Message read event:', data);
+          handleMessageRead(data);
+        });
+
+        // Add client event for testing
+        channel.bind('client-message', (data: any) => {
+          console.log('💬 Client event received:', data);
+        });
+
+      } catch (error) {
+        console.error(`🚨 Exception subscribing to ${channelName}:`, error);
+      }
+    }
+  });
+
+  return () => {
+    if (pusherRef.current) {
+      conversations.forEach(conversation => {
+        if (conversation.chat_id) {
+          const channelName = `private-chat.${conversation.chat_id}`;
+          pusherRef.current!.unsubscribe(channelName);
+          console.log(`🔕 Unsubscribed from ${channelName}`);
+        }
+      });
+    }
+  };
+}, [conversations]);
+
+  const handleNewMessage = (data: any) => {
+    const newMessageData = data.message;
+    
+    // Update messages if this is the currently selected conversation
+    if (selectedConversation && newMessageData.chat_id === selectedConversation.chat_id) {
+      setMessages(prev => [...prev, newMessageData]);
+    }
+    
+    // Update conversations list with new last message
+    setConversations(prev => prev.map(conv => 
+      conv.chat_id === newMessageData.chat_id 
+        ? { 
+            ...conv, 
+            last_message: newMessageData,
+            unread_count: conv.chat_id === selectedConversation?.chat_id ? 0 : conv.unread_count + 1
+          }
+        : conv
+    ));
+  };
+
+  const handleMessageRead = (data: any) => {
+    // Update unread count when messages are read
+    setConversations(prev => prev.map(conv => 
+      conv.chat_id === data.chat_id 
+        ? { ...conv, unread_count: data.unread_count || 0 }
+        : conv
+    ));
+  };
+
+  // Fetch conversations on component mount
   useEffect(() => {
     fetchConversations();
   }, [user.id]);
@@ -65,6 +298,15 @@ const UserMessages = ({ user }: { user: TFullUser }) => {
       const response = await messageService.getChatMessages(chatId);
       setMessages(response.messages);
       setSelectedConversation({ ...conversation, chat_id: chatId });
+      
+      // Mark messages as read when opening conversation
+      if (conversation.unread_count > 0) {
+        await messageService.markAsRead(chatId);
+        // Update conversation to remove unread count
+        setConversations(prev => prev.map(conv => 
+          conv.chat_id === chatId ? { ...conv, unread_count: 0 } : conv
+        ));
+      }
     } catch (err) {
       console.error('Failed to fetch messages:', err);
     } finally {
@@ -86,17 +328,11 @@ const UserMessages = ({ user }: { user: TFullUser }) => {
     if (!newMessage.trim() || !selectedConversation?.chat_id) return;
 
     try {
-      const response = await messageService.sendMessage(selectedConversation.chat_id, newMessage);
+      // Send message via HTTP API (which will broadcast via WebSocket)
+      await messageService.sendMessage(selectedConversation.chat_id, newMessage);
       
-      setMessages(prev => [...prev, response.message]);
+      // Clear input - the message will appear via WebSocket
       setNewMessage('');
-      
-      setConversations(prev => prev.map(conv => 
-        conv.user.id === selectedConversation.user.id && 
-        conv.property.id === selectedConversation.property.id
-          ? { ...conv, last_message: response.message, unread_count: 0 }
-          : conv
-      ));
     } catch (err) {
       console.error('Failed to send message:', err);
     }
@@ -104,9 +340,69 @@ const UserMessages = ({ user }: { user: TFullUser }) => {
 
   if (loading && !conversations.length) return <div className="container loading"><Loader message='Loading messages...' /></div>;
 
+// Add this function to test real-time messaging
+const testRealTimeMessaging = async () => {
+  if (!selectedConversation?.chat_id) return;
+  
+  try {
+    console.log('🧪 Testing real-time messaging...');
+    
+    // Send a test message with timestamp
+    const testMessage = `Test real-time message at ${new Date().toLocaleTimeString()}`;
+    await messageService.sendMessage(selectedConversation.chat_id, testMessage);
+    console.log('✅ Test message sent via HTTP');
+    
+    // Check if Pusher is connected and has active subscriptions
+    if (pusherRef.current) {
+      const connectionState = pusherRef.current.connection.state;
+      console.log('🔌 Pusher connection state:', connectionState);
+      
+      // List all active subscriptions
+      const subscriptions = Object.keys(pusherRef.current.channels.channels);
+      console.log('📡 Active channel subscriptions:', subscriptions);
+    }
+    
+  } catch (error) {
+    console.error('❌ Failed to send test message:', error);
+  }
+};
+
+// Add a test button to your UI temporarily
+
+
   return (
     <div className="container">
       <h1 className="heading-primary">Messages</h1>
+      <button 
+  onClick={testRealTimeMessaging}
+  style={{
+    marginBottom: '10px',
+    padding: '10px',
+    background: '#007bff',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer'
+  }}
+>
+  Test Real-Time Messaging
+</button>
+      
+      <div style={{ 
+        padding: '10px', 
+        marginBottom: '20px',
+        background: isConnected ? '#d4edda' : '#f8d7da',
+        color: isConnected ? '#155724' : '#721c24',
+        borderRadius: '4px',
+        border: `1px solid ${isConnected ? '#c3e6cb' : '#f5c6cb'}`
+      }}>
+        <strong>WebSocket Status:</strong> {isConnected ? 'Connected ✅' : 'Disconnected ❌'}
+        {!isConnected && (
+          <div style={{ fontSize: '0.9em', marginTop: '5px' }}>
+            Real-time messages will not work until connected.
+          </div>
+        )}
+      </div>
       
       <div className="messages-grid" style={{ 
         display: 'grid', 
@@ -278,7 +574,10 @@ const UserMessages = ({ user }: { user: TFullUser }) => {
                 {loading ? (
                   <div className="loading"> <Loader message='Loading messages...' /> </div>
                 ) : messages.length > 0 ? (
-                  messages.map(message => (
+                  messages
+                    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+                    .reverse()
+                    .map(message => (
                     <div
                       key={message.id}
                       style={{
@@ -375,6 +674,7 @@ const UserMessages = ({ user }: { user: TFullUser }) => {
           )}
         </div>
       </div>
+      <UserMessagesOrigin />
     </div>
   );
 };

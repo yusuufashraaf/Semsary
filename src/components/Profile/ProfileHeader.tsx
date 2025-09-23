@@ -16,6 +16,24 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, unreadCount }) => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  const getSectionTitle = (section: string) => {
+    const titles: { [key: string]: string } = {
+      userInfo: 'Your Info',
+      properties: 'My Properties',
+      'owner-dashboard': 'Dashboard',
+      reviews: 'Reviews & Ratings',
+      purchases: 'Purchase History',
+      wishlist: 'My Wishlist',
+      notifications: 'Notifications',
+      ownerNotification: 'Notifications',
+      rentRequests: 'Requests',
+      changePhone: 'Change Phone Number',
+      changeEmail: 'Change Email Address',
+      changePassword: 'Change Password'
+    };
+    return titles[section] || 'Profile';
+  };
+
   const handleNavigation = (path: string) => {
     navigate(`/profile/${path}`);
   };
@@ -111,7 +129,6 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, unreadCount }) => {
               >
                 <i className="fas fa-bell nav-icon"></i>
                 <span>Messages</span>
-                <span className="notification-badge">12</span>
               </button>
 
           <button 

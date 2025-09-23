@@ -13,6 +13,7 @@ import OwnerDashboard from '@components/owner/OwnerDashboard';
 import RentRequests from '@components/owner/RentRequests';
 import { useAppSelector } from '@store/hook';
 import UserMessages from '@components/Profile/UserMessages';
+import UserMessagesOrigin from '@components/Profile/UserMessagesOrigin';
 
 const Profile = () => {
   const { section } = useParams<{ section: string }>();
@@ -51,7 +52,7 @@ const Profile = () => {
       case 'wishlist':
         return <UserWishlist user={user} />;
     case 'messages':
-      return <UserMessages user={user} />;
+      return <UserMessagesOrigin />;
     case 'changeEmail':
       return <ChangeEmail />;
     case 'changePhone':
