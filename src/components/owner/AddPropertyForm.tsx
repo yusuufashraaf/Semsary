@@ -77,15 +77,15 @@ const AddPropertyForm: React.FC = () => {
     }
 
     // Price validation
-    if (!formData.price || Number(formData.price) <= 0) {
-      errors.price = "Price must be greater than 0";
+    if (!formData.price || Number(formData.price) <= 1000) {
+      errors.price = "Price must be greater than 1000";
     } else if (Number(formData.price) > 100000000) {
       errors.price = "Price is too high";
     }
 
     // Size validation
-    if (!formData.size || Number(formData.size) <= 0) {
-      errors.size = "Size must be greater than 0";
+    if (!formData.size || Number(formData.size) <= 60) {
+      errors.size = "Size must be greater than 60";
     } else if (Number(formData.size) > 50000) {
       errors.size = "Size is too large";
     }
@@ -101,6 +101,10 @@ const AddPropertyForm: React.FC = () => {
     } else if (formData.previewUrls.length > 10) {
       errors.images = "Maximum 10 images allowed";
     }
+    //contract validation
+    if (!formData.contract) {
+      errors.contract = "Please upload a contract document";
+    } 
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -324,7 +328,7 @@ const AddPropertyForm: React.FC = () => {
       setValidationErrors({});
       
       // Navigate to dashboard
-      // navigate('/owner-dashboard');
+      // navigate('profile/owner-dashboard');
       
     } catch (error) {
       toast.error("Failed to save property. Please check the form for errors.");
