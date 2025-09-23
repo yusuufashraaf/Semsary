@@ -58,32 +58,39 @@ const MobileFiltersModal: React.FC<MobileFiltersModalProps> = ({
           <div className={`modal-body ${styles.modalBody}`}>
             <form className="w-100">
               <div className="d-flex justify-content-center w-100">
-                <Filters
-                  location={tempFilters.location}
-                  setLocation={(val) => updateFilter("location", val)}
-                  propertyType={tempFilters.propertyType}
-                  setPropertyType={(val) => updateFilter("propertyType", val)}
-                  bedrooms={tempFilters.bedrooms}
-                  setBedrooms={(val) => updateFilter("bedrooms", val)}
-                  status={tempFilters.status}
-                  setStatus={(val) => updateFilter("status", val)}
-                  priceMin={tempFilters.priceMin}
-                  setPriceMin={(val) => updateFilter("priceMin", val)}
-                  priceMax={tempFilters.priceMax}
-                  setPriceMax={(val) => updateFilter("priceMax", val)}
-                  minPrice={filterOptions.minPrice}
-                  maxPrice={filterOptions.maxPrice}
-                  amenities={tempFilters.amenities}
-                  setAmenities={(val) => updateFilter("amenities", val)}
-                  clearAllFilters={clearTempFilters}
-                  itemsPerPage={itemsPerPage}
-                  setItemsPerPage={setItemsPerPage}
-                  locations={filterOptions.locations}
-                  propertyTypes={filterOptions.propertyTypes}
-                  bedroomsOptions={filterOptions.bedroomsOptions}
-                  statuses={filterOptions.statuses}
-                  amenitiesOptions={filterOptions.amenitiesOptions}
-                />
+<Filters
+  location={tempFilters.location}
+  setLocation={(val) => updateFilter("location", val)}
+  propertyType={tempFilters.propertyType}
+  setPropertyType={(val) => updateFilter("propertyType", val)}
+  bedrooms={tempFilters.bedrooms}
+  setBedrooms={(val) => updateFilter("bedrooms", val)}
+  status={tempFilters.status}
+  setStatus={(val) => updateFilter("status", val)}
+  priceMin={tempFilters.priceMin}
+  setPriceMin={(val) => updateFilter("priceMin", val)}
+  priceMax={tempFilters.priceMax}
+  setPriceMax={(val) => updateFilter("priceMax", val)}
+  /** ✅ missing priceType props */
+  priceType={tempFilters.priceType}
+  setPriceType={(val) => updateFilter("priceType", val)}
+  minPrice={filterOptions.minPrice}
+  maxPrice={filterOptions.maxPrice}
+  amenities={tempFilters.amenities}
+  setAmenities={(val) => updateFilter("amenities", val)}
+  clearAllFilters={clearTempFilters}
+  itemsPerPage={itemsPerPage}
+  setItemsPerPage={setItemsPerPage}
+  locations={filterOptions.locations}
+  propertyTypes={filterOptions.propertyTypes}
+  bedroomsOptions={filterOptions.bedroomsOptions}
+  statuses={filterOptions.statuses}
+  amenitiesOptions={filterOptions.amenitiesOptions}
+  sortBy={tempFilters.sortBy}
+  setSortBy={(val) => updateFilter("sortBy", val)}
+  sortOrder={tempFilters.sortOrder}
+  setSortOrder={(val) => updateFilter("sortOrder", val)}
+/>
               </div>
             </form>
           </div>

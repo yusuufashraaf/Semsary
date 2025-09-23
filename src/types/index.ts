@@ -99,6 +99,8 @@ export interface FilterState {
   amenities: Amenities;
   itemsPerPage: number;
   priceType: string;
+  sortBy: string;
+  sortOrder: string;
 }
 
 export interface FilterOptions {
@@ -122,6 +124,11 @@ export interface FiltersProps extends FilterState, FilterOptions {
   setItemsPerPage: NumberSetter;
   setPriceType: StringSetter;
   clearAllFilters: () => void;
+  sortBy: string;
+setSortBy: (val: string) => void;
+sortOrder: string;
+setSortOrder: (val: string) => void;
+
 }
 
 export interface MobileFiltersModalProps {
@@ -134,6 +141,9 @@ export interface MobileFiltersModalProps {
   filterOptions: FilterOptions;
   itemsPerPage: number;
   setItemsPerPage: NumberSetter;
+    sortBy: string;
+  sortOrder: string;
+
 }
 
 // ---------------- Reviews ----------------
