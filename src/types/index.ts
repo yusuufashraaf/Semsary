@@ -469,16 +469,19 @@ export type RentRequest = {
   property_id: number;
   user_id: number;
   status: string;
+  total_price: string;
   property?: {
     id: number;
     title: string;
     location: {
       address: string;
     };
+    owner_id: number;
   };
   user_info: {
     first_name: string;
     last_name: string;
+    role: string;
     phone_number: string;
   }
 };
@@ -513,11 +516,17 @@ export interface CreateRentRequestData {
 
 // Payment Data
 export interface PaymentData {
-  paymentMethod: string;
-  amount: number;
-  currency?: string;
+  payment_method_token: string;
+  expected_total: number;
+  idempotency_key: string;
   // Add other payment fields as needed
 }
+// export interface PaymentData {
+//   paymentMethod: string;
+//   amount: number;
+//   currency?: string;
+//   // Add other payment fields as needed
+// }
 
 // Request Stats
 export interface RequestStats {
@@ -574,7 +583,7 @@ export interface Checkout {
   rent_request_id: number;
   requester_id: number;
   requested_at: string;
-  status: 'pending' | 'confirmed' | 'rejected' | 'auto_confirmed';
+  status: 'pending' | 'confirmed' | 'rejected' | 'auto_confirmed'|'agent_review'| 'approved' | 'rejected_by_owner' | 'overridden_by_admin' | 'completed';
   type: 'before_checkin' | 'within_1_day' | 'after_1_day' | 'monthly_mid_contract';
   reason?: string;
   owner_confirmation: 'pending' | 'confirmed' | 'rejected' | 'not_required' | 'auto_confirmed';
@@ -613,6 +622,7 @@ export interface CheckoutAction {
   notes?: string;
   damage_notes?: string;
   admin_note?: string;
+  decision?: 'approve' | 'reject';
 }
 
 export interface CheckoutStats {

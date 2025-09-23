@@ -1,13 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRentRequests } from "@hooks/useRentRequest";
 import { RentRequest } from "src/types";
 import "./RentRequests.css";
-
-type RequestsProps = {
+import { useNavigate } from "react-router-dom";type RequestsProps = {
   userId: number;
 };
 
 const OwnerRequests: React.FC<RequestsProps> = ({ userId }) => {
+  const navigate = useNavigate();
   const {
     ownerRentRequests,
     userRentRequests,
@@ -19,10 +19,10 @@ const OwnerRequests: React.FC<RequestsProps> = ({ userId }) => {
     rejectRequest,
     cancelConfirmedRequest,
     cancelRequest,
+    payForRentRequest,
     ownerPagination,
     userPagination
   } = useRentRequests(userId);
-
   // Load both owner & user requests on mount
   useEffect(() => {
     fetchOwnerRentRequests();
@@ -85,10 +85,26 @@ const OwnerRequests: React.FC<RequestsProps> = ({ userId }) => {
   const renderUserActions = (req: RentRequest) => {
     switch (req.status) {
       case "confirmed":
+        <p>Status: {req.status}</p>
+
         return (
+          <div className="action-buttons">
           <button onClick={() => cancelRequest(req.id)} className="action-btn cancel-btn">
             <i className="fas fa-times"></i> Cancel Request
           </button>
+          <button
+            onClick={() =>
+              payForRentRequest(req.id, {
+                payment_method_token: "dummy_token_123",
+                expected_total: Number(req.total_price),
+                idempotency_key: crypto.randomUUID(),
+              })
+            }
+            className="action-btn pay-btn"
+          >
+            <i className="fas fa-credit-card"></i> Pay
+          </button>
+        </div>
         );
       case "confirmed":
         return (
@@ -98,10 +114,23 @@ const OwnerRequests: React.FC<RequestsProps> = ({ userId }) => {
         );
       case "paid":
         return (
-          <span className="status-badge status-paid">
-            <i className="fas fa-credit-card"></i> Paid
+        // <div className="checkout-wrapper">
+        //     <button
+        //       onClick={() => navigate("/checkout", {
+        //       state: {
+        //         rentRequest: req,
+        //         userId: userId,
+        //       },
+        //     })}
+        //       className="action-btn pay-btn"
+        //     >
+        //       <i className="fas fa-credit-card"></i> Checkout
+        //     </button>
+        // </div>
+        <span className="status-badge status-paid">
+            <i className="fas fa-check-circle"></i> paid
           </span>
-        );
+      );
       default:
         return (
              <div className="request-actions">
@@ -148,7 +177,6 @@ const OwnerRequests: React.FC<RequestsProps> = ({ userId }) => {
                   <h4 className="property-title">
                     {req.property?.title || "Property Title"}
                   </h4>
-
                   <div className="location">
                     <i className="fas fa-map-marker-alt"></i>{" "}
                     {req.property?.location?.address || "Property Location"}
