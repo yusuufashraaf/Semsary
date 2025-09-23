@@ -16,7 +16,7 @@ export default function ListingCard({
     <div className={`${styles.card} card h-100 shadow-sm`}>
       <div className={styles.imageWrapper}>
         <Link to={`/property/${id}`}>
-          <img src={image} className={styles.cardImg} alt={title} />
+<img src={image ?? undefined} className={styles.cardImg} alt={title ?? ''} />
         </Link>
         <span className={`${styles.priceBadge} badge`}>{formatCurrency(price)}</span>
       </div>
