@@ -1,0 +1,350 @@
+/* CS Agent Tailwind CSS - Blue-Green Theme */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@layer base {
+  :root {
+    /* CS Agent Primary Colors - Teal/Emerald */
+    --cs-primary-50: #f0fdfa;
+    --cs-primary-100: #ccfbf1;
+    --cs-primary-200: #99f6e4;
+    --cs-primary-300: #5eead4;
+    --cs-primary-400: #2dd4bf;
+    --cs-primary-500: #14b8a6;
+    --cs-primary-600: #0d9488;
+    --cs-primary-700: #0f766e;
+    --cs-primary-800: #115e59;
+    --cs-primary-900: #134e4a;
+
+    /* CS Agent Accent Colors - Emerald */
+    --cs-accent-50: #ecfdf5;
+    --cs-accent-100: #d1fae5;
+    --cs-accent-200: #a7f3d0;
+    --cs-accent-300: #6ee7b7;
+    --cs-accent-400: #34d399;
+    --cs-accent-500: #10b981;
+    --cs-accent-600: #059669;
+    --cs-accent-700: #047857;
+    --cs-accent-800: #065f46;
+    --cs-accent-900: #064e3b;
+
+    /* Status Colors for Verification */
+    --status-pending: #f59e0b;
+    --status-in-progress: #3b82f6;
+    --status-completed: #10b981;
+    --status-rejected: #ef4444;
+    --status-cancelled: #6b7280;
+
+    /* Priority Colors */
+    --priority-urgent: #dc2626;
+    --priority-high: #f97316;
+    --priority-normal: #3b82f6;
+    --priority-low: #9ca3af;
+
+    /* Workload Status Colors */
+    --workload-available: #10b981;
+    --workload-low: #22d3ee;
+    --workload-medium: #f59e0b;
+    --workload-high: #f97316;
+    --workload-overloaded: #ef4444;
+  }
+
+  .dark {
+    --cs-primary-50: #134e4a;
+    --cs-primary-100: #115e59;
+    --cs-primary-200: #0f766e;
+    --cs-primary-300: #0d9488;
+    --cs-primary-400: #14b8a6;
+    --cs-primary-500: #2dd4bf;
+    --cs-primary-600: #5eead4;
+    --cs-primary-700: #99f6e4;
+    --cs-primary-800: #ccfbf1;
+    --cs-primary-900: #f0fdfa;
+  }
+}
+
+@layer components {
+  /* CS Agent Layout */
+  .cs-agent-layout {
+    @apply relative min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800;
+  }
+
+  /* CS Agent Sidebar */
+  .cs-agent-sidebar {
+    @apply fixed left-0 top-0 z-40 h-screen border-r border-gray-200 bg-white transition-all duration-300 dark:border-gray-700 dark:bg-gray-800;
+  }
+
+  .cs-agent-sidebar-collapsed {
+    @apply w-16;
+  }
+
+  .cs-agent-sidebar-expanded {
+    @apply w-64;
+  }
+
+  /* CS Agent Header */
+  .cs-agent-header {
+    @apply sticky top-0 z-30 border-b border-gray-200 bg-white/80 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80;
+  }
+
+  /* Verification Card Styles */
+  .verification-card {
+    @apply rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-lg dark:border-gray-700 dark:bg-gray-800;
+  }
+
+  .verification-card-pending {
+    @apply border-l-4 border-l-amber-500;
+  }
+
+  .verification-card-in-progress {
+    @apply border-l-4 border-l-blue-500;
+  }
+
+  .verification-card-completed {
+    @apply border-l-4 border-l-green-500;
+  }
+
+  .verification-card-rejected {
+    @apply border-l-4 border-l-red-500;
+  }
+
+  /* CS Agent Buttons */
+  .btn-cs-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-teal-500 to-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:from-teal-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-cs-secondary {
+    @apply inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600;
+  }
+
+  .btn-cs-ghost {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-700;
+  }
+
+  /* Status Badges */
+  .status-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .status-pending {
+    @apply bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300;
+  }
+
+  .status-in-progress {
+    @apply bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300;
+  }
+
+  .status-completed {
+    @apply bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300;
+  }
+
+  .status-rejected {
+    @apply bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300;
+  }
+
+  .status-cancelled {
+    @apply bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300;
+  }
+
+  /* Priority Badges */
+  .priority-urgent {
+    @apply bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300;
+  }
+
+  .priority-high {
+    @apply bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300;
+  }
+
+  .priority-normal {
+    @apply bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300;
+  }
+
+  .priority-low {
+    @apply bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300;
+  }
+
+  /* File Upload Zone */
+  .file-upload-zone {
+    @apply relative flex min-h-[200px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 transition-colors hover:border-teal-400 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:hover:border-teal-500 dark:hover:bg-gray-700;
+  }
+
+  .file-upload-zone-active {
+    @apply border-teal-500 bg-teal-50 dark:border-teal-400 dark:bg-teal-900/20;
+  }
+
+  .file-upload-zone-error {
+    @apply border-red-500 bg-red-50 dark:border-red-400 dark:bg-red-900/20;
+  }
+
+  /* Progress Bar */
+  .progress-bar {
+    @apply h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700;
+  }
+
+  .progress-bar-fill {
+    @apply h-full rounded-full transition-all duration-300 ease-out;
+  }
+
+  .progress-bar-teal {
+    @apply bg-gradient-to-r from-teal-500 to-emerald-500;
+  }
+
+  .progress-bar-blue {
+    @apply bg-gradient-to-r from-blue-500 to-cyan-500;
+  }
+
+  .progress-bar-green {
+    @apply bg-gradient-to-r from-green-500 to-emerald-500;
+  }
+
+  .progress-bar-amber {
+    @apply bg-gradient-to-r from-amber-500 to-orange-500;
+  }
+
+  .progress-bar-red {
+    @apply bg-gradient-to-r from-red-500 to-pink-500;
+  }
+
+  /* CS Agent Cards */
+  .cs-card {
+    @apply rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800;
+  }
+
+  .cs-card-hover {
+    @apply transition-all hover:shadow-lg hover:scale-[1.02];
+  }
+
+  /* CS Agent Forms */
+  .cs-input {
+    @apply w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-teal-400 dark:focus:ring-teal-400;
+  }
+
+  .cs-select {
+    @apply w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-teal-400 dark:focus:ring-teal-400;
+  }
+
+  .cs-textarea {
+    @apply w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-teal-400 dark:focus:ring-teal-400;
+  }
+
+  /* CS Agent Tabs */
+  .cs-tabs {
+    @apply flex space-x-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-800;
+  }
+
+  .cs-tab {
+    @apply flex-1 rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-white;
+  }
+
+  .cs-tab-active {
+    @apply bg-white text-teal-600 shadow-sm dark:bg-gray-700 dark:text-teal-400;
+  }
+
+  /* Timeline Styles */
+  .timeline-item {
+    @apply relative pl-8 pb-6;
+  }
+
+  .timeline-item::before {
+    @apply absolute left-2.5 top-0 h-full w-px bg-gray-300 dark:bg-gray-600;
+    content: '';
+  }
+
+  .timeline-item:last-child::before {
+    @apply hidden;
+  }
+
+  .timeline-dot {
+    @apply absolute left-0 h-5 w-5 rounded-full border-4 border-white bg-teal-500 dark:border-gray-800;
+  }
+
+  /* Animations */
+  @keyframes slideUp {
+    from {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@layer utilities {
+  /* CS Agent Text Gradients */
+  .text-gradient-cs {
+    @apply bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent;
+  }
+
+  /* CS Agent Background Gradients */
+  .bg-gradient-cs {
+    @apply bg-gradient-to-br from-teal-500 to-emerald-600;
+  }
+
+  .bg-gradient-cs-light {
+    @apply bg-gradient-to-br from-teal-50 to-emerald-50;
+  }
+
+  .bg-gradient-cs-dark {
+    @apply bg-gradient-to-br from-teal-900/20 to-emerald-900/20;
+  }
+
+  /* Shadows */
+  .shadow-cs {
+    box-shadow: 0 4px 6px -1px rgba(20, 184, 166, 0.1), 0 2px 4px -1px rgba(20, 184, 166, 0.06);
+  }
+
+  .shadow-cs-lg {
+    box-shadow: 0 10px 15px -3px rgba(20, 184, 166, 0.1), 0 4px 6px -2px rgba(20, 184, 166, 0.05);
+  }
+
+  /* Custom Scrollbar */
+  .cs-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .cs-scrollbar::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+  }
+
+  .cs-scrollbar::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-gray-300 dark:bg-gray-600;
+  }
+
+  .cs-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-500;
+  }
+}

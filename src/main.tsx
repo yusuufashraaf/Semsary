@@ -1,17 +1,29 @@
 import { createRoot } from "react-dom/client";
 import AppRouter from "@routes/AppRouter.tsx";
-// styles
+
+// Styles - Keep Bootstrap and main website styles only
+import "@styles/themes.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/global.css";
 import "./components/Profile/profile-components.css";
 import { Provider } from "react-redux";
-import { persistor,store } from "./store";
+import { persistor, store } from "@store/index";
 import { PersistGate } from "redux-persist/integration/react";
 
+// For the Admin dashboard
+import { QueryClientProvider } from "@tanstack/react-query";
+// import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { queryClient } from "@lib/queryClient";
+
 createRoot(document.getElementById("root")!).render(
-    <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-            <AppRouter />
-        </PersistGate>
-    </Provider>
+  // <React.StrictMode>
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <QueryClientProvider client={queryClient}>
+        <AppRouter />
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+      </QueryClientProvider>
+    </PersistGate>
+  </Provider>
+  // </React.StrictMode>
 );

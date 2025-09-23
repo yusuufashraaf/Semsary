@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from "../../store";
 import api from "../../services/axios-global"; 
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import {generateDescription} from "../../services/ownerDashboard"
 import { string } from "zod";
 
 const AddPropertyForm: React.FC = () => {
@@ -76,15 +77,15 @@ const AddPropertyForm: React.FC = () => {
     }
 
     // Price validation
-    if (!formData.price || Number(formData.price) <= 0) {
-      errors.price = "Price must be greater than 0";
+    if (!formData.price || Number(formData.price) <= 1000) {
+      errors.price = "Price must be greater than 1000";
     } else if (Number(formData.price) > 100000000) {
       errors.price = "Price is too high";
     }
 
     // Size validation
-    if (!formData.size || Number(formData.size) <= 0) {
-      errors.size = "Size must be greater than 0";
+    if (!formData.size || Number(formData.size) <= 60) {
+      errors.size = "Size must be greater than 60";
     } else if (Number(formData.size) > 50000) {
       errors.size = "Size is too large";
     }
@@ -100,6 +101,10 @@ const AddPropertyForm: React.FC = () => {
     } else if (formData.previewUrls.length > 10) {
       errors.images = "Maximum 10 images allowed";
     }
+    //contract validation
+    if (!formData.contract) {
+      errors.contract = "Please upload a contract document";
+    } 
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -323,7 +328,7 @@ const AddPropertyForm: React.FC = () => {
       setValidationErrors({});
       
       // Navigate to dashboard
-      navigate('/owner-dashboard');
+      // navigate('profile/owner-dashboard');
       
     } catch (error) {
       toast.error("Failed to save property. Please check the form for errors.");
@@ -345,7 +350,6 @@ const AddPropertyForm: React.FC = () => {
           </ul>
         </Alert>
       )}
-
       <Form onSubmit={handleSubmit}>
         {/* Title */}
         <Form.Group className="mb-3">
@@ -391,6 +395,49 @@ const AddPropertyForm: React.FC = () => {
             </div>
           )}
         </Form.Group>
+          <button
+            type="button"
+            disabled={isSubmitting}
+            className="generate-btn"
+            onClick={async () => {
+              if (!formData.title || !formData.bedrooms || !formData.size || !formData.selectedLocation) {
+                toast.error("Please fill in Title, Rooms, Size, and Location first");
+                return;
+              }
+              try {
+                setIsSubmitting(true);
+                const result = await generateDescription({
+                  title: formData.title,
+                  bedrooms: formData.bedrooms,
+                  bathrooms: formData.bathrooms,
+                  size: Number(formData.size),
+                  location: formData.selectedLocation.address
+                });
+                const cleanDescription = typeof result === 'string'
+                ? result.substring(0, 500).trim()
+                : result;
+                setFormData(prev => ({ ...prev, description: cleanDescription }));
+                toast.success("Description generated successfully!");
+              } catch (error) {
+                console.error(error);
+                toast.error("Failed to generate description");
+              } finally {
+                setIsSubmitting(false);
+              }
+            }}
+          >
+            {isSubmitting && <div className="generate-btn-spinner"></div>}
+            {!isSubmitting && (
+              <>
+                <span className="generate-btn-icon">✨</span>
+                <div className="sparkle sparkle-1"></div>
+                <div className="sparkle sparkle-2"></div>
+              </>
+            )}
+            <span className="generate-btn-text">
+              {isSubmitting ? 'Generating...' : 'Generate Description'}
+            </span>
+          </button>
 
         <Row>
           <Col md={6}>
@@ -614,7 +661,7 @@ const AddPropertyForm: React.FC = () => {
             className="d-none"
             multiple
             accept="image/*"
-            onChange={handleFileChange} // 👈 صور
+            onChange={handleFileChange} 
           />
           <p className="text-muted small mb-0">
             Drag and drop images here or click to browse<br />
@@ -642,7 +689,7 @@ const AddPropertyForm: React.FC = () => {
                     />
                     <button
                       type="button"
-                      className="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 rounded-circle p-0"
+                      className="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 rounded-circle p-2"
                       onClick={() => handleRemoveImage(i)}
                       disabled={isSubmitting}
                       style={{ width: "25px", height: "25px" }}
@@ -657,7 +704,7 @@ const AddPropertyForm: React.FC = () => {
         )}
       </Form.Group>
 
-      {/* ✅ Section for contract / documents */}
+      {/* contract / documents */}
       <Form.Group className="mb-4">
         <Form.Label>
           Property Contract <span className="text-danger">*</span>
@@ -669,8 +716,8 @@ const AddPropertyForm: React.FC = () => {
             type="file"
             id="contract-upload"
             className="d-none"
-            accept=".pdf,.doc,.docx,.xls,.xlsx" // 👈 المستندات المسموحة
-            onChange={handleContractChange} // 👈 هنعمله تحت
+            accept=".pdf,.doc,.docx,.xls,.xlsx" 
+            onChange={handleContractChange} 
           />
           <p className="text-muted small mb-0">
             Supported formats: PDF, Word, Excel <br />
@@ -719,7 +766,7 @@ const AddPropertyForm: React.FC = () => {
             )}
           </Button>
         </div>
-      </Form>
+    </Form>
     </>
   );
 };

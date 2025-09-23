@@ -1,14 +1,27 @@
-
 import { useAppSelector } from "@store/hook";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
-function ProtectedRoute({children}:{children:React.ReactNode}) {
-    const {jwt}=useAppSelector(state => state.Authslice)
-
-    if(!jwt){
-       return <Navigate to="/login?message=login_required" />
-    }
-    return <>{children}</>;
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  allowedRoles?: string[];
 }
 
-export default ProtectedRoute
+function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
+  const { jwt, user } = useAppSelector(state => state.Authslice);
+  const location = useLocation();
+
+
+  // Check if user is authenticated
+  if (!jwt) {
+    return <Navigate to="/login?message=login_required" />;
+  }
+
+  // Check if user has required role (case-insensitive)
+  if (allowedRoles && user && !allowedRoles.some(role => role.toLowerCase() === user.role.toLowerCase())) {
+    return <Navigate to="/error?message=access_denied" />;
+  }
+
+  return <>{children}</>;
+}
+
+export default ProtectedRoute;

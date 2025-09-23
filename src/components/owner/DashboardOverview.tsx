@@ -1,9 +1,15 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Row, Col, Card, Spinner, Button } from "react-bootstrap";
+import { Row, Col, Card, Button } from "react-bootstrap";
 import { getDashboardData, getProperties } from "../../store/Owner/ownerDashboardSlice";
 import { RootState, AppDispatch } from "../../store";
+import UserProperties from "@components/Profile/UserProperties";
+import { useAppSelector } from '@store/hook';
 import { useNavigate } from "react-router-dom";
+import './DashboardOverview.css';
+import { Building, Calendar, DollarSign, Home, Eye } from 'lucide-react';
+import Loader from "@components/common/Loader/Loader";
+import { formatCurrency } from "@utils/HelperFunctions";
 
 const DashboardOverview: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -11,7 +17,7 @@ const DashboardOverview: React.FC = () => {
   const { overview, loading, properties } = useSelector(
     (state: RootState) => state.ownerDashboard
   );
-
+  const { user } = useAppSelector(state => state.Authslice);  
   useEffect(() => {
     dispatch(getDashboardData());
     dispatch(getProperties());
@@ -20,152 +26,164 @@ const DashboardOverview: React.FC = () => {
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{minHeight: '400px'}}>
-        <Spinner animation="border" variant="primary" />
+<Loader />
       </div>
     );
   }
 
   // Empty State Component
   const EmptyPropertiesState = () => (
-    <div className="text-center py-5">
-      <div className="mb-4">
-        <i className="fas fa-home" style={{fontSize: '64px', color: '#e0bcbc', opacity: 0.7}}></i>
+    <div className="text-center py-4">
+      <div className="mb-3">
+        <Home className="empty-icon" size={40} />
       </div>
-      <h4 className="mb-3" style={{color: '#666'}}>No Properties Yet</h4>
-      <p className="text-muted mb-4" style={{maxWidth: '400px', margin: '0 auto'}}>
-        You haven't added any properties to your portfolio yet. 
-        Start by adding your first property to begin managing your real estate listings.
+      <h6 className="mb-2 empty-title">No Properties Yet</h6>
+      <p className="text-muted mb-0 empty-text">
+        Start by adding your first property to begin managing your listings.
       </p>
-      <div className="d-flex gap-2 justify-content-center">
-        <Button 
-          variant="primary"
-          onClick={() => navigate('/owner-dashboard/add-property')}
-          style={{backgroundColor: '#e0bcbc', borderColor: '#e0bcbc', color: '#333'}}
-          className="px-4"
-        >
-          <i className="fas fa-plus me-2"></i>
-          Add Your First Property
-        </Button>
-        <Button 
-          variant="outline-secondary"
-          onClick={() => navigate('/owner-dashboard/manage-properties')}
-        >
-          View Guide
-        </Button>
-      </div>
     </div>
   );
 
   return (
     <>
-      {/* Cards */}
-      <Row>
+      {/* Compact Stats Cards with Professional Icons */}
+      <Row className="g-3 mb-4">
         <Col md={4}>
-          <Card className="mb-3 shadow-sm" style={{ backgroundColor: "#F2E8E8" }}>
-            <Card.Body>
-              <Card.Title>Total Properties</Card.Title>
-              <Card.Text className="h4 mb-0">{overview?.total_properties || 0}</Card.Text>
+          <Card className="stat-card">
+            <Card.Body className="p-3">
+              <div className="d-flex align-items-center">
+                <div className="stat-icon me-3">
+                  <Building size={18} strokeWidth={2} />
+                </div>
+                <div>
+                  <div className="stat-label">Properties</div>
+                  <div className="stat-value">{overview?.total_properties || 0}</div>
+                </div>
+              </div>
             </Card.Body>
           </Card>
         </Col>
         <Col md={4}>
-          <Card className="mb-3 shadow-sm" style={{ backgroundColor: "#F2E8E8" }}>
-            <Card.Body>
-              <Card.Title>Total Bookings</Card.Title>
-              <Card.Text className="h4 mb-0">{overview?.total_bookings || 0}</Card.Text>
+          <Card className="stat-card">
+            <Card.Body className="p-3">
+              <div className="d-flex align-items-center">
+                <div className="stat-icon me-3">
+                  <Calendar size={18} strokeWidth={2} />
+                </div>
+                <div>
+                  <div className="stat-label">Bookings</div>
+                  <div className="stat-value">{overview?.total_bookings || 0}</div>
+                </div>
+              </div>
             </Card.Body>
           </Card>
         </Col>
         <Col md={4}>
-          <Card className="mb-3 shadow-sm" style={{ backgroundColor: "#F2E8E8" }}>
-            <Card.Body>
-              <Card.Title>Total Income</Card.Title>
-              <Card.Text className="h4 mb-0">${overview?.total_income || 0}</Card.Text>
+          <Card className="stat-card">
+            <Card.Body className="p-3">
+              <div className="d-flex align-items-center">
+                <div className="stat-icon me-3">
+                  <DollarSign size={18} strokeWidth={2} />
+                </div>
+                <div>
+                  <div className="stat-label">Income</div>
+                  <div className="stat-value">{formatCurrency(overview?.total_income) || 0}</div>
+                </div>
+              </div>
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
       {/* Properties Section */}
-      <div className="mt-4">
+      <div className="properties-section">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h5 className="section-title mb-0">All Properties</h5>
+          {properties.length > 0 && (
+            <Button 
+              size="sm"
+              variant="outline-secondary"
+              //onClick={() => navigate('/owner-dashboard/manage-properties')}
+              className="view-all-btn"
+            >
+              Properties ({properties.length})
+            </Button>
+          )}
         </div>
 
-        {properties.length === 0 ? (
-          <Card>
+        {/* {properties.length === 0 ? (
+          <Card className="empty-state-card">
             <Card.Body>
               <EmptyPropertiesState />
             </Card.Body>
           </Card>
         ) : (
-          <div className="table-container">
-            <table className="table table-hover">
-              <thead className="table-light">
-                <tr>
-                  <th>Property</th>
-                  <th>Status</th>
-                  <th>Location</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {properties.slice(0, 5).map((property) => (
-                  <tr key={property.id}>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        {property.images?.[0]?.image_url && (
-                          <img 
-                            src={property.images[0].image_url} 
-                            alt={property.title}
-                            className="me-2 rounded"
-                            style={{width: '40px', height: '40px', objectFit: 'cover'}}
-                          />
-                        )}
-                        <div>
-                          <strong>{property.title}</strong>
-                          <br />
-                          <small className="text-muted">{property.type}</small>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span className={`badge ${
-                        property.property_state === 'Valid' ? 'bg-success' :
-                        property.property_state === 'Rented' ? 'bg-info' :
-                        property.property_state === 'Pending' ? 'bg-warning' : 'bg-secondary'
-                      }`}>
-                        {property.property_state}
-                      </span>
-                    </td>
-                    <td>{property.location?.address || 'N/A'}</td>
-                    <td>
-                      <Button 
-                        size="sm" 
-                        variant="outline-primary"
-                        onClick={() => navigate(`/property/${property.id}`)}
-                      >
-                        View
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {properties.length > 5 && (
-              <div className="text-center mt-3">
-                <Button 
-                  variant="outline-secondary"
-                  onClick={() => navigate('/owner-dashboard/manage-properties')}
-                >
-                  View All Properties ({properties.length})
-                </Button>
+          <Card className="properties-table-card">
+            <Card.Body className="p-0">
+              <div className="table-responsive">
+                <table className="table table-sm table-hover mb-0">
+                  <thead className="table-light">
+                    <tr>
+                      <th className="border-0 py-2 ps-3">Property</th>
+                      <th className="border-0 py-2">Status</th>
+                      <th className="border-0 py-2">Location</th>
+                      <th className="border-0 py-2 pe-3">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {properties.slice(0, 5).map((property) => (
+                      <tr key={property.id}>
+                        <td className="ps-3 py-2">
+                          <div className="d-flex align-items-center">
+                            {property.images?.[0]?.image_url && (
+                              <img 
+                                src={property.images[0].image_url} 
+                                alt={property.title}
+                                className="property-thumb me-2"
+                              />
+                            )}
+                            <div>
+                              <div className="property-title">{property.title}</div>
+                              <small className="text-muted property-type">{property.type}</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-2">
+                          <span className={`status-badge ${
+                            property.property_state === 'Valid' ? 'status-valid' :
+                            property.property_state === 'Rented' ? 'status-rented' :
+                            property.property_state === 'Pending' ? 'status-pending' : 'status-inactive'
+                          }`}>
+                            {property.property_state}
+                          </span>
+                        </td>
+                        <td className="py-2">
+                          <div className="location-text">
+                            {property.location?.address?.slice(0, 30)}...
+                          </div>
+                        </td>
+                        <td className="py-2 pe-3">
+                          <Button 
+                            size="sm" 
+                            variant="outline-primary"
+                            className="view-btn"
+                            onClick={() => navigate(`/property/${property.id}`)}
+                          >
+                            <Eye size={12} className="me-1" />
+                            View
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            )}
-          </div>
-        )}
+            </Card.Body>
+          </Card>
+        )} */}
+        {user && <UserProperties user={user} />}
       </div>
     </>
   );
 };
+
 export default DashboardOverview;

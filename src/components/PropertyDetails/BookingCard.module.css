@@ -4,9 +4,10 @@
   padding: var(--spacing-lg);
   border-radius: var(--radius-lg);
   border: 1px solid var(--divider);
-  position: sticky;
   top: 24px;
   color: var(--primary-color);
+    width: 100%;           
+
 }
 
 /* Price display */
@@ -100,3 +101,26 @@
   color: var(--primary-color) !important;
   outline: 1px solid var(--primary-color);
 }
+/* Custom locked-day styling */
+.lockedDay {
+  background-color: var(--danger-color) !important;
+  color: var(--white) !important;
+  border-radius: var(--radius-sm);
+  opacity: 0.9;
+  pointer-events: none; /* prevent clicking */
+}
+
+
+/* PropertyDetails.module.css */
+
+.react-datepicker__day {
+  background-color: var(--primary-color) !important;  /* your theme */
+  color: var(--white) !important;
+  border-radius: var(--radius-md);
+}
+
+.react-datepicker__day:hover {
+  background-color: var(--hover-bg) !important;
+  color: var(--hover-color) !important;
+}
+

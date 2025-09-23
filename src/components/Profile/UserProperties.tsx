@@ -1,20 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import PropertyCard from './PropertyCard';
+import { useState, useEffect } from 'react';
+import PropertyCard from '@components/PropertyList/PropertCard';
 import { fetchUserProperties } from '@services/axios-global';
-import { Property } from '../../types';
+import { Listing } from '../../types';
+import { TFullUser } from 'src/types/users/users.types';
+import { toast } from 'react-toastify';
+import Loader from '@components/common/Loader/Loader';
 
-const UserProperties: React.FC = () => {
-  const userId = 7;
-  const [properties, setProperties] = useState<Property[]>([]);
+const UserProperties = ({ user }: {user: TFullUser })=> {
+  const [properties, setProperties] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'forSale' | 'forRent'>('all');
+  const [savedProperties, setSavedProperties] = useState<number[]>([]);
 
   useEffect(() => {
     const getPropertiesData = async () => {
       try {
         setLoading(true);
-        const data = await fetchUserProperties(userId);
+        const data = await fetchUserProperties(user.id);
         setProperties(data);
       } catch (err) {
         setError('Failed to fetch properties');
@@ -25,44 +28,18 @@ const UserProperties: React.FC = () => {
     };
 
     getPropertiesData();
-  }, [userId]);
-
-  const handleSave = (id: number, section: string) => {
-    console.log(`Property ${id} saved/unsaved from section: ${section}`);
-  };
-
-  const formatPropertyForCard = (property: Property) => {
-    return {
-      id: property.id,
-      address: `${property.location.address}, ${property.location.city}, ${property.location.state}`,
-      price: `${formatCurrency(property.price)} ${property.price_type === 'Monthly' ? '/mo' : ''}`,
-      image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80',
-      saved: false,
-      bedrooms: property.bedrooms,
-      bathrooms: property.bathrooms,
-      size: property.size
-    };
-  };
-
-  const formatCurrency = (amount: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(parseFloat(amount));
-  };
+  }, [user.id]);
 
   const filteredProperties = properties.filter(property => {
     if (activeTab === 'forSale') return property.price_type === 'FullPay';
-    if (activeTab === 'forRent') return property.price_type === 'Monthly';
+    if (activeTab === 'forRent') return (property.price_type === 'Monthly' || property.price_type === 'Daily');
     return true;
   });
 
   if (loading) {
     return (
       <div className="container">
-        <div className="loading">Loading properties...</div>
+        <div className="loading"><Loader message='Loading properties...' /></div>
       </div>
     );
   }
@@ -75,9 +52,22 @@ const UserProperties: React.FC = () => {
     );
   }
 
+  const toggleSavedProperty = (id: number) => {
+      setSavedProperties((prev) => {
+        const isSaved = prev.includes(id);
+        const updated = isSaved ? prev.filter((i) => i !== id) : [...prev, id];
+  
+        // Toast feedback
+        if (isSaved) toast.info("Removed from wishlist");
+        else toast.success("Added to wishlist");
+  
+        return updated;
+      });
+    };
+
   return (
     <div className="container">
-      <div className="stats-grid">
+      {/* <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-icon">
             <i className="fas fa-home"></i>
@@ -105,7 +95,7 @@ const UserProperties: React.FC = () => {
             <p>For Rent</p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="content-header">
         <div className="tabs">
@@ -143,18 +133,16 @@ const UserProperties: React.FC = () => {
                 : 'You haven\'t listed any properties yet.'
               }
             </p>
-            <button className="btn btn-primary">
-              List a Property
-            </button>
           </div>
         ) : (
           filteredProperties.map(property => (
-            <PropertyCard
-              key={property.id}
-              property={formatPropertyForCard(property)}
-              onSave={handleSave}
-              section="myProperties"
-            />
+            
+            <PropertyCard key={property.id}
+                                              property={property}
+                                              viewMode={"list"}
+                                              savedProperties={savedProperties}
+                                              toggleSavedProperty={toggleSavedProperty}
+                                            />
           ))
         )}
       </div>

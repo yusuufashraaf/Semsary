@@ -63,12 +63,12 @@ export default function Navbar() {
 
           {/* Navigation links */}
           <ul className="navbar-nav me-auto ms-lg-5 mb-2 mb-lg-0">
-            {(user?.role === "user" || user?.role === "Owner") && (
+            {(user?.role === "user" || user?.role === "owner") && (
               <li className="nav-item me-2">
                 <span
                   className={`${styles.navLink} ${styles.highlight}`}
                   style={{ cursor: "pointer" }}
-                  onClick={() => handleNavClick("/owner-dashboard/add-property")}
+                  onClick={() => handleNavClick("/profile/owner-dashboard")}
                 >
                   Add Property
                 </span>
@@ -92,7 +92,7 @@ export default function Navbar() {
             <button className={`me-3 ${styles.wishlistBtn}`} onClick={() => handleNavClick("/profile/wishlist")}>
               <FontAwesomeIcon icon={faHeart} />
             </button>
-            <button className={`me-3 ${styles.notificationBtn}`}>
+            <button className={`me-3 ${styles.notificationBtn}`} onClick={() => handleNavClick("/profile/notifications")}>
               <FontAwesomeIcon icon={faBell} />
             </button>
 

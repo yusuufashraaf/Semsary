@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from "../../store";
 import api from "../../services/axios-global"; 
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
+import Loader from "@components/common/Loader/Loader";
 
 const EditProperty: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,7 +29,6 @@ const EditProperty: React.FC = () => {
       try {
         const res = await api.get(`/properties/${id}`);
         
-        console.log('API Response:', res.data);
         
         const property = res.data?.data || res.data || res.data?.property;
         
@@ -36,7 +36,6 @@ const EditProperty: React.FC = () => {
           throw new Error('Property data not found in response');
         }
 
-        console.log('Property data:', property);
 
         // Process images with proper URLs
         const processedImages = Array.isArray(property.images) 
@@ -61,7 +60,6 @@ const EditProperty: React.FC = () => {
             })
           : [];
 
-        console.log('Processed images:', processedImages);
 
         setFormData({
           title: property.title || "",
@@ -87,7 +85,7 @@ const EditProperty: React.FC = () => {
       } catch (err) {
         console.error('Error fetching property:', err);
         toast.error("Failed to fetch property details");
-        navigate('/owner-dashboard');
+        navigate('/profile/owner-dashboard');
       } finally {
         setLoading(false);
       }
@@ -109,7 +107,7 @@ const EditProperty: React.FC = () => {
     } else {
       setLoading(false);
       toast.error("Property ID is missing");
-      navigate('/owner-dashboard');
+      navigate('/profile/owner-dashboard');
     }
   }, [id, navigate]);
 
@@ -352,7 +350,7 @@ const EditProperty: React.FC = () => {
         }
       });
       
-      navigate('/owner-dashboard');
+      navigate('/profile/owner-dashboard');
       
     } catch (error) {
       toast.error("Failed to update property. Please check the form for errors.");
@@ -366,7 +364,7 @@ const EditProperty: React.FC = () => {
       <div className="d-flex justify-content-center align-items-center" style={{minHeight: '400px'}}>
         <div className="text-center">
           <div className="spinner-border text-primary mb-3"></div>
-          <p>Loading property details...</p>
+<Loader message="Loading property details..." />
         </div>
       </div>
     );
@@ -376,7 +374,7 @@ const EditProperty: React.FC = () => {
     return (
       <div className="text-center mt-5">
         <h4>Property not found</h4>
-        <Button variant="primary" onClick={() => navigate('/owner-dashboard')}>
+        <Button variant="primary" onClick={() => navigate('/profile/owner-dashboard')}>
           Back to Dashboard
         </Button>
       </div>
@@ -658,7 +656,8 @@ const EditProperty: React.FC = () => {
         {/* Images */}
         <Form.Group className="mb-4">
           <Form.Label>Property Images <span className="text-danger">*</span></Form.Label>
-          <div className="border border-dashed border-2 p-4 text-center rounded bg-light">
+          {/* <div className="border border-dashed border-2 p-4 text-center rounded bg-light"> */}
+          <div className="border-dashed border-2 p-4 text-center rounded bg-light">
             <input 
               type="file" 
               id="file-upload" 

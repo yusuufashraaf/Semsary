@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { getProperties, removeProperty } from "../../store/Owner/ownerDashboardSlice";
 import { RootState, AppDispatch } from "../../store";
 import { useNavigate } from "react-router-dom";
-import { Card, Button, Spinner, Badge, Modal } from "react-bootstrap";
+import { Card, Button,  Badge, Modal } from "react-bootstrap";
 import { toast } from "react-toastify";
+import Loader from "@components/common/Loader/Loader";
+import { formatCurrency } from "@utils/HelperFunctions";
 
 const ManageProperties: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,9 +23,7 @@ const ManageProperties: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{minHeight: '400px'}}>
-        <Spinner animation="border" variant="primary" />
-      </div>
+        <Loader />
     );
   }
 
@@ -38,7 +38,7 @@ const ManageProperties: React.FC = () => {
         Your property portfolio is empty. Add your first property to start managing 
         your real estate listings, track bookings, and monitor your income.
       </p>
-      <div className="d-flex gap-2 justify-content-center flex-wrap">
+      {/* <div className="d-flex gap-2 justify-content-center flex-wrap">
         <Button 
           variant="primary"
           onClick={() => navigate('/owner-dashboard/add-property')}
@@ -54,7 +54,7 @@ const ManageProperties: React.FC = () => {
         >
           Back to Dashboard
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 
@@ -94,17 +94,33 @@ const ManageProperties: React.FC = () => {
   };
 
   const confirmDelete = async () => {
-    if (propertyToDelete) {
-      try {
-        await dispatch(removeProperty(propertyToDelete)).unwrap();
-        toast.success("Property deleted successfully");
-        setShowDeleteModal(false);
-        setPropertyToDelete(null);
-      } catch (error) {
-        toast.error("Failed to delete property");
-      }
+  if (propertyToDelete) {
+    try {
+      // Remove any existing toasts first
+      toast.dismiss();
+      
+      const result = await dispatch(removeProperty(propertyToDelete)).unwrap();
+      
+      // Only show toast here, not in Redux slice
+      toast.success("Property deleted successfully", {
+        toastId: `delete-${propertyToDelete}`, // Unique ID to prevent duplicates
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+      
+      setShowDeleteModal(false);
+      setPropertyToDelete(null);
+    } catch (error) {
+      toast.error("Failed to delete property", {
+        toastId: `delete-error-${propertyToDelete}`, // Unique ID
+        autoClose: 3000,
+      });
+      console.error("Delete error:", error);
     }
-  };
+  }
+};
 
   const renderPropertyTable = (properties: any[], title: string) => {
     if (properties.length === 0) {
@@ -163,7 +179,7 @@ const ManageProperties: React.FC = () => {
                     </td>
                     <td>{getStatusBadge(property.property_state)}</td>
                     <td>
-                      <strong>${property.price?.toLocaleString()}</strong>
+                      <strong>{formatCurrency(property.price?.toLocaleString())}</strong>
                       <br />
                       <small className="text-muted">{property.price_type}</small>
                     </td>
@@ -180,7 +196,7 @@ const ManageProperties: React.FC = () => {
                           onClick={() => navigate(`/property/${property.id}`)}
                           title="View Details"
                         >
-                          <i className="fas fa-eye"></i>
+                          <i className="fas fa-eye">View</i>
                         </Button>
                         {property.property_state !== "Rented" && property.property_state !== "Sold" && (
                           <>
@@ -190,7 +206,7 @@ const ManageProperties: React.FC = () => {
                               onClick={() => handleEdit(property.id)}
                               title="Edit Property"
                             >
-                              <i className="fas fa-edit"></i>
+                              <i className="fas fa-edit">Edit</i>
                             </Button>
                             <Button 
                               size="sm" 
@@ -198,7 +214,7 @@ const ManageProperties: React.FC = () => {
                               onClick={() => handleDeleteClick(property.id)}
                               title="Delete Property"
                             >
-                              <i className="fas fa-trash"></i>
+                              <i className="fas fa-trash">Delete</i>
                             </Button>
                           </>
                         )}
@@ -228,14 +244,6 @@ const ManageProperties: React.FC = () => {
     <div className="manage-container">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4>Manage Properties</h4>
-        <Button 
-          variant="primary"
-          onClick={() => navigate('/owner-dashboard/add-property')}
-          style={{backgroundColor: '#e0bcbc', borderColor: '#e0bcbc', color: '#333'}}
-        >
-          <i className="fas fa-plus me-2"></i>
-          Add New Property
-        </Button>
       </div>
 
       {/* Active Listings */}

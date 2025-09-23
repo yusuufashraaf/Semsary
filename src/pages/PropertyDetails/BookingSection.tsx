@@ -1,44 +1,65 @@
-import BookingCard from "@components/PropertyDetails/BookingCard";
-import { BookingSectionProps } from "src/types";
+import { Dispatch, SetStateAction } from "react";
+import BookingCard from "../../components/PropertyDetails/BookingCard";
+import { Property, GuestOption } from "src/types";
 
-/**
- * BookingSection
- *
- * A wrapper around BookingCard that passes booking data and handlers.
- * - Handles guest selection, dates, and reservation submission
- * - Calculates nights, subtotal, and total
- */
+interface BookingSectionProps {
+  property: Property;
+  booking: {
+    checkIn: string;
+    setCheckIn: Dispatch<SetStateAction<string>>;
+    checkOut: string;
+    setCheckOut: Dispatch<SetStateAction<string>>;
+    guests: string;
+    setGuests: Dispatch<SetStateAction<string>>;
+    nights: number;
+    subtotal: number;
+    total: number;
+    loading: boolean;
+  };
+  guestOptions: GuestOption[];
+  onReserve: () => void;
+  onBuy: () => void;
+  onCancel: () => void;
+  hasActivePurchase: boolean;
+  rentRequestLoading: boolean;
+  errorMessages: string;
+  unavailableDates: Date[]; 
+  owner: any;
+  activePurchase?: any;
+  purchaseCheckCompleted: boolean;
+}
+
 function BookingSection({
   property,
   booking,
   guestOptions,
+  onReserve,
+  onBuy,
+  onCancel,
+  hasActivePurchase,
+  rentRequestLoading,
+  errorMessages,
+  unavailableDates,
+  owner,
+  activePurchase,
+  purchaseCheckCompleted,
 }: BookingSectionProps) {
+  
   return (
     <BookingCard
-      // Price & Sale/Rent
-      price={property.price}
-      isSell={property.price_type === "FullPay"}
-      // Booking details (check-in/out and guests)
-      checkIn={booking.checkIn}
-      setCheckIn={booking.setCheckIn}
-      checkOut={booking.checkOut}
-      setCheckOut={booking.setCheckOut}
-      guests={booking.guests}
-      setGuests={booking.setGuests}
+      property={property}
+      booking={booking}
       guestOptions={guestOptions}
-      // Reserve button handler
-      onReserve={() => booking.handleReserve(property.id)}
-      // Loading and error handling
-      loading={booking.loading}
-      errorMessage={
-        booking.errors.checkIn ||
-        booking.errors.checkOut ||
-        booking.errors.guests
-      }
-      // Booking summary
-      nights={booking.nights}
-      subtotal={booking.subtotal}
-      total={booking.total}
+      onReserve={onReserve}
+      onBuy={onBuy}
+      onCancel={onCancel}
+      hasActivePurchase={hasActivePurchase}
+      loading={rentRequestLoading || booking.loading}
+      errorMessage={errorMessages}
+      unavailableDates={unavailableDates}
+      owner={owner}
+      activePurchase={activePurchase}
+      purchaseCheckCompleted={purchaseCheckCompleted}
     />
   );
 }

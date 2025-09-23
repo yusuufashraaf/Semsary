@@ -3,45 +3,55 @@ import UserCard from '../UserCard/UserCard';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@store/hook';
 import ActGetUsersData from '@store/Auth/Act/ActGetUsersData';
-// Assuming UserCard is in the same directory
+import Loader from '@components/common/Loader/Loader';
+import { useNavigate } from 'react-router-dom';
 
 const BasicInfo = () => {
     const dispatch = useAppDispatch();
-    const { user,loading } = useAppSelector(state => state.Authslice);
-    
+    const navigate = useNavigate();
+    const { user, loading } = useAppSelector(state => state.Authslice);
+
     useEffect(() => {
-    dispatch(ActGetUsersData());
-        
-    },[dispatch])
+        dispatch(ActGetUsersData());
+    }, [dispatch]);
 
     if (loading === "pending") {
-    return <div>Loading...</div>; 
-  }
+        return <div><Loader message='Loading...' /></div>; 
+    }
 
-  if (!user) {
-    return <div>No user data available.</div>;
-  }
+    if (!user) {
+        return <div>No user data available.</div>;
+    }
 
+    const handleVerifyClick = (type: "email" | "phone" | "id") => {
+    if (type === "email") {
+        navigate("/verify-email");
+    } else if (type === "phone") {
+        navigate("/verify-phone");
+    } else if (type === "id") {
+        navigate("/upload-id");
+    }
+    };
 
+    const userData = {
+        firstName: user?.first_name,
+        lastName: user?.last_name,
+        email: user?.email,
+        phoneNumber: user?.phone_number,
+        isEmailVerified: !!user?.email_verified_at,
+        isPhoneVerified: !!user?.phone_verified_at,
+        role: user?.role,
+        status: user?.status,
+        idUpladed: user?.id_image_url ?? null,
+    };
 
-  const userData = {
-    firstName: user?.first_name,
-    lastName: user?.last_name,
-    email: user?.email,
-    phoneNumber: user?.phone_number,
-    isEmailVerified: user?.email_verified_at ? true : false,
-    isPhoneVerified: user?.phone_verified_at ? true : false,
-    role: user?.role
-  };
-
-
-  return (
-    <Container>
-      <h3>Basic Information</h3>
-      <hr />
-        {user && <UserCard user={userData} />}
-    </Container>
-  );
+    return (
+        <Container>
+            <h3>Basic Information</h3>
+            <hr />
+            <UserCard user={userData} onVerifyClick={handleVerifyClick} />
+        </Container>
+    );
 };
 
 export default BasicInfo;

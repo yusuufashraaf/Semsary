@@ -1,30 +1,30 @@
 import React from 'react';
 import { Property } from '../../types';
 import './PropertyCard.css';
+// import AddToWishlist from '@components/common/AddToWishlist/AddToWishlist';
+// import UserWishlist from './UserWishlists';
 
 interface PropertyCardProps {
   property: Property;
   onSave: (id: number, section: string) => void;
   section: string;
+  saved?: boolean;
 }
 
-const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSave, section }) => {
+const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSave, section, saved = false }) => {
   return (
     <div className="property-card">
       <div className="property-image">
         <img 
-          src={property.image} 
+          src={property.images?.[0] || 'fallback-url'} 
           alt={property.address}
           className="property-img"
-          onError={(e) => {
+          onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
             // Fallback to a placeholder if image fails to load
             e.currentTarget.src = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80';
           }}
         />
         <div className="property-image-overlay">
-          <button className="favorite-btn" onClick={() => onSave(property.id, section)}>
-            <i className={`fas fa-heart ${property.saved ? 'saved' : ''}`}></i>
-          </button>
         </div>
       </div>
       <div className="property-info">
@@ -38,10 +38,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSave, section }
         <div className="property-actions">
           <button className="btn btn-primary">View Details</button>
           <button 
-            className={`btn ${property.saved && section === 'recentlyViewed' ? 'btn-primary' : 'btn-outline'}`}
-            onClick={() => onSave(property.id, section)}
+            className={`btn ${saved && section === 'recentlyViewed' ? 'btn-primary' : 'btn-outline'}`}
+            onClick={() => onSave(parseInt(property.id), section)}
           >
-            {section === 'recentlyViewed' ? (property.saved ? 'Saved' : 'Save') : 'Remove'}
+            {section === 'recentlyViewed' ? (saved ? 'Saved' : 'Save') : 'Remove'}
           </button>
         </div>
       </div>

@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Use useNavigate from React Router
 import { fetchUserPurchases, fetchUserBookings } from '@services/axios-global';
+import { TFullUser } from 'src/types/users/users.types';
+import Loader from '@components/common/Loader/Loader';
 
 type TabType = 'purchases' | 'bookings';
 
@@ -63,7 +66,8 @@ interface Booking {
   property: Property;
 }
 
-const UserPurchases: React.FC = () => {
+const UserPurchases = ({ user }: {user: TFullUser })=> {
+  const navigate = useNavigate(); // Use useNavigate instead of useRouter
   const [activeTab, setActiveTab] = useState<TabType>('purchases');
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -74,7 +78,7 @@ const UserPurchases: React.FC = () => {
     const getPurchasesData = async () => {
       try {
         setLoading(true);
-        const data = await fetchUserPurchases(7);
+        const data = await fetchUserPurchases(user.id);
         setPurchases(data);
       } catch (err) {
         setError('Failed to fetch purchases');
@@ -105,6 +109,17 @@ const UserPurchases: React.FC = () => {
     setActiveTab(tab);
   };
 
+  // Function to handle property click
+  const handlePropertyClick = (propertyId: number) => {
+    navigate(`/property/${propertyId}`);
+  };
+
+  // Function to handle "View details" button click
+  const handleViewDetailsClick = (e: React.MouseEvent, propertyId: number) => {
+    e.stopPropagation(); // Prevent the card click event from firing
+    navigate(`/property/${propertyId}`);
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -113,7 +128,7 @@ const UserPurchases: React.FC = () => {
     });
   };
 
-  const formatCurrency = (amount: string, currency: string = 'USD') => {
+  const formatCurrency = (amount: string, currency: string = 'EGP') => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency
@@ -123,7 +138,7 @@ const UserPurchases: React.FC = () => {
   if (loading) {
     return (
       <div className="container">
-        <div className="loading">Loading...</div>
+        <div className="loading"><Loader message='Loading...' /></div>
       </div>
     );
   }
@@ -161,7 +176,12 @@ const UserPurchases: React.FC = () => {
           <div className="list">
             {purchases.length > 0 ? (
               purchases.map(purchase => (
-                <div key={purchase.purchase_id} className="card card-hover">
+                <div 
+                  key={purchase.purchase_id} 
+                  className="card card-hover"
+                  onClick={() => handlePropertyClick(purchase.property.id)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className="purchase-header">
                     <span className="order-date">
                       Order placed on {formatDate(purchase.created_at)}
@@ -191,14 +211,17 @@ const UserPurchases: React.FC = () => {
                   
                   <div className="property-actions">
                     <span className="property-price">
-                      {formatCurrency(purchase.amount, purchase.payment_details.currency)}
+                      {formatCurrency(purchase.amount)}
                     </span>
                     <span>
                       Paid via {purchase.payment_gateway}
                     </span>
                   </div>
                   
-                  <button className="btn btn-primary">
+                  <button 
+                    className="btn btn-primary"
+                    onClick={(e) => handleViewDetailsClick(e, purchase.property.id)}
+                  >
                     View details
                   </button>
                 </div>
@@ -218,7 +241,12 @@ const UserPurchases: React.FC = () => {
           <div className="list">
             {bookings.length > 0 ? (
               bookings.map(booking => (
-                <div key={booking.id} className="card card-hover">
+                <div 
+                  key={booking.id} 
+                  className="card card-hover"
+                  onClick={() => handlePropertyClick(booking.property.id)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className="booking-header">
                     <span className="booking-dates">
                       {formatDate(booking.start_date)} - {formatDate(booking.end_date)}
@@ -255,7 +283,10 @@ const UserPurchases: React.FC = () => {
                     </span>
                   </div>
                   
-                  <button className="btn btn-primary">
+                  <button 
+                    className="btn btn-primary"
+                    onClick={(e) => handleViewDetailsClick(e, booking.property.id)}
+                  >
                     View details
                   </button>
                 </div>

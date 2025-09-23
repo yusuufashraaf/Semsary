@@ -13,6 +13,12 @@ import { toast } from "react-toastify";
 
 type StepStatus = "pending" | "completed" | "skipped";
 
+interface dataTosend{
+    otp:OtpType,
+    email:string
+}
+
+
 interface IEmailVerificationProps {
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
   setStepStatus: (status: StepStatus) => void;
@@ -27,6 +33,10 @@ const EmailVerification = ({
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.Authslice);
   const formData = useAppSelector((state) => state.form); // Get form data from store
+  const {user} = useAppSelector((state)=> state.Authslice)
+  useEffect(()=>{
+    dispatch(ActReSendOTP(user?.email as string));
+  },[])
 
   useEffect(() => {
     let interval: number;
@@ -43,6 +53,7 @@ const EmailVerification = ({
   }, [timer, dispatch]);
 
   useEffect(() => {
+      console.log(user?.email);
     toast.success("OTP has been sent to your email.");
   },[])
 
@@ -58,7 +69,12 @@ const EmailVerification = ({
   });
   const otpValue = watch("emailOTP");
   const handleNext = (data: OtpType) => {
-    dispatch(ActSendOTP(data))
+    const sent:dataTosend ={
+      otp:data,
+      email : user?.email ||formData.email
+    }
+    
+    dispatch(ActSendOTP(sent))
       .unwrap()
       .then(() => {
         setStepStatus("completed");
@@ -67,10 +83,12 @@ const EmailVerification = ({
   };
 
   const handleClickOnResend = () => {
+    const email =formData.email;
     setResendLoading(true);
-    dispatch(ActReSendOTP())
+    dispatch(ActReSendOTP(user?.email || email))
       .unwrap()
-      .then(() => {
+      .then((res) => {
+        toast(res.message)
         setTimer(60);
       })
       .finally(() => setResendLoading(false));
@@ -79,7 +97,7 @@ const EmailVerification = ({
   return (
     <Form onSubmit={handleSubmit(handleNext)}>
       <p className="text-muted mb-3">
-        We've sent a verification code to <strong>{formData.email}</strong>
+        We've sent a verification code to <strong>{user?.email || formData.email}</strong>
       </p>
 
       <Input

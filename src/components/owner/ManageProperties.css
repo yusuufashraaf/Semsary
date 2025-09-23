@@ -1,70 +1,305 @@
-.manage-container {
-  padding: 24px;
-  font-family: Arial, sans-serif;
+/* ManageProperties.css - Professional Styling */
+
+.manage-properties-container {
+  padding: 0;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+.page-title {
+  color: var(--primary-color);
+  font-weight: 600;
+  margin: 0;
 }
 
+/* Property Section Cards */
+.property-section-card {
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px rgba(140, 92, 92, 0.06);
+  transition: all 0.3s ease;
+}
 
-
+.property-section-card:hover {
+  box-shadow: 0 4px 16px rgba(140, 92, 92, 0.1);
+}
 
 .section-title {
-  font-size: 18px;
+  color: var(--primary-color);
   font-weight: 600;
-  margin: 16px 0 8px 0;
-  color: black;
+  font-size: 1.1rem;
 }
 
-.table-container {
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  margin-bottom: 24px;
-  overflow: hidden;
+.count-badge {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-border);
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+/* Table Styling */
+.properties-table {
+  margin: 0;
 }
 
-thead {
-  background: #f9fafb;
-  text-align: left;
+.properties-table th {
+  background: var(--secondary-color);
+  color: var(--hover-color);
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-color: var(--primary-border);
+  padding: 0.75rem;
 }
 
-th, td {
-  padding: 12px;
+.properties-table td {
+  border-color: var(--primary-border);
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
 }
 
-tr + tr {
-  border-top: 1px solid #e5e7eb;
+.properties-table tbody tr:hover {
+  background: rgba(242, 232, 232, 0.3);
 }
 
-.status-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 6px;
-  background: #f7efef;
-  color: black;
-  font-size: 13px;
+/* Property Details */
+.property-thumbnail {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary-border);
 }
 
-.actions {
-  color: #f7efef;
+.property-title {
+  font-weight: 600;
+  color: var(--hover-color);
+  font-size: 0.9rem;
+  margin-bottom: 0.2rem;
 }
 
-.actions button {
-  background: none;
+.property-details {
+  color: var(--invalid-color);
+  font-size: 0.75rem;
+}
+
+.property-price {
+  font-weight: 700;
+  color: var(--hover-color);
+  font-size: 0.9rem;
+}
+
+.price-type {
+  color: var(--invalid-color);
+  font-size: 0.7rem;
+}
+
+.property-location {
+  color: var(--invalid-color);
+  font-size: 0.8rem;
+}
+
+/* Custom Status Badges */
+.custom-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  padding: 0.3rem 0.6rem;
+  font-weight: 600;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.custom-status-badge i {
+  font-size: 0.65rem;
+}
+
+/* Action Buttons - Professional Design */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
   border: none;
-  color: #8C5C5C;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.8rem;
+  position: relative;
 }
 
-.actions button:hover {
-  text-decoration: underline;
+/* View Button */
+.view-btn {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-border);
+}
+
+.view-btn:hover {
+  background: var(--primary-color);
+  color: var(--white);
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(140, 92, 92, 0.2);
+}
+
+/* Edit Button */
+.edit-btn {
+  background: rgba(255, 193, 7, 0.1);
+  color: var(--pending-color);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.edit-btn:hover {
+  background: var(--pending-color);
+  color: var(--white);
+  border-color: var(--pending-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
+}
+
+/* Delete Button */
+.delete-btn {
+  background: rgba(220, 53, 69, 0.1);
+  color: var(--danger-color);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.delete-btn:hover {
+  background: var(--danger-color);
+  color: var(--white);
+  border-color: var(--danger-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+/* Empty States */
+.empty-properties-card {
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-md);
+}
+
+.empty-properties-icon {
+  font-size: 4rem;
+  color: var(--primary-color);
+  opacity: 0.6;
+}
+
+.empty-properties-title {
+  color: var(--hover-color);
+  font-weight: 600;
+}
+
+.empty-properties-text {
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.empty-section-icon {
+  font-size: 2rem;
+  opacity: 0.5;
+  color: var(--invalid-color);
+}
+
+/* Delete Modal */
+.delete-modal .modal-content {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--primary-border);
+}
+
+.delete-modal .modal-header {
+  background: var(--secondary-color);
+  border-bottom: 1px solid var(--primary-border);
+}
+
+.delete-modal .modal-title {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.delete-warning-icon {
+  font-size: 3rem;
+  color: var(--danger-color);
+  margin-bottom: 1rem;
+}
+
+.cancel-btn {
+  background: var(--secondary-color);
+  border: 1px solid var(--primary-border);
+  color: var(--hover-color);
+}
+
+.cancel-btn:hover {
+  background: var(--primary-border);
+  border-color: var(--primary-border);
+}
+
+.confirm-delete-btn {
+  background: var(--danger-color);
+  border: 1px solid var(--danger-color);
+}
+
+.confirm-delete-btn:hover {
+  background: #c82333;
+  border-color: #c82333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .property-thumbnail {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .property-title {
+    font-size: 0.85rem;
+  }
+  
+  .property-details {
+    font-size: 0.7rem;
+  }
+  
+  .action-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+  
+  .action-buttons {
+    gap: 0.3rem;
+  }
+  
+  .properties-table th,
+  .properties-table td {
+    padding: 0.5rem 0.4rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .manage-properties-container {
+    padding: 0;
+  }
+  
+  .property-section-card {
+    border-radius: var(--radius-sm);
+  }
+  
+  .section-title {
+    font-size: 1rem;
+  }
+  
+  .properties-table {
+    font-size: 0.85rem;
+  }
+
 }
