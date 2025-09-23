@@ -14,7 +14,6 @@ function useCheckEmailForAvailability() {
         setEmailAvailabilityStatus("checking");
 
         try {
-            console.log('checking email availability for:', email);
             
             const response =await api.get(`/check-availability/email?email=${email}`);
             

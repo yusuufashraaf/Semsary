@@ -160,7 +160,8 @@ const toggleSavedProperty = (id: number) => {
             //   section="wishlist"
             // />
             <PropertyCard
-                                  property={wishlistItem.property}
+              property={wishlistItem.property}
+              key={wishlistItem.id}
                                   viewMode={"list"}
                                   savedProperties={savedProperties}
                                   toggleSavedProperty={toggleSavedProperty}

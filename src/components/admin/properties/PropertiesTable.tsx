@@ -420,8 +420,6 @@ export const PropertiesTable: React.FC<PropertiesTableProps> = ({
                 variant="success"
                 size="sm"
                 onClick={() => {
-                  // Trigger bulk approve
-                  console.log('Bulk approve:', selectedProperties);
                 }}
               >
                 Approve Selected
@@ -430,8 +428,6 @@ export const PropertiesTable: React.FC<PropertiesTableProps> = ({
                 variant="danger"
                 size="sm"
                 onClick={() => {
-                  // Trigger bulk reject
-                  console.log('Bulk reject:', selectedProperties);
                 }}
               >
                 Reject Selected

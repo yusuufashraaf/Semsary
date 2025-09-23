@@ -225,12 +225,10 @@ function AppRouter() {
   useEffect(() => {
     if (!hasRun.current) {
       hasRun.current = true;
-      console.log("🚀 AppRouter: Initializing auth check...");
       dispatch(ActCheckAuth());
     }
   }, [dispatch]);
 
-  console.log("🔄 AppRouter render:", { isInitialized, loading });
 
   if (!isInitialized) {
     return <LoadingScreen />;

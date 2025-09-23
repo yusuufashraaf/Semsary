@@ -16,7 +16,6 @@ function useCheckPhoneForAvailability() {
         setPhoneAvailabilityStatus("checking");
 
         try {
-            console.log('Checking phone availability for:', phone);
 
             const response = await api.get(`/check-availability/phone?phone=${phone}`);
             

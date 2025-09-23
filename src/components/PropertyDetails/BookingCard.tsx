@@ -85,16 +85,6 @@ function BookingCard({
     return statusMessages[activePurchase.status as keyof typeof statusMessages] || `Status: ${activePurchase.status}`;
   };
 
-  console.log("BookingCard Debug:", {
-    isSell,
-    propertyStatus: property.status,
-    hasActivePurchase,
-    purchaseStatus: activePurchase?.status,
-    shouldShowBuy: shouldShowBuyButton(),
-    shouldShowCancel: shouldShowCancelButton(),
-    shouldShowOwner: shouldShowOwnerInfo(),
-    owner
-  });
 
   return (
     <div className="col-lg-4">
