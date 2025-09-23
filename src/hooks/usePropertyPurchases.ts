@@ -70,10 +70,8 @@ export const usePropertyPurchases = (): UsePropertyPurchasesReturn => {
       
       if (result.success && result.data.purchases) {
         setPurchases(result.data.purchases);
-        console.log("Fetched user purchases:", result.data.purchases);
       } else {
         setPurchases([]);
-        console.log("No purchases found or API returned unsuccessful response");
       }
     } catch (err) {
       handleError(err, "Error fetching user purchases.");
@@ -111,11 +109,9 @@ export const usePropertyPurchases = (): UsePropertyPurchasesReturn => {
           }
         });
         
-        console.log("Fetched purchase for property:", purchase);
         return purchase;
       } else {
         setActivePurchase(null);
-        console.log("No active purchase found for property:", propertyId);
         return null;
       }
     } catch (err: any) {
@@ -156,7 +152,6 @@ export const usePropertyPurchases = (): UsePropertyPurchasesReturn => {
           // Set as active purchase if it's for the current property
           setActivePurchase(newPurchase);
           
-          console.log("Payment successful:", newPurchase);
         }
         
         return result;
@@ -194,7 +189,6 @@ export const usePropertyPurchases = (): UsePropertyPurchasesReturn => {
             prev?.id === purchaseId ? { ...prev, status: "cancelled" } : prev
           );
           
-          console.log("Purchase cancelled successfully");
         }
         
         return result;

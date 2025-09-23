@@ -183,39 +183,20 @@ export const PropertiesPage: React.FC = () => {
     }
   }, [statsError]);
 
-  // Debug logging for statistics
-  useEffect(() => {
-    console.log('Statistics data:', statistics);
-    console.log('Statistics loading:', statsLoading);
-    console.log('Statistics error:', statsError);
-  }, [statistics, statsLoading, statsError]);
-
-  // Debug logging for properties
-  useEffect(() => {
-    console.log('Properties data:', propertiesData);
-    console.log('Properties loading:', propertiesLoading);
-    console.log('Properties error:', propertiesError);
-  }, [propertiesData, propertiesLoading, propertiesError]);
 
   // Filter handling - FIXED VERSION
   const handleFilterChange = (newFilters: ExtendedPropertyFilters) => {
-    console.log('PropertiesPage received filters:', newFilters);
     setFilters(newFilters);
     setCurrentPage(1);
   };
 
   const handleClearFilters = () => {
-    console.log('PropertiesPage clearing filters');
     setFilters({});
     setCurrentPage(1);
   };
 
   // Statistics cards data with error handling - FIXED VERSION
   const statisticsCards = useMemo(() => {
-    // Debug logging
-    console.log('Raw statistics in component:', statistics);
-    console.log('Stats loading:', statsLoading);
-    console.log('Stats error:', statisticsError);
     
     // Provide default statistics if loading or error
     const defaultStats = {
@@ -237,7 +218,6 @@ export const PropertiesPage: React.FC = () => {
       };
     }
     
-    console.log('Mapped stats for cards:', stats);
    
     return [
       {

@@ -40,8 +40,7 @@ export const getCategories = async (
       link: `/property?type=${encodeURIComponent(item.type)}`, 
     }));
   } catch (error) {
-    console.error("Failed to fetch categories:", error);
-    throw new Error("Unable to fetch categories");
+    throw new Error("");
   }
 };
 
@@ -58,7 +57,6 @@ export const getFeaturedListings = async (
 
     return response.data.data; // already matches Listing[]
   } catch (error) {
-    console.error("❌ Failed to fetch featured listings:", error);
-    throw new Error("Unable to fetch featured listings");
+    throw new Error("");
   }
 };

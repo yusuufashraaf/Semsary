@@ -9,6 +9,7 @@ interface dataTosend{
 }
 
 const ActSendOTP =createAsyncThunk('Auth/sendOTP',
+
     async(data:dataTosend,thunkApi)=>{
         
         
