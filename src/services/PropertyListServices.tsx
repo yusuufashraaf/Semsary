@@ -29,6 +29,9 @@ export interface PropertyQuery {
   page?: number;
   per_page?: number;
   price_type?: string;
+            sortBy?: string,
+  sortOrder?: string,
+
 }
 
 // Get properties with query filters
