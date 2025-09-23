@@ -37,6 +37,7 @@ export interface PurchaseResponse {
     escrow: PropertyEscrow;
     property: any;
     seller: any;
+    iframe_url?: string; // Add this
   };
 }
 

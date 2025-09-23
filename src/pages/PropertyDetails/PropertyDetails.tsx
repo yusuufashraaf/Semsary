@@ -21,6 +21,7 @@ import { useWishlist } from "@hooks/useWishlist";
 import { toast } from "react-toastify";
 import { getUnavailableDates } from "@services/rentRequest";
 import { usePropertyPurchases } from "@hooks/usePropertyPurchases";
+import WalletCard from "@components/Wallet/wallet";
 
 // Guest dropdown options
 const guestOptions: GuestOption[] = [
@@ -189,44 +190,47 @@ function PropertyListing() {
 
   // Handle buy functionality
   const handleBuy = async () => {
-    if (!user) {
-      toast.error("Please login to make a purchase");
-      return;
-    }
+  if (!user) {
+    toast.error("Please login to make a purchase");
+    return;
+  }
 
-    if (!property) {
-      toast.error("Property information is not available");
-      return;
-    }
+  if (!property) {
+    toast.error("Property information is not available");
+    return;
+  }
 
-    // Clear any previous errors
-    clearError();
-    
-    try {
-      const purchasePayload = {
-        expected_total: property.price,
-        idempotency_key: `${property.id}-${user.id}-${Date.now()}`,
-      };
+  clearError();
 
-      const result = await pay(Number(property.id), purchasePayload);
-      
-      
-      if (result?.success) {
-        toast.success("Property purchased successfully!");
-        
-        // Refetch property details to get updated status
-        refetch();
-        
-      } else {
-        toast.error("Purchase failed. Please try again.");
+  try {
+    const purchasePayload = {
+      expected_total: property.price,
+      idempotency_key: `${property.id}-${user.id}-${Date.now()}`,
+    };
+
+    const result = await pay(Number(property.id), purchasePayload);
+
+    if (result?.success) {
+      //  if Paymob iframe URL is returned, redirect
+      if (result.data.iframe_url) {
+        window.location.href = result.data.iframe_url;
+        return;
       }
-      
-    } catch (error: any) {
-      console.error("Failed to purchase property:", error);
-      const errorMessage = error.response?.data?.message || "Failed to purchase property. Please try again.";
-      toast.error(errorMessage);
+
+      toast.success("Property purchase started!");
+      refetch();
+    } else {
+      toast.error("Purchase failed. Please try again.");
     }
-  };
+  } catch (error: any) {
+    console.error("Failed to purchase property:", error);
+    const errorMessage =
+      error.response?.data?.message ||
+      "Failed to purchase property. Please try again.";
+    toast.error(errorMessage);
+  }
+};
+
 
   // Handle cancel purchase functionality
   const handleCancelPurchase = async () => {
@@ -291,6 +295,7 @@ function PropertyListing() {
   // Error or missing property
   if (error || !property) {
     return (
+
       <ErrorScreen
         title="Property Not Found"
         message={error || `Property with ID "${propertyId}" could not be loaded.`}
@@ -323,32 +328,44 @@ function PropertyListing() {
         aria-label={`Image carousel for ${property.title}`}
       />
 
-      <div className="row">
-        <PropertyContent
-          property={property}
-          reviews={reviews}
-          totalReviews={reviewsTotal}
-          onPageChange={fetchReviews}
-          loading={reviewsLoading}
-        />
+<div className="row">
+  <PropertyContent
+    property={property}
+    reviews={reviews}
+    totalReviews={reviewsTotal}
+    onPageChange={fetchReviews}
+    loading={reviewsLoading}
+  />
 
-        <BookingSection
-          property={property}
-          owner={listing?.host} // Pass owner data
-          booking={booking}
-          guestOptions={guestOptions}
-          onReserve={handleReserveWithRentRequest}
-          onBuy={handleBuy}
-          onCancel={handleCancelPurchase}
-          hasActivePurchase={hasActivePurchase}
-          rentRequestLoading={rentRequestLoading || purchaseLoading}
-          errorMessages={errorMessage}
-          unavailableDates={unavailableDates}
-          activePurchase={activePurchase}
-          purchaseCheckCompleted={purchaseCheckCompleted}
-        />
-      </div>
+<div className="col-lg-4 col-md-5 col-12">
+  <div className={styles.stickySidebar}>
+    <div className={styles.cardWrapper}>
+      <BookingSection
+        property={property}
+        owner={listing?.host}
+        booking={booking}
+        guestOptions={guestOptions}
+        onReserve={handleReserveWithRentRequest}
+        onBuy={handleBuy}
+        onCancel={handleCancelPurchase}
+        hasActivePurchase={hasActivePurchase}
+        rentRequestLoading={rentRequestLoading || purchaseLoading}
+        errorMessages={errorMessage}
+        unavailableDates={unavailableDates}
+        activePurchase={activePurchase}
+        purchaseCheckCompleted={purchaseCheckCompleted}
+      />
     </div>
+
+    <div className={styles.cardWrapper}>
+      <WalletCard />
+    </div>
+  </div>
+</div>
+</div>
+
+    </div>
+    
   );
 }
 

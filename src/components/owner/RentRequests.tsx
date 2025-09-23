@@ -3,6 +3,7 @@ import { useRentRequests } from "@hooks/useRentRequest";
 import { RentRequest } from "src/types";
 import "./RentRequests.css";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 type RequestsProps = {
   userId: number;
@@ -129,21 +130,31 @@ const OwnerRequests: React.FC<RequestsProps> = ({ userId }) => {
 <button
   onClick={async () => {
     try {
+      const checkIn = new Date(req.check_in);
+      const checkOut = new Date(req.check_out);
+      const days = Math.max(
+        1,
+        Math.ceil(
+          (checkOut.getTime() - checkIn.getTime()) /
+            (1000 * 60 * 60 * 24)
+        )
+      );
+
+
       const idempotency_key = `${req.id}-${userId}-${Date.now()}`;
 
       const result = await payForRentRequest(req.id, {
         idempotency_key,
-        // payment_method_token: "...", // only if required
+
       });
 
-      // ✅ Paymob gives back `redirect_url`
-      if (result?.redirect_url) {
+      if (result?.data?.redirect_url) {
         window.location.href = result.redirect_url;
       } else if (result?.success) {
-        alert("Payment successful!");
+        toast.success("Payment successful!");
       }
     } catch (err) {
-      console.error("Payment failed", err);
+      toast.error("Payment failed");
     }
   }}
   className="action-btn pay-btn"
