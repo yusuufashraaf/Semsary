@@ -52,7 +52,7 @@ function Login() {
           if (user?.role === 'admin') {
             navigate("/admin/dashboard");
           } else if (user?.role === 'owner') {
-            navigate("/owner-dashboard");
+            navigate("profile/owner-dashboard");
           } else {
             navigate("/");
           }
