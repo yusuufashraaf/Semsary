@@ -1,8 +1,6 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import {
   PropertyPurchase,
-  PropertyEscrow,
-  Wallet,
 } from "src/types";
 import {
   payForProperty,

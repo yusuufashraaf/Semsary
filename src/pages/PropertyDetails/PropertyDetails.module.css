@@ -16,3 +16,19 @@
   flex-wrap: wrap;
   margin: calc(-1 * var(--spacing-sm));
 }
+.stickySidebar {
+  position: sticky;
+  top: 80px; /* adjust depending on navbar */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Shared card style */
+.cardWrapper {
+  width: 100% !important;
+  background: var(--secondary-color);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--divider);
+}

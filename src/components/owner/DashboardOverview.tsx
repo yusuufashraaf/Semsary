@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import './DashboardOverview.css';
 import { Building, Calendar, DollarSign, Home, Eye } from 'lucide-react';
 import Loader from "@components/common/Loader/Loader";
+import { formatCurrency } from "@utils/HelperFunctions";
 
 const DashboardOverview: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -86,7 +87,7 @@ const DashboardOverview: React.FC = () => {
                 </div>
                 <div>
                   <div className="stat-label">Income</div>
-                  <div className="stat-value">${overview?.total_income || 0}</div>
+                  <div className="stat-value">{formatCurrency(overview?.total_income) || 0}</div>
                 </div>
               </div>
             </Card.Body>
@@ -101,10 +102,10 @@ const DashboardOverview: React.FC = () => {
             <Button 
               size="sm"
               variant="outline-secondary"
-              onClick={() => navigate('/owner-dashboard/manage-properties')}
+              //onClick={() => navigate('/owner-dashboard/manage-properties')}
               className="view-all-btn"
             >
-              View All ({properties.length})
+              Properties ({properties.length})
             </Button>
           )}
         </div>

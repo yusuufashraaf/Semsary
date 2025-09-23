@@ -57,7 +57,7 @@ function Login() {
             } else if (user?.role === "agent") {
               navigate("/cs-agent/dashboard");
             } else if (user?.role === "owner") {
-              navigate("/owner-dashboard");
+              navigate("/profile/owner-dashboard");
             } else {
               navigate("/");
             }

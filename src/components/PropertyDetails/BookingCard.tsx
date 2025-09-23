@@ -44,7 +44,6 @@ function BookingCard({
   unavailableDates,
   owner,
   activePurchase,
-  purchaseCheckCompleted
 }: BookingCardProps) {
   const today = new Date();
   const isSell = property.price_type === "FullPay";
@@ -59,13 +58,13 @@ function BookingCard({
   // Check if we should show cancel button (pending or paid status)
   const shouldShowCancelButton = () => {
     if (!hasActivePurchase || !activePurchase) return false;
-    return ['pending', 'paid'].includes(activePurchase.status);
+    return [ 'paid'].includes(activePurchase.status);
   };
 
   // Check if we should show owner info (only for buy properties with pending/paid status)
   const shouldShowOwnerInfo = () => {
     if (!isSell || !hasActivePurchase || !activePurchase || !owner) return false;
-    return ['pending', 'paid'].includes(activePurchase.status);
+    return [ 'paid'].includes(activePurchase.status);
   };
 
   // Get status display message
@@ -87,7 +86,6 @@ function BookingCard({
 
 
   return (
-    <div className="col-lg-4">
       <div className={styles.bookingCard}>
         {/* Owner info - Only show for buy properties with pending/paid purchase */}
         {shouldShowOwnerInfo() && (
@@ -312,7 +310,6 @@ function BookingCard({
           </div>
         )}
       </div>
-    </div>
   );
 }
 
