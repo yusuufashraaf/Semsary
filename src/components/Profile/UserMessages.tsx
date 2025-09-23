@@ -278,7 +278,8 @@ const UserMessages = ({ user }: { user: TFullUser }) => {
                 {loading ? (
                   <div className="loading"> <Loader message='Loading messages...' /> </div>
                 ) : messages.length > 0 ? (
-                  messages.map(message => (
+                  messages.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).reverse()
+    .map(message => (
                     <div
                       key={message.id}
                       style={{
