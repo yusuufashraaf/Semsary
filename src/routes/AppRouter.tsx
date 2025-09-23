@@ -14,7 +14,7 @@ import AboutUs from "@components/AboutUs/AboutUs";
 import ContactUs from "@components/ContactUs/ContactUs";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ResetPassword, ForgotPassword, OAuthCallback, Login, Register } from "@pages/index";
+import { ResetPassword, ForgotPassword, OAuthCallback, Login, Register, VerifyEmail } from "@pages/index";
 import Logout from "@pages/Logout/Logout";
 import Chatbot from "@components/Chatbot/Chatbot";
 import ProtectedRoute from "@components/common/ProtectedRoute/ProtectedRoute";
@@ -48,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: "register",
         element: <Register />,
+      },
+      {
+        path:"verify-email",
+        element:<VerifyEmail />
       },
       {
         path: "/auth/callback",

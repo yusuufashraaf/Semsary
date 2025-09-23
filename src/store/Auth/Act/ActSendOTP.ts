@@ -7,6 +7,7 @@ import { isAxiosError } from "axios";
 const ActSendOTP =createAsyncThunk('Auth/sendOTP',
     async(data:OtpType,thunkApi)=>{
     
+        console.log(data,"dsadsa");
         
         const {rejectWithValue,fulfillWithValue,getState}= thunkApi;
         const state = getState() as RootState;
