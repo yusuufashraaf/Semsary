@@ -145,6 +145,7 @@ const OwnerRequests: React.FC<RequestsProps> = ({ userId }) => {
 
       const result = await payForRentRequest(req.id, {
         idempotency_key,
+
       });
 
       if (result?.data?.redirect_url) {
