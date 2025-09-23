@@ -158,7 +158,6 @@ const OwnerRequests: React.FC<OwnerRequestsProps> = ({ userId }) => {
     );
   }
 
-  console.log(ownerRentRequests);
 
   return (
     <div className="requests-container">

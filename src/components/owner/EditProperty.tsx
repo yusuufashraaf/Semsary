@@ -29,7 +29,6 @@ const EditProperty: React.FC = () => {
       try {
         const res = await api.get(`/properties/${id}`);
         
-        console.log('API Response:', res.data);
         
         const property = res.data?.data || res.data || res.data?.property;
         
@@ -37,7 +36,6 @@ const EditProperty: React.FC = () => {
           throw new Error('Property data not found in response');
         }
 
-        console.log('Property data:', property);
 
         // Process images with proper URLs
         const processedImages = Array.isArray(property.images) 
@@ -62,7 +60,6 @@ const EditProperty: React.FC = () => {
             })
           : [];
 
-        console.log('Processed images:', processedImages);
 
         setFormData({
           title: property.title || "",

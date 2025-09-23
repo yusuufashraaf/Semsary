@@ -37,7 +37,6 @@ export const queryClient = new QueryClient({
 // Global error handler for React Query
 export const handleQueryError = (error: any) => {
   if (error?.name === 'CanceledError' || error?.message === 'canceled') {
-    console.log('Request was cancelled');
     return { message: 'Request was cancelled' };
   }
   

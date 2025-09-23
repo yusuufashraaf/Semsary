@@ -93,10 +93,8 @@ function PropertyListing() {
       }
 
       try {
-        console.log("Fetching purchase data for property:", propertyId);
         await fetchPurchaseForProperty(propertyId);
       } catch (error) {
-        console.error("Error checking purchase for property:", error);
       } finally {
         setPurchaseCheckCompleted(true);
       }
@@ -178,7 +176,6 @@ function PropertyListing() {
       const newRequest = await createRequest(rentRequestData);
 
       toast.success("Rent request submitted successfully!");
-      console.log("Rent request created:", newRequest);
 
     } catch (error: any) {
       console.error("Failed to create rent request:", error);
@@ -211,10 +208,8 @@ function PropertyListing() {
         idempotency_key: `${property.id}-${user.id}-${Date.now()}`,
       };
 
-      console.log("Making purchase request:", purchasePayload);
       const result = await pay(Number(property.id), purchasePayload);
       
-      console.log("Purchase result:", result);
       
       if (result?.success) {
         toast.success("Property purchased successfully!");
@@ -251,7 +246,6 @@ function PropertyListing() {
     try {
       const result = await cancel(activePurchase.id);
       
-      console.log("Cancel result:", result);
       
       if (result?.success) {
         toast.success("Purchase cancelled successfully!");

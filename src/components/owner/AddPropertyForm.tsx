@@ -413,7 +413,6 @@ const AddPropertyForm: React.FC = () => {
                   size: Number(formData.size),
                   location: formData.selectedLocation.address
                 });
-                console.log('Generated description:', result);
                 const cleanDescription = typeof result === 'string'
                 ? result.substring(0, 500).trim()
                 : result;

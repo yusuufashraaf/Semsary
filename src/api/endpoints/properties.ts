@@ -112,10 +112,8 @@ export const propertiesApi = {
         ...filters,
       });
 
-      console.log('Fetching properties with params:', params.toString());
       const response = await api.get(`/admin/properties?${params}`);
       
-      console.log('Raw properties response:', response.data);
       
       // Handle different possible response structures
       let backendData, properties, pagination;
@@ -271,7 +269,6 @@ export const propertiesApi = {
         }
       });
 
-      console.log('Transformed properties:', transformedProperties);
 
       return {
         data: transformedProperties,
@@ -291,10 +288,8 @@ export const propertiesApi = {
   // Get single property with full admin details
   getProperty: async (id: number): Promise<any> => {
     try {
-      console.log('Fetching property:', id);
       const response = await api.get(`/admin/properties/${id}`);
       
-      console.log('Raw property response:', response.data);
       
       // Return the raw response data as it comes from the API
       return response.data.data || response.data;
@@ -307,10 +302,8 @@ export const propertiesApi = {
   // Get property statistics for dashboard - FIXED FOR YOUR API
   getStatistics: async (): Promise<PropertyStatistics> => {
     try {
-      console.log('Fetching statistics from /admin/properties/statistics...');
       
       const response = await api.get('/admin/properties/statistics');
-      console.log('Raw API response:', response.data);
       
       // Extract data from your API response structure
       const apiData = response.data.data;
@@ -356,13 +349,7 @@ export const propertiesApi = {
         }))
       };
       
-      console.log('Mapped statistics:', mappedStats);
-      console.log('Final stats for component:', {
-        total: mappedStats.total,
-        pending: mappedStats.pending,
-        approved: mappedStats.approved, 
-        rejected: mappedStats.rejected
-      });
+      
       
       return mappedStats;
       
