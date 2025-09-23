@@ -5,5 +5,7 @@ import OAuthCallback from "./OAuthCallback/OAuthCallback";
 import ForgotPassword from "./ForgetPassword/ForgetPassword";
 import Error from "./Error/Error";
 import VerifyEmail from "./VerifiyEmail/VerifiyEmail";
+import VerifyPhone from "./VerifyPhone/VerifyPhone";
 import PaymentForm from "./PaymentForm/PaymentForm";
-export {ResetPassword, Login, Register,OAuthCallback,ForgotPassword,Error,VerifyEmail,PaymentForm};
+import UploadId from "./UploadId/UploadId";
+export {ResetPassword, Login, Register,OAuthCallback,ForgotPassword,Error,VerifyEmail,PaymentForm,VerifyPhone,UploadId};
