@@ -46,17 +46,22 @@ function Login() {
     dispatch(ActSignIn(data))
       .unwrap()
       .then(() => {
-        dispatch(ActCheckAuth()).unwrap().then((result) => {
-          // Use role-based navigation instead of always going to "/"
-          const user = result.user;
-          if (user?.role === 'admin') {
-            navigate("/admin/dashboard");
-          } else if (user?.role === 'owner') {
-            navigate("profile/owner-dashboard");
-          } else {
-            navigate("/");
-          }
-        });
+        dispatch(ActCheckAuth())
+          .unwrap()
+          .then((result) => {
+            console.log("🚀 Login: Auth check result:", result);
+            // Use role-based navigation instead of always going to "/"
+            const user = result.user;
+            if (user?.role === "admin") {
+              navigate("/admin/dashboard");
+            } else if (user?.role === "agent") {
+              navigate("/cs-agent/dashboard");
+            } else if (user?.role === "owner") {
+              navigate("/owner-dashboard");
+            } else {
+              navigate("/");
+            }
+          });
       });
   };
   if (jwt) {

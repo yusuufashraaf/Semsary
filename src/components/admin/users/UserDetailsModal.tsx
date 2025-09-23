@@ -13,6 +13,7 @@ import {
 } from '@hooks/useUserMutations';
 import { formatCurrency, formatDate } from '@utils/formatters';
 import { cn } from '@utils/classNames';
+
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import {
@@ -20,10 +21,8 @@ import {
   EnvelopeIcon,
   PhoneIcon,
   CalendarIcon,
-  MapPinIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
-  ClockIcon,
   BuildingOfficeIcon,
   CreditCardIcon,
 } from '@heroicons/react/24/outline';

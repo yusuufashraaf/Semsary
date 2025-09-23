@@ -18,7 +18,7 @@ export type TFullUser = {
   email_otp: string | null;
   email_otp_expires_at: string | null;
   id_image_url: string | null;
-  role: "user" | "admin" | "owner";
+  role: "user" | "admin" | "owner" | "agent";
   phone_number: string;
   status: "pending" | "active" | "suspended";
   phone_verified_at: string | null;
@@ -35,5 +35,11 @@ export type ChangePasswordFormValues = {
 export type ChangeEmailFormValues = {
   current_email: string;
   email: string;
+  password: string;
+};
+
+export type ChangePhoneFormValues = {
+  current_phone: string;
+  phone_number: string;
   password: string;
 };

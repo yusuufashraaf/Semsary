@@ -24,12 +24,21 @@ import ProtectedRoute from "@components/common/ProtectedRoute/ProtectedRoute";
 import { AdminLayout } from "@components/admin/AdminLayout";
 import { DashboardPage } from "@pages/admin/DashboardPage";
 import { AdminProfilePage } from "@pages/admin/AdminProfilePage";
-import { UsersPage } from '@pages/admin/UsersPage';
-import { PropertiesPage } from '@pages/admin/PropertiesPage';
+import { UsersPage } from "@pages/admin/UsersPage";
+import { PropertiesPage } from "@pages/admin/PropertiesPage";
 import { PropertyDetailPage } from "@components/admin/properties/PropertyDetailPage";
 import PaymentCallback from "@pages/PaymentCallback/PaymentCallback";
 import TermsAndConditions from "@components/TermsAndConditions/TermsAndCondition";
 import PrivacyPolicy from "@components/PrivacyPolicy/PrivacyPolicy";
+import { CsAgentsPage } from "@pages/admin/CsAgentsPage";
+import { CsAgentDetailsPage } from "@pages/admin/CsAgentDetailsPage";
+import { AssignmentsPage } from "@pages/admin/AssignmentsPage";
+// ADD CS AGENT IMPORTS
+import { CsAgentLayout } from "@components/cs-agent/CsAgentLayout";
+import { CsAgentProfilePage } from "@pages/cs-agent/CsAgentProfilePage";
+import { PropertyTaskQueuePage } from "@pages/cs-agent/PropertyTaskQueuePage";
+import { PropertyVerificationPage } from "@pages/cs-agent/PropertyVerificationPage";
+import { CsAgentDashboardPage } from "@pages/cs-agent/CsAgentDashboardPage";
 
 const router = createBrowserRouter([
   {
@@ -102,28 +111,28 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-    //  {
-    //   path: "profiles",
-    //   element: <UserLayout />,
-    //   children: [
-    //     {
-    //       path: 'basicInfo',
-    //       element: <BasicInfo />,
-    //     },
-    //     {
-    //       path: 'changeEmail',
-    //       element: <ChangeEmail />,
-    //     },
-    //     {
-    //       path: 'changePassword',
-    //       element: <ChangePassword />,
-    //     },
-    //     {
-    //       path: 'changePhone',
-    //       element: <ChangePhone />,
-    //     }
-    //   ],
-    // },
+      //  {
+      //   path: "profiles",
+      //   element: <UserLayout />,
+      //   children: [
+      //     {
+      //       path: 'basicInfo',
+      //       element: <BasicInfo />,
+      //     },
+      //     {
+      //       path: 'changeEmail',
+      //       element: <ChangeEmail />,
+      //     },
+      //     {
+      //       path: 'changePassword',
+      //       element: <ChangePassword />,
+      //     },
+      //     {
+      //       path: 'changePhone',
+      //       element: <ChangePhone />,
+      //     }
+      //   ],
+      // },
       {
         path: "logout",
         element: (
@@ -139,10 +148,11 @@ const router = createBrowserRouter([
       {
         path: "property/:id",
         element: <PropertyDetails />,
-      },      {
+      },
+      {
         path: "property/:id/edit",
         element: (
-            <ProtectedRoute allowedRoles={['user', 'owner', 'admin']}>
+          <ProtectedRoute allowedRoles={["user", "owner", "admin"]}>
             <EditProperty />
           </ProtectedRoute>
         ),
@@ -169,7 +179,7 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      <ProtectedRoute allowedRoles={['admin']}>
+      <ProtectedRoute allowedRoles={["admin"]}>
         <AdminLayout />
       </ProtectedRoute>
     ),
@@ -185,9 +195,7 @@ const router = createBrowserRouter([
       },
       {
         path: "users",
-        element: (
-          <UsersPage />
-        ),
+        element: <UsersPage />,
       },
       {
         path: "properties",
@@ -220,6 +228,70 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <AdminProfilePage />,
+      },
+      {
+        path: "cs-agents",
+        element: <CsAgentsPage />,
+      },
+      {
+        path: "cs-agents/:agentId",
+        element: <CsAgentDetailsPage />,
+      },
+      {
+        path: "assignments",
+        element: <AssignmentsPage />,
+      },
+    ],
+  },
+  // CS AGENT ROUTES AS SEPARATE ROUTE GROUP WITH PROTECTION
+  {
+    path: "/cs-agent",
+    element: (
+      <ProtectedRoute allowedRoles={["agent"]}>
+        <CsAgentLayout />
+      </ProtectedRoute>
+    ),
+    errorElement: <ErrorScreen />,
+    children: [
+      {
+        index: true,
+        element: <CsAgentDashboardPage />,
+      },
+      {
+        path: "dashboard",
+        element: <CsAgentDashboardPage />,
+      },
+      {
+        path: "properties",
+        element: <PropertyTaskQueuePage />,
+      },
+      {
+        path: "properties/:id",
+        element: <PropertyVerificationPage />,
+      },
+      {
+        path: "properties/:id/verify",
+        element: <PropertyVerificationPage />,
+      },
+      {
+        path: "verifications",
+        element: (
+          <div className="p-6 text-center">
+            Verification History (Coming Soon)
+          </div>
+        ),
+      },
+      {
+        path: "performance",
+        element: (
+          <div className="p-6 text-center">
+            Performance Analytics (Coming Soon)
+          </div>
+        ),
+      },
+      {
+        path: "profile",
+        element: <CsAgentProfilePage />,
       },
       
     ],
@@ -262,8 +334,8 @@ function AppRouter() {
         pauseOnHover
         theme="light"
       />
-     <div className="fixed bottom-4 right-4">
-      <Chatbot />
+      <div className="fixed bottom-4 right-4">
+        <Chatbot />
       </div>
     </>
   );

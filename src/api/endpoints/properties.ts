@@ -106,10 +106,22 @@ export const propertiesApi = {
     filters?: any
   ): Promise<PaginatedResponse<AdminProperty>> => {
     try {
+      // Filter out unsupported parameters that cause 422 errors
+      const supportedFilters = { ...filters };
+      
+      // Remove known unsupported filters until backend implements them
+      const unsupportedFilters = ['has_images', 'has_reviews', 'has_bookings'];
+      unsupportedFilters.forEach(filter => {
+        if (supportedFilters[filter] !== undefined) {
+          console.warn(`Filter '${filter}' is not yet supported by the backend, removing from request`);
+          delete supportedFilters[filter];
+        }
+      });
+      
       const params = createSearchParams({
         page: page.toString(),
         per_page: limit.toString(),
-        ...filters,
+        ...supportedFilters,
       });
 
       const response = await api.get(`/admin/properties?${params}`);

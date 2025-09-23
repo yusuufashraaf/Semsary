@@ -1,10 +1,9 @@
 // src/components/admin/properties/PropertyDetailsModal.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import { Modal } from '@components/ui/Modal';
 import { Button } from '@components/ui/Button';
 import { Badge } from '@components/ui/Badge';
 import { LoadingSpinner } from '@components/ui/LoadingSpinner';
-import { AdminProperty } from '@api/endpoints/properties';
 import { formatCurrency, formatNumber, formatDate } from '@utils/formatters';
 import { getStatusVariant } from '@utils/statusHelpers';
 import { useProperty } from '@hooks/usePropertiesQueries';
