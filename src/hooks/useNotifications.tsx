@@ -31,7 +31,6 @@ export function useNotifications(userId: number | null) {
     const channel = echo.private(channelName);
 
     channel.notification((notification: NotificationPayload | any) => {
-      console.log("Received notification:", notification);
       const data: RentNotification = notification.data ?? notification;
       dispatch(addNotification(data));
     });

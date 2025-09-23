@@ -1,16 +1,16 @@
 import { Dispatch, SetStateAction } from "react";
-import BookingCard from "@components/PropertyDetails/BookingCard";
+import BookingCard from "../../components/PropertyDetails/BookingCard";
 import { Property, GuestOption } from "src/types";
 
 interface BookingSectionProps {
   property: Property;
   booking: {
     checkIn: string;
-    setCheckIn: Dispatch<SetStateAction<string>>; // Fixed type
+    setCheckIn: Dispatch<SetStateAction<string>>;
     checkOut: string;
-    setCheckOut: Dispatch<SetStateAction<string>>; // Fixed type
+    setCheckOut: Dispatch<SetStateAction<string>>;
     guests: string;
-    setGuests: Dispatch<SetStateAction<string>>; // Fixed type
+    setGuests: Dispatch<SetStateAction<string>>;
     nights: number;
     subtotal: number;
     total: number;
@@ -18,8 +18,15 @@ interface BookingSectionProps {
   };
   guestOptions: GuestOption[];
   onReserve: () => void;
+  onBuy: () => void;
+  onCancel: () => void;
+  hasActivePurchase: boolean;
   rentRequestLoading: boolean;
   errorMessages: string;
+  unavailableDates: Date[]; 
+  owner: any;
+  activePurchase?: any;
+  purchaseCheckCompleted: boolean;
 }
 
 function BookingSection({
@@ -27,27 +34,32 @@ function BookingSection({
   booking,
   guestOptions,
   onReserve,
+  onBuy,
+  onCancel,
+  hasActivePurchase,
   rentRequestLoading,
   errorMessages,
+  unavailableDates,
+  owner,
+  activePurchase,
+  purchaseCheckCompleted,
 }: BookingSectionProps) {
+  
   return (
     <BookingCard
-      price={property.price}
-      isSell={property.status === "Sold"}
-      checkIn={booking.checkIn}
-      setCheckIn={booking.setCheckIn}
-      checkOut={booking.checkOut}
-      setCheckOut={booking.setCheckOut}
-      guests={booking.guests}
-      setGuests={booking.setGuests}
+      property={property}
+      booking={booking}
       guestOptions={guestOptions}
       onReserve={onReserve}
+      onBuy={onBuy}
+      onCancel={onCancel}
+      hasActivePurchase={hasActivePurchase}
       loading={rentRequestLoading || booking.loading}
       errorMessage={errorMessages}
-      nights={booking.nights}
-      subtotal={booking.subtotal}
-      total={booking.total}
-      property_state={property.status}
+      unavailableDates={unavailableDates}
+      owner={owner}
+      activePurchase={activePurchase}
+      purchaseCheckCompleted={purchaseCheckCompleted}
     />
   );
 }

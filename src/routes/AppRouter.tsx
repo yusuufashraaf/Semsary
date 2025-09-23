@@ -14,16 +14,11 @@ import AboutUs from "@components/AboutUs/AboutUs";
 import ContactUs from "@components/ContactUs/ContactUs";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  ResetPassword,
-  ForgotPassword,
-  OAuthCallback,
-  Login,
-  Register,
-} from "@pages/index";
+import { ResetPassword, ForgotPassword, OAuthCallback, Login, Register, VerifyEmail, PaymentForm, VerifyPhone, UploadId } from "@pages/index";
 import Logout from "@pages/Logout/Logout";
 import Chatbot from "@components/Chatbot/Chatbot";
 import ProtectedRoute from "@components/common/ProtectedRoute/ProtectedRoute";
+// import CheckoutWrapper from "@components/Checkout/CheckoutWrapper";
 
 // ADD ADMIN IMPORTS
 import { AdminLayout } from "@components/admin/AdminLayout";
@@ -32,6 +27,9 @@ import { AdminProfilePage } from "@pages/admin/AdminProfilePage";
 import { UsersPage } from "@pages/admin/UsersPage";
 import { PropertiesPage } from "@pages/admin/PropertiesPage";
 import { PropertyDetailPage } from "@components/admin/properties/PropertyDetailPage";
+import PaymentCallback from "@pages/PaymentCallback/PaymentCallback";
+import TermsAndConditions from "@components/TermsAndConditions/TermsAndCondition";
+import PrivacyPolicy from "@components/PrivacyPolicy/PrivacyPolicy";
 import { CsAgentsPage } from "@pages/admin/CsAgentsPage";
 import { CsAgentDetailsPage } from "@pages/admin/CsAgentDetailsPage";
 import { AssignmentsPage } from "@pages/admin/AssignmentsPage";
@@ -62,6 +60,18 @@ const router = createBrowserRouter([
         element: <Register />,
       },
       {
+        path:"verify-email",
+        element:<VerifyEmail />
+      },
+      {
+        path:"verify-phone",
+        element:<VerifyPhone />
+      },
+      {
+        path:"/upload-id",
+        element:<UploadId />
+      },
+      {
         path: "/auth/callback",
         element: <OAuthCallback />,
       },
@@ -76,6 +86,14 @@ const router = createBrowserRouter([
       {
         path: "home",
         element: <Home />,
+      },
+      {
+        path:"payment/callback",
+        element:<PaymentCallback />
+      },
+      {
+        path:"payment",
+        element:<PaymentForm />
       },
       {
         path: "profile",
@@ -147,6 +165,14 @@ const router = createBrowserRouter([
         path: "/contact",
         element: <ContactUs />,
       },
+       {
+        path: "/terms-and-conditions",
+        element: <TermsAndConditions />
+      },
+      {
+        path: "/privacy-policy",
+        element: <PrivacyPolicy />
+      },
     ],
   },
   // ADMIN ROUTES AS SEPARATE ROUTE GROUP WITH PROTECTION
@@ -197,6 +223,8 @@ const router = createBrowserRouter([
           <div className="p-6 text-center">Settings Page (Coming Soon)</div>
         ),
       },
+     
+
       {
         path: "profile",
         element: <AdminProfilePage />,
@@ -265,8 +293,13 @@ const router = createBrowserRouter([
         path: "profile",
         element: <CsAgentProfilePage />,
       },
+      
     ],
   },
+  // {
+  //       path: "checkout",
+  //       element: <CheckoutWrapper />,
+  // }
 ]);
 
 function AppRouter() {
@@ -277,12 +310,10 @@ function AppRouter() {
   useEffect(() => {
     if (!hasRun.current) {
       hasRun.current = true;
-      console.log("🚀 AppRouter: Initializing auth check...");
       dispatch(ActCheckAuth());
     }
   }, [dispatch]);
 
-  console.log("🔄 AppRouter render:", { isInitialized, loading });
 
   if (!isInitialized) {
     return <LoadingScreen />;

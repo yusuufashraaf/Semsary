@@ -48,7 +48,7 @@ const UserNotifications = ({
     };
 
     getNotificationsData();
-  }, [user.id]); // removed duplicate dependency array
+  }, [user.id]);
 
   const handleTabChange = (tab: NotificationType) => {
     setActiveTab(tab);
@@ -82,8 +82,8 @@ const UserNotifications = ({
     return "fas fa-bell";
   };
 
-  const filteredNotifications = notifications.filter((notification) => {
-    if (activeTab === "unread") return !notification.is_read;
+  const filteredNotifications = notifications.filter(notification => {
+    if (activeTab === 'unread') return !notification.is_read;
     return true;
   });
 

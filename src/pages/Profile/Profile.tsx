@@ -1,7 +1,6 @@
 import UserNotifications from '@components/Profile/UserNotifications';
-import UserProperties from '@components/Profile/UserProperties';
 import UserReviews from '@components/Profile/UserReviews';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import UserPurchases from '@components/Profile/UserPurchases';
 import ProfileHeader from '@components/Profile/ProfileHeader';
@@ -11,7 +10,7 @@ import ChangeEmail from '@components/User/ChangeEmail/ChangeEmail';
 import ChangePhone from '@components/User/ChangePhone/ChangePhone';
 import ChangePassword from '@components/User/ChangePassword/ChangePassword';
 import OwnerDashboard from '@components/owner/OwnerDashboard';
-import OwnerRequests from '@components/owner/OwnerRequests';
+import RentRequests from '@components/owner/RentRequests';
 import { useAppSelector } from '@store/hook';
 import UserMessages from '@components/Profile/UserMessages';
 
@@ -28,8 +27,8 @@ const Profile = () => {
   }, [user, navigate]);
     
   useEffect(() => {
-  const validSections = ['home', 'properties','owner-dashboard' ,'reviews', 
-    'notifications', 'ownerNotification', 'ownerRequests' , 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword'];
+  const validSections = ['home','owner-dashboard' ,'reviews', 
+    'notifications', 'rentRequests' , 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword', 'messages'];
   
   if (!section || !validSections.includes(section)) {
     navigate('/profile/home', { replace: true });
@@ -41,20 +40,16 @@ const Profile = () => {
   switch (section) {
     case 'home':
       return <BasicInfo />;
-     case 'properties':
-        return <UserProperties user={user} />;
       case 'reviews':
         return <UserReviews user={user} />;
       case 'notifications':
         return <UserNotifications user={user} onUnreadCountChange={setUnreadCount}/>;
-      case 'ownerRequests':
-        return <OwnerRequests userId={user.id}/>;
+      case 'rentRequests':
+        return <RentRequests userId={user.id}/>;
       case 'purchases':
         return <UserPurchases user={user} />;
       case 'wishlist':
         return <UserWishlist user={user} />;
-    // case 'basicInfo':
-    //   return <BasicInfo />;
     case 'messages':
       return <UserMessages user={user} />;
     case 'changeEmail':

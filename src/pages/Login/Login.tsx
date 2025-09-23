@@ -10,6 +10,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import styles from "./login.module.css";
 import ActCheckAuth from "@store/Auth/Act/ActCheckAuth";
+import Loader from "@components/common/Loader/Loader";
 
 function Login() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -41,7 +42,7 @@ function Login() {
   const submitForm: SubmitHandler<signInType> = (data) => {
     if (searchParams.get("message")) {
       setSearchParams("");
-    }
+    };
     dispatch(ActSignIn(data))
       .unwrap()
       .then(() => {
@@ -105,14 +106,15 @@ function Login() {
               className={`${styles.loginBtn}  mt-3`}
               style={{ width: "100%" }}
             >
-              {loading === "pending" ? (
-                <>
-                  <Spinner animation="border" size="sm" />
-                  Loading...
-                </>
-              ) : (
-                "Submit"
-              )}
+               {loading === "pending"  ? (
+                    <>
+                      <Spinner animation="border" size="sm" />
+                      Loading...
+                    </>
+                  ) : (
+                    "Log in"
+                )}
+        
             </Button>
 
             <div className={styles.divider}>
@@ -127,8 +129,26 @@ function Login() {
               />
               <span>Continue With Google</span>
             </a>
-            {error && (
-              <p style={{ color: "#DC3545", marginTop: "10px" }}>{error}</p>
+           {error && (
+              <div style={{ marginTop: "10px" }}>
+                <p style={{ color: "#DC3545" }}>{error}</p>
+                {error === "Please verify your email before logging in." && (
+                  <Button
+                    variant="warning"
+                    style={{ marginTop: "5px" }}
+                    onClick={() => navigate("/verify-email")}
+                  >
+                  {loading === "pending"  ? (
+                    <>
+                      <Spinner animation="border" size="sm" />
+                      Verifying...
+                    </>
+                  ) : (
+                    "Verify Email"
+                  )}
+                  </Button>
+                )}
+              </div>
             )}
           </Form>
         </Col>

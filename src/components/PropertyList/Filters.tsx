@@ -30,6 +30,10 @@ function Filters({
   setItemsPerPage,
   minPrice,
   maxPrice,
+  sortBy,
+  setSortBy,
+  sortOrder,
+  setSortOrder,
 }: FiltersProps) {
   // ---------------------- Local states for smooth slider ----------------------
   const [localPriceMin, setLocalPriceMin] = useState(priceMin);
@@ -86,6 +90,28 @@ function Filters({
         <button className={styles.clearFiltersBtn} onClick={clearAllFilters}>
           Clear All
         </button>
+      </div>
+
+      {/* Sort By */}
+      <div className={styles.filterGroup}>
+        <label className={styles.filterLabel}>Sort By</label>
+        <div className={styles.customSelectWrapper}>
+          <select
+            value={`${sortBy}:${sortOrder}`}
+            onChange={(e) => {
+              const [field, order] = e.target.value.split(":");
+              setSortBy(field);
+              setSortOrder(order);
+            }}
+            className={styles.customSelect}
+          >
+            <option value="created_at:desc">Latest (Newest First)</option>
+            <option value="created_at:asc">Earliest (Oldest First)</option>
+            <option value="price:asc">Price (Low → High)</option>
+            <option value="price:desc">Price (High → Low)</option>
+          </select>
+          <span className={styles.selectArrow}>▼</span>
+        </div>
       </div>
 
       {/* Items Per Page */}

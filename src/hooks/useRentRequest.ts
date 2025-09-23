@@ -11,14 +11,17 @@ import {
   payForRequest,
   getRentRequestDetails,
   getRentRequestStats,
+  getUnavailableDates, 
 } from "@services/rentRequest";
 import { useAppSelector } from "@store/hook";
-import {  LaravelPaginatedResponse,
+import {
+  LaravelPaginatedResponse,
   RentRequestQuery,
   CreateRentRequestData,
   PaymentData,
   RequestStats,
-} from "src/types/index"
+} from "src/types/index";
+
 interface UseRentRequestsReturn {
   // State
   userRentRequests: RentRequest[];
@@ -27,14 +30,16 @@ interface UseRentRequestsReturn {
   ownerPagination: LaravelPaginatedResponse<RentRequest> | null;
   requestDetails: RentRequest | null;
   stats: RequestStats | null;
+  unavailableDates: { start: string; end: string }[]; // 👈 NEW
   loading: boolean;
   error: string | null;
-  
+
   // Actions
   fetchUserRentRequests: (query?: RentRequestQuery) => Promise<void>;
   fetchOwnerRentRequests: (query?: RentRequestQuery) => Promise<void>;
   fetchRequestDetails: (requestId: number) => Promise<RentRequest | null>;
   fetchRequestStats: () => Promise<RequestStats | null>;
+  fetchUnavailableDates: (propertyId: number) => Promise<void>; // 👈 NEW
   createRequest: (data: CreateRentRequestData) => Promise<RentRequest | null>;
   cancelRequest: (requestId: number) => Promise<void>;
   confirmRequest: (requestId: number) => Promise<void>;
@@ -43,7 +48,7 @@ interface UseRentRequestsReturn {
   payForRentRequest: (requestId: number, paymentData: PaymentData) => Promise<any>;
   clearError: () => void;
   resetState: () => void;
-  
+
   // Legacy compatibility
   userTotal: number;
   ownerTotal: number;
@@ -53,10 +58,15 @@ interface UseRentRequestsReturn {
 export const useRentRequests = (userId: number | null): UseRentRequestsReturn => {
   const [userRentRequests, setUserRentRequests] = useState<RentRequest[]>([]);
   const [ownerRentRequests, setOwnerRentRequests] = useState<RentRequest[]>([]);
-  const [userPagination, setUserPagination] = useState<LaravelPaginatedResponse<RentRequest> | null>(null);
-  const [ownerPagination, setOwnerPagination] = useState<LaravelPaginatedResponse<RentRequest> | null>(null);
+  const [userPagination, setUserPagination] =
+    useState<LaravelPaginatedResponse<RentRequest> | null>(null);
+  const [ownerPagination, setOwnerPagination] =
+    useState<LaravelPaginatedResponse<RentRequest> | null>(null);
   const [requestDetails, setRequestDetails] = useState<RentRequest | null>(null);
   const [stats, setStats] = useState<RequestStats | null>(null);
+  const [unavailableDates, setUnavailableDates] = useState<
+    { start: string; end: string }[]
+  >([]); // 👈 NEW
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,7 +89,8 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
   // Handle errors consistently
   const handleError = useCallback((error: any, defaultMessage: string) => {
     console.error(defaultMessage, error);
-    const message = error?.message || error?.response?.data?.message || defaultMessage;
+    const message =
+      error?.message || error?.response?.data?.message || defaultMessage;
     setError(message);
   }, []);
 
@@ -169,6 +180,28 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
     [jwt, validateAuth, handleError]
   );
 
+  //  Fetch unavailable dates
+  const fetchUnavailableDates = useCallback(
+    async (propertyId: number): Promise<void> => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const dates = await getUnavailableDates(propertyId, jwt ?? undefined);
+        const formatted = dates.map((d: { check_in: string; check_out: string }) => ({
+        start: d.check_in,
+        end: d.check_out,
+      }));
+        setUnavailableDates(formatted);
+      } catch (err: any) {
+        handleError(err, "Error fetching unavailable dates.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [jwt, handleError]
+  );
+
   // Create rent request
   const createRequest = useCallback(
     async (data: CreateRentRequestData): Promise<RentRequest | null> => {
@@ -201,11 +234,10 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
 
       try {
         await cancelRentRequestByUser(requestId, jwt!);
-        
-        // Update local state
+
         const updateStatus = (req: RentRequest) =>
           req.id === requestId ? { ...req, status: "cancelled" as const } : req;
-          
+
         setUserRentRequests((prev) => prev.map(updateStatus));
         setOwnerRentRequests((prev) => prev.map(updateStatus));
       } catch (err: any) {
@@ -228,11 +260,10 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
 
       try {
         await confirmRentRequestByOwner(requestId, jwt!);
-        
-        // Update local state
+
         const updateStatus = (req: RentRequest) =>
           req.id === requestId ? { ...req, status: "confirmed" as const } : req;
-          
+
         setOwnerRentRequests((prev) => prev.map(updateStatus));
         setUserRentRequests((prev) => prev.map(updateStatus));
       } catch (err: any) {
@@ -255,11 +286,10 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
 
       try {
         await rejectRentRequestByOwner(requestId, jwt!);
-        
-        // Update local state
+
         const updateStatus = (req: RentRequest) =>
           req.id === requestId ? { ...req, status: "rejected" as const } : req;
-          
+
         setOwnerRentRequests((prev) => prev.map(updateStatus));
         setUserRentRequests((prev) => prev.map(updateStatus));
       } catch (err: any) {
@@ -282,11 +312,12 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
 
       try {
         await cancelConfirmedByOwner(requestId, jwt!);
-        
-        // Update local state
+
         const updateStatus = (req: RentRequest) =>
-          req.id === requestId ? { ...req, status: "cancelled_by_owner" as const } : req;
-          
+          req.id === requestId
+            ? { ...req, status: "cancelled_by_owner" as const }
+            : req;
+
         setOwnerRentRequests((prev) => prev.map(updateStatus));
         setUserRentRequests((prev) => prev.map(updateStatus));
       } catch (err: any) {
@@ -309,14 +340,13 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
 
       try {
         const result = await payForRequest(requestId, paymentData, jwt!);
-        
-        // Update local state
+
         const updateStatus = (req: RentRequest) =>
           req.id === requestId ? { ...req, status: "paid" as const } : req;
-          
+
         setUserRentRequests((prev) => prev.map(updateStatus));
         setOwnerRentRequests((prev) => prev.map(updateStatus));
-        
+
         return result;
       } catch (err: any) {
         handleError(err, "Error processing payment.");
@@ -341,6 +371,7 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
     setOwnerPagination(null);
     setRequestDetails(null);
     setStats(null);
+    setUnavailableDates([]); 
     setError(null);
   }, []);
 
@@ -352,14 +383,16 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
     ownerPagination,
     requestDetails,
     stats,
+    unavailableDates, 
     loading,
     error,
-    
+
     // Actions
     fetchUserRentRequests,
     fetchOwnerRentRequests,
     fetchRequestDetails,
     fetchRequestStats,
+    fetchUnavailableDates, 
     createRequest,
     cancelRequest,
     confirmRequest,
@@ -368,7 +401,7 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
     payForRentRequest,
     clearError,
     resetState,
-    
+
     // Legacy compatibility
     userTotal: userPagination?.total || 0,
     ownerTotal: ownerPagination?.total || 0,

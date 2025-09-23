@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Collapse } from 'react-bootstrap';
+import { Collapse } from 'react-bootstrap';
 import '../../styles/themes.css';
 import './ProfileHeader.css';
 import { TFullUser } from 'src/types/users/users.types';
@@ -11,7 +11,7 @@ type ProfileHeaderProps = {
   unreadCount: number;
 };
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCount }) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, unreadCount }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -22,24 +22,6 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
 
   const isActive = (path: string) => {
     return location.pathname.includes(path);
-  };
-
-  const getSectionTitle = (section: string) => {
-    const titles: { [key: string]: string } = {
-      userInfo: 'Your Info',
-      properties: 'My Properties',
-      'owner-dashboard': 'Dashboard',
-      reviews: 'Reviews & Ratings',
-      purchases: 'Purchase History',
-      wishlist: 'My Wishlist',
-      notifications: 'Notifications',
-      ownerNotification: 'Notifications',
-      ownerRequests: 'Requests',
-      changePhone: 'Change Phone Number',
-      changeEmail: 'Change Email Address',
-      changePassword: 'Change Password'
-    };
-    return titles[section] || 'Profile';
   };
 
   const role = user?.role?.toLowerCase();
@@ -59,20 +41,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
           >
             <i className="fas fa-home nav-icon"></i>
             <span>Your Info</span>
-          </button>
-          
-          {role === 'user' && (
-            <button 
-              onClick={() => handleNavigation('properties')}
-              className={`nav-link ${isActive('properties') ? 'active' : ''}`}
-            >
-              <i className="fas fa-building nav-icon"></i>
-              <span>Properties</span>
-            </button>
-          )}
-          
-          {role === 'owner' && (
-            <>
+          </button>         
+          {/* {role === 'owner' && ( */}
+            {/* <> */}
             <button
               onClick={() => handleNavigation('owner-dashboard')}
               className={`nav-link ${isActive('owner-dashboard') ? 'active' : ''}`}
@@ -81,8 +52,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
               <span>Dashboard</span>
             </button>
           <button 
-            onClick={() => handleNavigation('ownerRequests')}
-            className={`nav-link ${isActive('ownerRequests') ? 'active' : ''}`}
+            onClick={() => handleNavigation('rentRequests')}
+            className={`nav-link ${isActive('rentRequests') ? 'active' : ''}`}
           >
             <i className="fas fa-envelope-open-text nav-icon"></i>
             <span>Requests</span>
@@ -98,8 +69,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
               <span className="notification-badge">{unreadCount}</span>
             )}
           </button>
-          </>
-          )}
+          {/* </> */}
+          {/* )} */}
           
           <button 
             onClick={() => handleNavigation('reviews')}
@@ -173,20 +144,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ section, user, unreadCoun
 
   return (
     <div className="profile-wrapper">
-      {/* Top Bar with Toggle and Title */}
-      {/* <div className="profile-topbar">
-        <Button 
-          variant="link"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="sidebar-toggle"
-          aria-label="Toggle sidebar"
-        >
-          <i className={`fas ${sidebarOpen ? 'fa-times' : 'fa-bars'}`}></i>
-        </Button>
-        <h1 className="page-title">{getSectionTitle(section)}</h1>
-      </div> */}
-
-      <div className="profile-layout">
+    <div className="profile-layout">
         {/* Collapsible Sidebar */}
         <Collapse in={sidebarOpen} dimension="width">
           <div className="profile-sidebar">

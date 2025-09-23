@@ -70,6 +70,9 @@ export default function PropertyList() {
       ? getUrlParam("amenities").split(",")
       : [],
     itemsPerPage: getUrlNumParam("itemsPerPage", 12),
+      sortBy: getUrlParam("sortBy", "created_at"),
+  sortOrder: getUrlParam("sortOrder", "desc"),
+
   }));
 
   const [tempFilters, setTempFilters] = useState({ ...filters });
@@ -140,6 +143,9 @@ export default function PropertyList() {
         amenities: filters.amenities,
         page: currentPage,
         per_page: itemsPerPage,
+          sortBy: filters.sortBy,
+  sortOrder: filters.sortOrder,
+
       });
 
       if (!data?.data) throw new Error("Invalid response from backend");
@@ -202,6 +208,8 @@ export default function PropertyList() {
       priceType: "",
       amenities: [],
       itemsPerPage: 12,
+  sortBy: "created_at",  
+  sortOrder: "desc",    
     };
     setFilters(clearedFilters);
     setItemsPerPage(12);
@@ -271,6 +279,13 @@ export default function PropertyList() {
     if (currentPage !== 1) {
       params.set("page", currentPage.toString());
     }
+    if (filters.sortBy) {
+  params.set("sortBy", filters.sortBy);
+}
+if (filters.sortOrder) {
+  params.set("sortOrder", filters.sortOrder);
+}
+
 
     // Only update URL if params have actually changed
     const newParamsString = params.toString();
@@ -349,6 +364,15 @@ export default function PropertyList() {
                 setAmenities={(val) =>
                   setFilters((prev) => ({ ...prev, amenities: val }))
                 }
+                      sortBy={filters.sortBy}
+  setSortBy={(val) =>
+    setFilters((prev) => ({ ...prev, sortBy: val }))
+  }
+  sortOrder={filters.sortOrder}
+  setSortOrder={(val) =>
+    setFilters((prev) => ({ ...prev, sortOrder: val }))
+  }
+
                 clearAllFilters={clearFilters}
                 itemsPerPage={itemsPerPage}
                 setItemsPerPage={setItemsPerPage}
@@ -390,6 +414,11 @@ export default function PropertyList() {
             filterOptions={filterOptions}
             itemsPerPage={itemsPerPage}
             setItemsPerPage={setItemsPerPage}
+  sortOrder={filters.sortOrder}
+                        sortBy={filters.sortBy}
+
+
+            
           />
 
           <div className={styles.propertyListContainer}>

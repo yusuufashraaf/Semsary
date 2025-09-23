@@ -23,13 +23,13 @@
 
 .searchInput {
   width: 100%;
-  padding: 10px 40px 10px 36px;
+  padding: 10px 40px 10px 36px !important;
   border-radius: var(--search-radius);
   outline: none;
   border: 0;
   font-size: var(--search-font-size);
   color: var(--primary-color);
-  background: var(--secondary-color);
+  background: var(--secondary-color) !important;
 }
 
 .searchInput::placeholder {

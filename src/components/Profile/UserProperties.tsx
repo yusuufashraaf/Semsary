@@ -4,6 +4,7 @@ import { fetchUserProperties } from '@services/axios-global';
 import { Listing } from '../../types';
 import { TFullUser } from 'src/types/users/users.types';
 import { toast } from 'react-toastify';
+import Loader from '@components/common/Loader/Loader';
 
 const UserProperties = ({ user }: {user: TFullUser })=> {
   const [properties, setProperties] = useState<Listing[]>([]);
@@ -38,7 +39,7 @@ const UserProperties = ({ user }: {user: TFullUser })=> {
   if (loading) {
     return (
       <div className="container">
-        <div className="loading">Loading properties...</div>
+        <div className="loading"><Loader message='Loading properties...' /></div>
       </div>
     );
   }
@@ -66,7 +67,7 @@ const UserProperties = ({ user }: {user: TFullUser })=> {
 
   return (
     <div className="container">
-      <div className="stats-grid">
+      {/* <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-icon">
             <i className="fas fa-home"></i>
@@ -94,7 +95,7 @@ const UserProperties = ({ user }: {user: TFullUser })=> {
             <p>For Rent</p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="content-header">
         <div className="tabs">
@@ -132,9 +133,6 @@ const UserProperties = ({ user }: {user: TFullUser })=> {
                 : 'You haven\'t listed any properties yet.'
               }
             </p>
-            <button className="btn btn-primary">
-              List a Property
-            </button>
           </div>
         ) : (
           filteredProperties.map(property => (
