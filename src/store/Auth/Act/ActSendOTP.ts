@@ -1,21 +1,25 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@services/axios-global";
-import { RootState } from "@store/index";
 import { OtpType } from "@validations/otpSchema";
 import { isAxiosError } from "axios";
 
+interface dataTosend{
+    otp:OtpType,
+    email:string
+}
+
 const ActSendOTP =createAsyncThunk('Auth/sendOTP',
-    async(data:OtpType,thunkApi)=>{
-    
+
+    async(data:dataTosend,thunkApi)=>{
         
-        const {rejectWithValue,fulfillWithValue,getState}= thunkApi;
-        const state = getState() as RootState;
-     
-        const user_id = state.Authslice.user?.id;
+        
+        const {rejectWithValue,fulfillWithValue}= thunkApi;
 
         try {
-            const response = await api.post('/verify-email',{ user_id,
-        otp: data.emailOTP,});
+      const response = await api.post("/verify-email", {
+        email: data.email,
+        otp: typeof data.otp === "object" ? data.otp.emailOTP : data.otp, 
+      });
             
             return fulfillWithValue(response.data)
 

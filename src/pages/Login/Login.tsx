@@ -42,7 +42,7 @@ function Login() {
   const submitForm: SubmitHandler<signInType> = (data) => {
     if (searchParams.get("message")) {
       setSearchParams("");
-    }
+    };
     dispatch(ActSignIn(data))
       .unwrap()
       .then(() => {

@@ -10,8 +10,15 @@ import { useEffect, useState } from "react";
 import { resetUI } from "@store/Auth/AuthSlice";
 import styles from "./EmailVerification.module.css";
 import { toast } from "react-toastify";
+import { email } from "zod";
 
 type StepStatus = "pending" | "completed" | "skipped";
+
+interface dataTosend{
+    otp:OtpType,
+    email:string
+}
+
 
 interface IEmailVerificationProps {
   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
@@ -58,7 +65,11 @@ const EmailVerification = ({
   });
   const otpValue = watch("emailOTP");
   const handleNext = (data: OtpType) => {
-    dispatch(ActSendOTP(data))
+    const sent:dataTosend ={
+      otp:data,
+      email:formData.email
+    }
+    dispatch(ActSendOTP(sent))
       .unwrap()
       .then(() => {
         setStepStatus("completed");
@@ -67,10 +78,12 @@ const EmailVerification = ({
   };
 
   const handleClickOnResend = () => {
+    const email =formData.email;
     setResendLoading(true);
-    dispatch(ActReSendOTP())
+    dispatch(ActReSendOTP(email))
       .unwrap()
-      .then(() => {
+      .then((res) => {
+        toast(res.message)
         setTimer(60);
       })
       .finally(() => setResendLoading(false));
