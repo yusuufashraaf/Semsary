@@ -119,7 +119,6 @@ export const markNotificationAsRead = async (
 };
 
 export const messageService = {
-<<<<<<< HEAD
   getUserChats: async (userId:number): Promise<{chats: Chat[]}> => {
     const response = await api.get('/fetch-chats/' + userId);
     return response.data;
@@ -134,29 +133,6 @@ export const messageService = {
   //   const response = await api.post(`user/chats/${chatId}/messages`, { content });
   //   return response.data;
   // },
-=======
-  getUserChats: async (): Promise<{ chats: Chat[]; total_unread: number }> => {
-    const response = await api.get("user/chats");
-    return response.data;
-  },
-
-  getChatMessages: async (
-    chatId: number
-  ): Promise<{ messages: Message[]; chat: Chat }> => {
-    const response = await api.get(`user/chats/${chatId}/messages`);
-    return response.data;
-  },
-
-  sendMessage: async (
-    chatId: number,
-    content: string
-  ): Promise<{ message: Message; chat: Chat }> => {
-    const response = await api.post(`user/chats/${chatId}/messages`, {
-      content,
-    });
-    return response.data;
-  },
->>>>>>> 4f05f088abc59560b523f4917e71a8401184baf1
 
   startChat: async (
     propertyId: number,
