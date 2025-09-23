@@ -3,6 +3,7 @@ import {  AccountTab } from '../../types';
 import './UserAccount.css';
 import { useAppSelector } from '@store/hook';
 import { TUser } from 'src/types/users/users.types';
+import WalletCard from '@components/Wallet/wallet';
 
 
 const UserAccount: React.FC = () => {
@@ -45,7 +46,6 @@ const UserAccount: React.FC = () => {
   };
 
   return (
-    
     <div className="user-account">
       <div className="account-content">
         {activeTab === 'personal' && (
@@ -155,7 +155,7 @@ const UserAccount: React.FC = () => {
           </div>
         )}
       </div>
-    </div>
+      </div>
   );
 };
 

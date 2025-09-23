@@ -1,0 +1,65 @@
+@import "../../styles/themes.css";
+
+/* Wallet card container */
+.walletCard {
+  background: var(--secondary-color);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--primary-border);
+  color: var(--primary-color);
+  position: sticky;
+  top: 24px;
+}
+
+/* Header */
+.walletTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+  color: var(--primary-color);
+}
+
+/* Balance */
+.walletBalance {
+  margin-bottom: var(--spacing-md);
+}
+
+.balanceLabel {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  opacity: 0.8;
+}
+
+.balanceValue {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--available-color);
+}
+
+/* Breakdown section */
+.walletBreakdown {
+  margin-top: var(--spacing-sm);
+}
+
+.breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-base);
+}
+
+/* Divider */
+.divider {
+  border-color: var(--primary-border);
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Total */
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: var(--font-size-md);
+}

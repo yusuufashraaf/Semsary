@@ -4,9 +4,10 @@
   padding: var(--spacing-lg);
   border-radius: var(--radius-lg);
   border: 1px solid var(--divider);
-  position: sticky;
   top: 24px;
   color: var(--primary-color);
+    width: 100%;           
+
 }
 
 /* Price display */
