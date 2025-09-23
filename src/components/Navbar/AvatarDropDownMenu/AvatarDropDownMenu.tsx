@@ -3,11 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import styles from './styles.module.css';
 import { TUser } from 'src/types/users/users.types';
 import { LogIn, User } from 'lucide-react';
+import { useAppSelector } from '@store/hook';
 
 const AvatarDropdown = ({ user }: { user: TUser | null }) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-
+  const {jwt} = useAppSelector(state=> state.Authslice)
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   //   if the user clicked outside
@@ -36,7 +37,7 @@ const AvatarDropdown = ({ user }: { user: TUser | null }) => {
     setIsOpen(!isOpen);
   };
 
-  if (!user) {
+  if (!user || !jwt) {
     return (
       <Link to="/login" title="Log in">
       <button className={styles.signInBtn} aria-label="Log in">

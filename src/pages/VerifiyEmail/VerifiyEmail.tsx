@@ -1,4 +1,7 @@
 import EmailVerification from "@components/forms/emailVerification/EmailVerification";
+import ActReSendOTP from "@store/Auth/Act/ActReSendOTP";
+import ActSendOTP from "@store/Auth/Act/ActSendOTP";
+import { useAppDispatch } from "@store/hook";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // adjust import path
@@ -9,6 +12,7 @@ const VerifyEmail = () => {
   const [stepStatus, setStepStatus] = useState<"pending" | "completed" | "skipped">("pending");
   const navigate = useNavigate();
   useEffect(() => {
+    
     if (stepStatus === "completed") {
       // delay 2s so user can see success message
       const timer = setTimeout(() => {
@@ -33,7 +37,7 @@ const VerifyEmail = () => {
         {stepStatus === "completed" && (
           <p className="text-success text-center mt-3">
             🎉 Your email has been verified successfully! <br />
-            Redirecting to login...
+            Redirecting...
           </p>
         )}
       </div>

@@ -14,7 +14,7 @@ import AboutUs from "@components/AboutUs/AboutUs";
 import ContactUs from "@components/ContactUs/ContactUs";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ResetPassword, ForgotPassword, OAuthCallback, Login, Register, VerifyEmail, PaymentForm } from "@pages/index";
+import { ResetPassword, ForgotPassword, OAuthCallback, Login, Register, VerifyEmail, PaymentForm, VerifyPhone, UploadId } from "@pages/index";
 import Logout from "@pages/Logout/Logout";
 import Chatbot from "@components/Chatbot/Chatbot";
 import ProtectedRoute from "@components/common/ProtectedRoute/ProtectedRoute";
@@ -52,6 +52,14 @@ const router = createBrowserRouter([
       {
         path:"verify-email",
         element:<VerifyEmail />
+      },
+      {
+        path:"verify-phone",
+        element:<VerifyPhone />
+      },
+      {
+        path:"/upload-id",
+        element:<UploadId />
       },
       {
         path: "/auth/callback",
