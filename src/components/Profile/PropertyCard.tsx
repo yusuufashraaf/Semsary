@@ -19,7 +19,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSave, section, 
           src={property.images?.[0] || 'fallback-url'} 
           alt={property.address}
           className="property-img"
-          onError={(e) => {
+          onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
             // Fallback to a placeholder if image fails to load
             e.currentTarget.src = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80';
           }}

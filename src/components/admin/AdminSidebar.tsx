@@ -13,12 +13,16 @@ import {
   ChartBarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  UserGroupIcon,
+  ClipboardDocumentListIcon,
 } from "@heroicons/react/24/outline";
 
 const navigation = [
   { name: "Dashboard", href: "/admin/dashboard", icon: HomeIcon },
   { name: "Users", href: "/admin/users", icon: UsersIcon },
   { name: "Properties", href: "/admin/properties", icon: BuildingOfficeIcon },
+  { name: "CS Agents", href: "/admin/cs-agents", icon: UserGroupIcon },
+  { name: "Assignments", href: "/admin/assignments", icon: ClipboardDocumentListIcon },
   { name: "Transactions", href: "/admin/transactions", icon: CreditCardIcon },
   { name: "Analytics", href: "/admin/analytics", icon: ChartBarIcon },
   { name: "Settings", href: "/admin/settings", icon: Cog6ToothIcon },
@@ -40,7 +44,7 @@ export const AdminSidebar: React.FC = () => {
       )}
     >
       {/* Remove Logo Section - Start navigation directly */}
-      
+
       {/* Navigation */}
       <nav className="flex-1 space-y-1 p-2 pt-4">
         {navigation.map((item) => {
@@ -61,11 +65,11 @@ export const AdminSidebar: React.FC = () => {
               onClick={() => setActivePage(item.name.toLowerCase())}
               title={sidebarCollapsed ? item.name : undefined}
             >
-              <Icon 
+              <Icon
                 className={cn(
                   "h-5 w-5 flex-shrink-0",
                   sidebarCollapsed ? "mx-auto" : "mr-3"
-                )} 
+                )}
               />
               {!sidebarCollapsed && (
                 <span className="truncate">{item.name}</span>
