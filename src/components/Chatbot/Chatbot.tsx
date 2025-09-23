@@ -29,7 +29,8 @@ const Chatbot: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:8000/api/chatbot", {
+      const res = await axios.post(  `${import.meta.env.VITE_API_URL}/chatbot`,
+ {
         query: userMessage,
       });
 
