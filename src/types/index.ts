@@ -32,6 +32,8 @@ export interface Host {
   name: string;
   avatar: string;
   joinDate: string;
+  phone: string,
+  email:string
 }
 
 export type Props = {
@@ -72,7 +74,11 @@ export interface BaseProperty {
 }
 
 export interface Listing extends BaseProperty {
-  image: string|null;
+  image: string | null;
+    property_state?: string;
+  pending_buyer_id?: number;
+  owner?: any | undefined; // Allow undefined
+
 }
 
 export type Property = Omit<BaseProperty, "images" | "coordinates" | "host"> & {
