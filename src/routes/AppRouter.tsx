@@ -18,6 +18,7 @@ import { ResetPassword, ForgotPassword, OAuthCallback, Login, Register } from "@
 import Logout from "@pages/Logout/Logout";
 import Chatbot from "@components/Chatbot/Chatbot";
 import ProtectedRoute from "@components/common/ProtectedRoute/ProtectedRoute";
+// import CheckoutWrapper from "@components/Checkout/CheckoutWrapper";
 
 // ADD ADMIN IMPORTS
 import { AdminLayout } from "@components/admin/AdminLayout";
@@ -207,6 +208,10 @@ const router = createBrowserRouter([
       
     ],
   },
+  // {
+  //       path: "checkout",
+  //       element: <CheckoutWrapper />,
+  // }
 ]);
 
 function AppRouter() {

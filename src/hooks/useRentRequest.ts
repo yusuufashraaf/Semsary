@@ -188,7 +188,11 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
 
       try {
         const dates = await getUnavailableDates(propertyId, jwt ?? undefined);
-        setUnavailableDates(dates);
+        const formatted = dates.map((d: { check_in: string; check_out: string }) => ({
+        start: d.check_in,
+        end: d.check_out,
+      }));
+        setUnavailableDates(formatted);
       } catch (err: any) {
         handleError(err, "Error fetching unavailable dates.");
       } finally {
