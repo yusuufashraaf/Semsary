@@ -516,10 +516,9 @@ export interface CreateRentRequestData {
 
 // Payment Data
 export interface PaymentData {
-  payment_method_token: string;
-  expected_total: number;
-  idempotency_key: string;
-  // Add other payment fields as needed
+  payment_method_token?: string;
+  expected_total?: number;
+idempotency_key:string  // Add other payment fields as needed
 }
 // export interface PaymentData {
 //   paymentMethod: string;
