@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import Authslice from "./Auth/AuthSlice";
 import FormSlice from "./FormConfirm/FormSlice";
+import paymentSlice from "./payment/paymentSlice"
 import ownerDashboardReducer from "./Owner/ownerDashboardSlice";
 import { setStore } from '@services/axios-global';
 import { persistStore, persistReducer, FLUSH,REHYDRATE,PAUSE,PERSIST,PURGE,REGISTER, } from 'redux-persist'
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   form: FormSlice,
   ownerDashboard: ownerDashboardReducer,
   notifications: notificationsReducer,
+  paymentSlice:paymentSlice
 
 });
 
