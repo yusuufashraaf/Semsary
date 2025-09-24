@@ -8,7 +8,7 @@ const UserMessagesOrigin = () => {
   // State for current message input and message history
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [currentchatid, setCurrentchatId] = useState<number | null>(1);
+  const [currentchatid, setCurrentchatId] = useState<number | null>(0);
   const [allchats, setAllchats] = useState<Chat[]>([]);
   const [availablechats, setavailablechats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

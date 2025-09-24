@@ -90,6 +90,7 @@ export const fetchUserProperties = async (userId: number) => {
 
 export const fetchUserNotifications = async (userId: number) => {
   const response = await api.get(`/user/${userId}/notifications`);
+  console.log("API response for notifications:", response);
   return response.data;
 };
 
@@ -112,18 +113,12 @@ export const markNotificationAsRead = async (
   userId: number,
   notificationId: number
 ) => {
-  const response = await api.patch(
-    `/user/${userId}/notifications/${notificationId}/read`
-  );
-  return response.data;
+  const response = await api.get(`/user/${userId}/notificationread/${notificationId}`);
+  return response;
 };
 
 export const messageService = {
-<<<<<<< HEAD
   getUserChats: async (userId:number): Promise<{chats: any[]}> => {
-=======
-  getUserChats: async (userId:number): Promise<{chats: Chat[]}> => {
->>>>>>> 21c72af1be095002ad2d4b541246cd133db8136d
     const response = await api.get('/fetch-chats/' + userId);
     return response.data;
   },
@@ -137,15 +132,12 @@ export const messageService = {
   //   const response = await api.post(`user/chats/${chatId}/messages`, { content });
   //   return response.data;
   // },
-<<<<<<< HEAD
   getAvailableNewChats: async (userId: number): Promise<{ properties: any[] }> => {
     const response = await api.get(`/fetch-available-chats/${userId}`);
     console.log(response);
     return response.data;
   },
   
-=======
->>>>>>> 21c72af1be095002ad2d4b541246cd133db8136d
 
   startChat: async (
     propertyId: number,
