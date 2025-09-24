@@ -15,7 +15,7 @@ const UserAddReview: React.FC<AddReviewProps> = ({
   onCancel, 
   refreshTrigger = 0 // Default value
 }) => {
-  const [properties, setProperties] = useState<Property[]>([]);
+  const [properties, setProperties] = useState<any[]>([]);
   const [selectedPropertyId, setSelectedPropertyId] = useState<number | ''>('');
   const [formData, setFormData] = useState<Omit<CreateReviewData, 'property_id' | 'user_id'>>({
     comment: '',

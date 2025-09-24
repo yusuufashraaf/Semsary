@@ -27,7 +27,8 @@ export const initEcho = (jwt: string) => {
     forceTLS: import.meta.env.VITE_REVERB_SCHEME === "https",
     enabledTransports: ["ws", "wss"],
 
-    authEndpoint: "http://127.0.0.1:8000/broadcasting/auth",
+   authEndpoint: `${import.meta.env.VITE_API_URL.replace('/api', '')}/broadcasting/auth`,
+
     auth: {
       headers: {
         Authorization: `Bearer ${jwt}`,

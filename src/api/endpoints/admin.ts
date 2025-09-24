@@ -232,6 +232,11 @@ export const usersApi = {
     );
     return response.data.data;
   },
+  async changeRole(userId: number, payload: { role: string; reason?: string }): Promise<User> {
+    const res = await api.post(`/admin/users/${userId}/change-role`, payload);
+    return res.data.data; // ✅ return updated user
+  },
+
 
   // Get user properties
   getUserProperties: async (id: number): Promise<Property[]> => {

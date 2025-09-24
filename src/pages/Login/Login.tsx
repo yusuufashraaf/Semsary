@@ -18,7 +18,7 @@ function Login() {
   const { loading, error, jwt } = useAppSelector((state) => state.Authslice);
   const navigate = useNavigate();
 
-  const googleLoginUrl = "http://127.0.0.1:8000/api/auth/google/redirect";
+const googleLoginUrl = `${import.meta.env.VITE_API_URL}/auth/google/redirect`;
   useEffect(() => {
     return () => {
       dispatch(resetUI());

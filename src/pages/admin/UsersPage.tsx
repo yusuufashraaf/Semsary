@@ -53,6 +53,12 @@ export const UsersPage: React.FC = () => {
 
   // Debug logging to see if pagination data is updating
   useEffect(() => {
+    console.log('Pagination Debug:', {
+      currentPage,
+      totalPages,
+      totalUsers,
+      usersCount: users.length,
+    });
   }, [currentPage, totalPages, totalUsers, users.length]);
 
   // Handlers
@@ -67,6 +73,7 @@ export const UsersPage: React.FC = () => {
   };
 
   const handlePageChange = (page: number) => {
+    console.log('Page change requested:', page);
     setCurrentPage(page);
     // Force refetch to ensure data updates
     setTimeout(() => {
