@@ -4,7 +4,9 @@ import { useNotifications } from "@hooks/useNotifications";
 import { TFullUser } from "src/types/users/users.types";
 import "./UserNotifications.css";
 import Loader from "@components/common/Loader/Loader";
+import { useAppSelector } from "@store/hook";
 
+// Define proper types
 type NotificationType = "all" | "unread";
 
 interface Notification {
@@ -19,58 +21,104 @@ interface Notification {
 }
 
 const UserNotifications = ({
-  user,
   onUnreadCountChange,
 }: {
-  user: TFullUser;
+  users?: TFullUser;
   onUnreadCountChange?: (count: number) => void;
 }) => {
-  const [activeTab, setActiveTab] = useState<NotificationType>("all");
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [activeTab, setActiveTab] = useState<NotificationType>("all"); // Fixed type
+  const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAppSelector(state => state.Authslice);
+
+  // Debug: Check if user is available
+  useEffect(() => {
+    console.log("User from Redux:", user);
+    console.log("User ID:", user?.id);
+  }, [user]);
 
   // 🔌 Subscribe to WebSocket
-  useNotifications(user?.id ?? null);
+  // /useNotifications(user?.id);
 
   useEffect(() => {
     const getNotificationsData = async () => {
+      console.log("🔄 useEffect triggered - Fetching notifications for user ID:", user?.id);
+      
+      // Check if user exists and has an ID
+      if (!user?.id) {
+        console.log("❌ No user ID available");
+        setLoading(false);
+        setError("User not available");
+        return;
+      }
+
       try {
+        console.log("✅ Starting to fetch notifications...");
         setLoading(true);
+        setError(null);
         const data = await fetchUserNotifications(user.id);
-        setNotifications(data); // API loads history
+        console.log("📨 Fetched notifications data:", data);
+        setNotifications(data || []); // Ensure it's always an array
+        console.log("✅ Notifications state updated");
       } catch (err) {
+        console.error("❌ Error fetching notifications:", err);
         setError("Failed to fetch notifications");
-        console.error(err);
       } finally {
+        console.log("🏁 Loading set to false");
         setLoading(false);
       }
     };
 
     getNotificationsData();
-  }, [user.id]);
+  }, [user?.id]);
 
-  const handleTabChange = (tab: NotificationType) => {
+  const handleTabChange = (tab: any) => {
+    console.log("Tab changed to:", tab);
     setActiveTab(tab);
   };
 
-  const markAsRead = (id: number) => {
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.id === id ? { ...notification, is_read: true } : notification
-      )
-    );
-    markNotificationAsRead(user.id, id);
+  const markAsRead = async (id: number) => {
+    console.log("Marking notification as read:", id);
+    if (!user?.id) {
+      console.log("❌ No user ID for markAsRead");
+      return;
+    }
+
+    try {
+      // Optimistic update
+      setNotifications(prev =>
+        prev.map(notification =>
+          notification.id === id ? { ...notification, is_read: true } : notification
+        )
+      );
+      
+      const $response = await markNotificationAsRead(user.id, id);
+      //console.log($read);
+      console.log("✅ Notification marked as read successfully" + $response.data);
+    } catch (err) {
+      // Revert on error
+      setNotifications(prev =>
+        prev.map(notification =>
+          notification.id === id ? { ...notification, is_read: false } : notification
+        )
+      );
+      console.error("❌ Error marking notification as read:", err);
+    }
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch (error) {
+      return "Invalid date";
+    }
   };
 
   const getNotificationIcon = (title: string) => {
@@ -90,33 +138,47 @@ const UserNotifications = ({
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   useEffect(() => {
-    if (onUnreadCountChange) {
-      onUnreadCountChange(unreadCount);
-    }
+    console.log("Unread count updated:", unreadCount);
+    onUnreadCountChange?.(unreadCount);
   }, [unreadCount, onUnreadCountChange]);
 
+  // Debug current state
+  console.log("=== CURRENT STATE ===");
+  console.log("Loading:", loading);
+  console.log("Error:", error);
+  console.log("Total notifications:", notifications.length);
+  console.log("Unread count:", unreadCount);
+  console.log("Filtered notifications:", filteredNotifications.length);
+  console.log("Active tab:", activeTab);
+  console.log("=====================");
+
   if (loading) {
+    console.log("Rendering loading state");
     return (
       <div className="notifications-container">
         <div className="loading-state">
-          <div className="loading-spinner"></div>
-<Loader message="Loading notifications..."></Loader>
+          <Loader message="Loading notifications..." />
         </div>
       </div>
     );
   }
 
   if (error) {
+    console.log("Rendering error state:", error);
     return (
       <div className="notifications-container">
         <div className="error-state">
           <i className="fas fa-exclamation-triangle"></i>
           <p>Error: {error}</p>
+          <button onClick={() => window.location.reload()} className="retry-btn">
+            Retry
+          </button>
         </div>
       </div>
     );
   }
 
+  console.log("Rendering notifications list");
   return (
     <div className="notifications-container">
       <div className="notifications-header">
@@ -159,9 +221,12 @@ const UserNotifications = ({
               key={notification.id}
               className={`notification-item ${!notification.is_read ? "unread" : ""}`}
             >
+              {/* <div className="notification-icon">
+                <i className={getNotificationIcon(notification.title)}></i>
+              </div> */}
               <div className="notification-body">
                 <div className="notification-header-content">
-                  <h4 className="notification-title">{notification.title}</h4>
+                  <h4 className="notification-title">{notification.type}</h4>
                   <span className="notification-time">
                     {formatDate(notification.created_at)}
                   </span>
