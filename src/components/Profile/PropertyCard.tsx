@@ -39,7 +39,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onSave, section, 
           <button className="btn btn-primary">View Details</button>
           <button 
             className={`btn ${saved && section === 'recentlyViewed' ? 'btn-primary' : 'btn-outline'}`}
-            onClick={() => onSave(parseInt(property.id), section)}
+onClick={() => onSave(parseInt(String(property.id), 10), section)}
           >
             {section === 'recentlyViewed' ? (saved ? 'Saved' : 'Save') : 'Remove'}
           </button>
