@@ -5,7 +5,7 @@ import { resetUI } from "@store/Auth/AuthSlice";
 import { useAppDispatch, useAppSelector } from "@store/hook";
 import { signInSchema, signInType } from "@validations/signInSchema";
 import { useEffect } from "react";
-import { Alert, Button, Col, Form, Row } from "react-bootstrap";
+import { Alert, Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import styles from "./login.module.css";
@@ -42,21 +42,26 @@ function Login() {
   const submitForm: SubmitHandler<signInType> = (data) => {
     if (searchParams.get("message")) {
       setSearchParams("");
-    }
+    };
     dispatch(ActSignIn(data))
       .unwrap()
       .then(() => {
-        dispatch(ActCheckAuth()).unwrap().then((result) => {
-          // Use role-based navigation instead of always going to "/"
-          const user = result.user;
-          if (user?.role === 'admin') {
-            navigate("/admin/dashboard");
-          } else if (user?.role === 'owner') {
-            navigate("/owner-dashboard");
-          } else {
-            navigate("/");
-          }
-        });
+        dispatch(ActCheckAuth())
+          .unwrap()
+          .then((result) => {
+            console.log("🚀 Login: Auth check result:", result);
+            // Use role-based navigation instead of always going to "/"
+            const user = result.user;
+            if (user?.role === "admin") {
+              navigate("/admin/dashboard");
+            } else if (user?.role === "agent") {
+              navigate("/cs-agent/dashboard");
+            } else if (user?.role === "owner") {
+              navigate("/profile/owner-dashboard");
+            } else {
+              navigate("/");
+            }
+          });
       });
   };
   if (jwt) {
@@ -101,13 +106,15 @@ function Login() {
               className={`${styles.loginBtn}  mt-3`}
               style={{ width: "100%" }}
             >
-              {loading === "pending" ? (
-                <>
-                  <Loader message=" Loading..." />
-                </>
-              ) : (
-                "Submit"
-              )}
+               {loading === "pending"  ? (
+                    <>
+                      <Spinner animation="border" size="sm" />
+                      Loading...
+                    </>
+                  ) : (
+                    "Log in"
+                )}
+        
             </Button>
 
             <div className={styles.divider}>
@@ -122,8 +129,26 @@ function Login() {
               />
               <span>Continue With Google</span>
             </a>
-            {error && (
-              <p style={{ color: "#DC3545", marginTop: "10px" }}>{error}</p>
+           {error && (
+              <div style={{ marginTop: "10px" }}>
+                <p style={{ color: "#DC3545" }}>{error}</p>
+                {error === "Please verify your email before logging in." && (
+                  <Button
+                    variant="warning"
+                    style={{ marginTop: "5px" }}
+                    onClick={() => navigate("/verify-email")}
+                  >
+                  {loading === "pending"  ? (
+                    <>
+                      <Spinner animation="border" size="sm" />
+                      Verifying...
+                    </>
+                  ) : (
+                    "Verify Email"
+                  )}
+                  </Button>
+                )}
+              </div>
             )}
           </Form>
         </Col>

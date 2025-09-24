@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchOwnerDashboard, fetchOwnerProperties, fetchPropertyById ,addProperty, deleteProperty, updateProperty  } from "../../services/ownerDashboard";
 
 interface DashboardState {
@@ -88,7 +88,7 @@ export const removeProperty = createAsyncThunk(
   "ownerDashboard/deleteProperty",
   async (propertyId: number, { rejectWithValue }) => {
     try {
-      const response = await deleteProperty(propertyId);
+      await deleteProperty(propertyId);
       return propertyId; // Return the deleted property's ID
     } catch (err: any) {
       if (err.response && err.response.status === 422) {

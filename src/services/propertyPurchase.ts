@@ -37,6 +37,7 @@ export interface PurchaseResponse {
     escrow: PropertyEscrow;
     property: any;
     seller: any;
+    iframe_url?: string; // Add this
   };
 }
 
@@ -47,6 +48,23 @@ export interface TransactionsResponse {
     purchases: PropertyPurchase[];
     escrows: PropertyEscrow[];
     rents: any[];
+  };
+}
+
+export interface UserPurchasesResponse {
+  success: boolean;
+  message: string;
+  data: {
+    purchases: PropertyPurchase[];
+    count: number;
+  };
+}
+
+export interface PropertyPurchaseResponse {
+  success: boolean;
+  message: string;
+  data: {
+    purchase: PropertyPurchase;
   };
 }
 
@@ -116,7 +134,52 @@ export const getAllTransactions = async (
 ): Promise<TransactionsResponse> => {
   try {
     const response = await API.get<TransactionsResponse>(
-      `/transactions/all`,
+      `/transactions`,
+      {
+        headers: { Authorization: `Bearer ${jwt}` },
+        signal,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    throw error;
+  }
+};
+
+/**
+ * NEW: Get user's purchases only
+ */
+export const getUserPurchases = async (
+  jwt: string,
+  signal?: AbortSignal
+): Promise<UserPurchasesResponse> => {
+  try {
+    const response = await API.get<UserPurchasesResponse>(
+      `/user/purchases`,
+      {
+        headers: { Authorization: `Bearer ${jwt}` },
+        signal,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleError(error);
+    throw error;
+  }
+};
+
+/**
+ * NEW: Get user's purchase for a specific property
+ */
+export const getUserPurchaseForProperty = async (
+  propertyId: number,
+  jwt: string,
+  signal?: AbortSignal
+): Promise<PropertyPurchaseResponse> => {
+  try {
+    const response = await API.get<PropertyPurchaseResponse>(
+      `/properties/${propertyId}/purchase`,
       {
         headers: { Authorization: `Bearer ${jwt}` },
         signal,

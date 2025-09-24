@@ -1,4 +1,4 @@
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Spinner } from "react-bootstrap";
 import Input from "../input/Input";
 import { useAppDispatch, useAppSelector } from "@store/hook";
 import { useForm } from "react-hook-form";
@@ -11,8 +11,6 @@ import { resetUI } from "@store/Auth/AuthSlice";
 import styles from "./AccountSetup.module.css";
 import useCheckEmailForAvailability from "@hooks/useCheckEmailForAvailability";
 import useCheckPhoneForAvailability from "@hooks/useCheckPhoneForAvailability";
-import { toast } from "react-toastify";
-import Loader from "@components/common/Loader/Loader";
 
 type StepStatus = "pending" | "completed" | "skipped";
 interface IAccountSetupProps {
@@ -36,6 +34,7 @@ const AccountSetup = ({
     getFieldState,
     trigger,
     reset,
+    watch
   } = useForm<signUpType>({
     mode: "onBlur",
     resolver: zodResolver(signUpSchema),
@@ -48,7 +47,6 @@ const AccountSetup = ({
       .then(() => {
         dispatch(updateFormData(data));
         setStepStatus("completed");
-        toast.success("Account setup completed successfully. And you can log In");
         setCurrentStep((prev) => prev + 1);
       });
   };
@@ -61,7 +59,20 @@ const AccountSetup = ({
   }, [persistedData, reset, dispatch]);
 
 
+const emailValue = watch("email");
+const phoneValue = watch("phone_number");
 
+useEffect(() => {
+  if (!emailValue) {
+    resetEmailAvailability();
+  }
+}, [emailValue, resetEmailAvailability]);
+
+useEffect(() => {
+  if (!phoneValue) {
+    resetPhoneAvailability();
+  }
+}, [phoneValue, resetPhoneAvailability]);
 
 const emailOnBlurHandler =async (e:React.FocusEvent<HTMLInputElement>)=>{
   await trigger('email');
@@ -146,7 +157,7 @@ const phoneOnBlurHandler = async (e: React.FocusEvent<HTMLInputElement>) => {
         register={register}
         error={errors.password_confirmation?.message}
       />
-      <Form.Group className="mb-3" controlId="role">
+      {/* <Form.Group className="mb-3" controlId="role">
         <Form.Label>Role</Form.Label>
         <Form.Select
           {...register("role")}
@@ -161,7 +172,7 @@ const phoneOnBlurHandler = async (e: React.FocusEvent<HTMLInputElement>) => {
         <Form.Control.Feedback type="invalid">
           {errors.role?.message}
         </Form.Control.Feedback>
-      </Form.Group>
+      </Form.Group> */}
       <div className="d-flex justify-content-end">
         <Button
           variant="info"
@@ -169,13 +180,15 @@ const phoneOnBlurHandler = async (e: React.FocusEvent<HTMLInputElement>) => {
           className={` ${styles.registerBtn}`}
           style={{ minWidth: "100%" }}
         >
-          {loading === "pending" ? (
-            <>
-<Loader message="Loading" />
-            </>
-          ) : (
-            "Next"
-          )}
+           {loading === "pending"  ? (
+                    <>
+                      <Spinner animation="border" size="sm" />
+                      loading...
+                    </>
+                  ) : (
+                    "Next"
+                  )}
+       
         </Button>
       </div>
       {error && <p style={{ color: "#DC3545", marginTop: "10px" }}>{error}</p>}

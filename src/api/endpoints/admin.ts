@@ -253,6 +253,44 @@ export const usersApi = {
   bulkSuspendUsers: async (userIds: number[]): Promise<void> => {
     await api.patch("/admin/users/bulk/suspend", { user_ids: userIds });
   },
+
+  // Search users
+  searchUsers: async (query: string, filters?: UserFilters): Promise<User[]> => {
+    const params = createSearchParams({ search: query, ...filters });
+    const response = await api.get<ApiResponse<User[]>>(`/admin/users/search?${params}`);
+    return response.data.data;
+  },
+
+  // Get user statistics
+  getUserStatistics: async (): Promise<any> => {
+    const response = await api.get<ApiResponse<any>>('/admin/users/statistics');
+    return response.data.data;
+  },
+
+  // Get users requiring attention
+  getUsersRequiringAttention: async (type?: string, limit = 20): Promise<User[]> => {
+    const params = createSearchParams({ type, limit });
+    const response = await api.get<ApiResponse<User[]>>(`/admin/users/requires-attention?${params}`);
+    return response.data.data;
+  },
+
+  // Get user activity
+  getUserActivity: async (id: number): Promise<any> => {
+    const response = await api.get<ApiResponse<any>>(`/admin/users/${id}/activity`);
+    return response.data.data;
+  },
+
+  // Block user
+  blockUser: async (id: number): Promise<User> => {
+    const response = await api.post<ApiResponse<User>>(`/admin/users/${id}/block`);
+    return response.data.data;
+  },
+
+  // Unblock user
+  unblockUser: async (id: number): Promise<User> => {
+    const response = await api.post<ApiResponse<User>>(`/admin/users/${id}/unblock`);
+    return response.data.data;
+  },
 };
 
 // Properties API endpoints
@@ -350,6 +388,31 @@ export const propertiesApi = {
       property_ids: propertyIds,
       reason,
     });
+  },
+
+  // Search properties
+  searchProperties: async (query: string, filters?: PropertyFilters): Promise<Property[]> => {
+    const params = createSearchParams({ search: query, ...filters });
+    const response = await api.get<ApiResponse<Property[]>>(`/admin/properties/search?${params}`);
+    return response.data.data;
+  },
+
+  // Get property statistics
+  getPropertyStatistics: async (): Promise<any> => {
+    const response = await api.get<ApiResponse<any>>('/admin/properties/statistics');
+    return response.data.data;
+  },
+
+  // Get properties requiring attention
+  getPropertiesRequiringAttention: async (type?: string, limit = 20): Promise<Property[]> => {
+    const params = createSearchParams({ type, limit });
+    const response = await api.get<ApiResponse<Property[]>>(`/admin/properties/requires-attention?${params}`);
+    return response.data.data;
+  },
+
+  // Delete property
+  deleteProperty: async (id: number): Promise<void> => {
+    await api.delete(`/admin/properties/${id}`);
   },
 };
 

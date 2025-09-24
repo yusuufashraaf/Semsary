@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import BookingCard from "@components/PropertyDetails/BookingCard";
+import BookingCard from "../../components/PropertyDetails/BookingCard";
 import { Property, GuestOption } from "src/types";
 
 interface BookingSectionProps {
@@ -23,7 +23,10 @@ interface BookingSectionProps {
   hasActivePurchase: boolean;
   rentRequestLoading: boolean;
   errorMessages: string;
-  unavailableDates: Date[]; // ✅ added
+  unavailableDates: Date[]; 
+  owner: any;
+  activePurchase?: any;
+  purchaseCheckCompleted: boolean;
 }
 
 function BookingSection({
@@ -37,7 +40,11 @@ function BookingSection({
   rentRequestLoading,
   errorMessages,
   unavailableDates,
+  owner,
+  activePurchase,
+  purchaseCheckCompleted,
 }: BookingSectionProps) {
+  
   return (
     <BookingCard
       property={property}
@@ -49,7 +56,10 @@ function BookingSection({
       hasActivePurchase={hasActivePurchase}
       loading={rentRequestLoading || booking.loading}
       errorMessage={errorMessages}
-      unavailableDates={unavailableDates} // ✅ pass down
+      unavailableDates={unavailableDates}
+      owner={owner}
+      activePurchase={activePurchase}
+      purchaseCheckCompleted={purchaseCheckCompleted}
     />
   );
 }

@@ -18,9 +18,6 @@ const signUpSchema =z.object({
     password_confirmation: z
     .string()
     .min(1, { message: "Confirm Password is required" }),
-    role: z.enum(["agent", "user", "owner"], {
-    message: "Please select a valid role.",
-    }),
     }).refine((input) => input.password === input.password_confirmation, {
         message: "Password and Confirm Password does not match",
         path: ["confirmPassword"],

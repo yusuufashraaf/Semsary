@@ -30,7 +30,7 @@ interface UseRentRequestsReturn {
   ownerPagination: LaravelPaginatedResponse<RentRequest> | null;
   requestDetails: RentRequest | null;
   stats: RequestStats | null;
-  unavailableDates: { start: string; end: string }[]; // 👈 NEW
+  unavailableDates: { start: string; end: string }[];
   loading: boolean;
   error: string | null;
 
@@ -39,7 +39,7 @@ interface UseRentRequestsReturn {
   fetchOwnerRentRequests: (query?: RentRequestQuery) => Promise<void>;
   fetchRequestDetails: (requestId: number) => Promise<RentRequest | null>;
   fetchRequestStats: () => Promise<RequestStats | null>;
-  fetchUnavailableDates: (propertyId: number) => Promise<void>; // 👈 NEW
+  fetchUnavailableDates: (propertyId: number) => Promise<void>;
   createRequest: (data: CreateRentRequestData) => Promise<RentRequest | null>;
   cancelRequest: (requestId: number) => Promise<void>;
   confirmRequest: (requestId: number) => Promise<void>;
@@ -66,7 +66,7 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
   const [stats, setStats] = useState<RequestStats | null>(null);
   const [unavailableDates, setUnavailableDates] = useState<
     { start: string; end: string }[]
-  >([]); // 👈 NEW
+  >([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -180,7 +180,7 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
     [jwt, validateAuth, handleError]
   );
 
-  //  Fetch unavailable dates
+  // Fetch unavailable dates
   const fetchUnavailableDates = useCallback(
     async (propertyId: number): Promise<void> => {
       setLoading(true);
@@ -188,7 +188,11 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
 
       try {
         const dates = await getUnavailableDates(propertyId, jwt ?? undefined);
-        setUnavailableDates(dates);
+        const formatted = dates.map((d: { check_in: string; check_out: string }) => ({
+          start: d.check_in,
+          end: d.check_out,
+        }));
+        setUnavailableDates(formatted);
       } catch (err: any) {
         handleError(err, "Error fetching unavailable dates.");
       } finally {
@@ -326,33 +330,42 @@ export const useRentRequests = (userId: number | null): UseRentRequestsReturn =>
     [jwt, validateAuth, handleError]
   );
 
-  // Pay for rent request
-  const payForRentRequest = useCallback(
-    async (requestId: number, paymentData: PaymentData): Promise<any> => {
-      if (!validateAuth()) return null;
+const payForRentRequest = useCallback(
+  async (requestId: number, paymentData: PaymentData): Promise<any> => {
+    if (!validateAuth()) return null;
 
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
 
-      try {
-        const result = await payForRequest(requestId, paymentData, jwt!);
+    try {
+      const response = await payForRequest(requestId, paymentData, jwt!);
+      const result = response?.data ?? response; // unwrap backend `data`
 
+      // ✅ If backend says redirect → send user to Paymob
+      if (result?.redirect_url) {
+        window.location.href = result.redirect_url;
+        return;
+      }
+
+      // ✅ If backend says success and no redirect → mark as paid
+      if (response?.success && !result?.redirect_url) {
         const updateStatus = (req: RentRequest) =>
           req.id === requestId ? { ...req, status: "paid" as const } : req;
 
         setUserRentRequests((prev) => prev.map(updateStatus));
         setOwnerRentRequests((prev) => prev.map(updateStatus));
-
-        return result;
-      } catch (err: any) {
-        handleError(err, "Error processing payment.");
-        throw err;
-      } finally {
-        setLoading(false);
       }
-    },
-    [jwt, validateAuth, handleError]
-  );
+
+      return result;
+    } catch (err: any) {
+      handleError(err, "Error processing payment.");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  },
+  [jwt, validateAuth, handleError]
+);
 
   // Clear error
   const clearError = useCallback(() => {
