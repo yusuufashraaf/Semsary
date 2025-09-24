@@ -119,8 +119,7 @@ export const markNotificationAsRead = async (
 };
 
 export const messageService = {
-<<<<<<< HEAD
-  getUserChats: async (userId:number): Promise<{chats: Chat[]}> => {
+  getUserChats: async (userId:number): Promise<{chats: any[]}> => {
     const response = await api.get('/fetch-chats/' + userId);
     return response.data;
   },
@@ -134,29 +133,12 @@ export const messageService = {
   //   const response = await api.post(`user/chats/${chatId}/messages`, { content });
   //   return response.data;
   // },
-=======
-  getUserChats: async (): Promise<{ chats: Chat[]; total_unread: number }> => {
-    const response = await api.get("user/chats");
+  getAvailableNewChats: async (userId: number): Promise<{ properties: any[] }> => {
+    const response = await api.get(`/fetch-available-chats/${userId}`);
+    console.log(response);
     return response.data;
   },
-
-  getChatMessages: async (
-    chatId: number
-  ): Promise<{ messages: Message[]; chat: Chat }> => {
-    const response = await api.get(`user/chats/${chatId}/messages`);
-    return response.data;
-  },
-
-  sendMessage: async (
-    chatId: number,
-    content: string
-  ): Promise<{ message: Message; chat: Chat }> => {
-    const response = await api.post(`user/chats/${chatId}/messages`, {
-      content,
-    });
-    return response.data;
-  },
->>>>>>> 4f05f088abc59560b523f4917e71a8401184baf1
+  
 
   startChat: async (
     propertyId: number,
@@ -184,8 +166,9 @@ export const reviewService = {
     return response.data;
   },
 
-  getReviewableProperties: async (): Promise<{ properties: Property[] }> => {
+  getReviewableProperties: async (): Promise<{ properties: any[] }> => {
     const response = await api.get("/user/reviewable-properties");
+    console.log(response);
     return response.data;
   },
 

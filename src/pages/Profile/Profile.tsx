@@ -48,7 +48,7 @@ const Profile = () => {
       case 'rentRequests':
         return <RentRequests userId={user.id}/>;
       case 'purchases':
-        return <UserPurchases user={user} />;
+        return <UserPurchases />;
       case 'wishlist':
         return <UserWishlist user={user} />;
     case 'messages':
