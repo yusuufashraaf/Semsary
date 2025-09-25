@@ -20,12 +20,15 @@ import ActChangePassword from "./Act/ActChangePassword";
 import ActChangeEmail from "./Act/ActChangeEmail";
 import ActChangePhone from "./Act/ActChangePhone";
 
+
+
 interface IAuthState {
   user: TFullUser | null;
   loading: TLoading;
   error: string | null;
   jwt: string | null;
   isInitialized: boolean;
+  loadingResend?: "idle" | "pending" | "succeeded" | "failed",
 }
 
 const initialState: IAuthState = {
@@ -34,6 +37,7 @@ const initialState: IAuthState = {
   error: null,
   jwt: null,
   isInitialized: false,
+  loadingResend:"idle"
 };
 
 const AuthSlice = createSlice({
@@ -147,13 +151,13 @@ const AuthSlice = createSlice({
 
     builder
       .addCase(ActReSendOTP.pending, (state) => {
-        state.loading = "pending";
+        state.loadingResend = "pending";
       })
       .addCase(ActReSendOTP.fulfilled, (state) => {
-        state.loading = "succeeded";
+        state.loadingResend = "succeeded";
       })
       .addCase(ActReSendOTP.rejected, (state, action) => {
-        state.loading = "failed";
+        state.loadingResend = "failed";
         if (typeof action.payload === "string") state.error = action.payload;
       });
 
