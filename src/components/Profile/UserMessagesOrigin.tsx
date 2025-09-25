@@ -291,24 +291,26 @@ const UserMessagesOrigin = () => {
                   ))
                 )}
               </div>
+              {currentchatid != 0 ? (
+  <div className="message-input-container">
+    <input 
+      value={message} 
+      onChange={(e) => setMessage(e.target.value)}
+      onKeyPress={handleKeyPress}
+      placeholder="Type your message..."
+      className="message-input"
+      disabled={loading}
+    />
+    <button 
+      onClick={sendMessage} 
+      disabled={!message.trim() || loading}
+      className="btn btn-primary"
+    >
+      {loading ? 'Sending...' : 'Send'}
+    </button>
+  </div>
+) : null}
               
-              <div className="message-input-container">
-                <input 
-                  value={message} 
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Type your message..."
-                  className="message-input"
-                  disabled={loading}
-                />
-                <button 
-                  onClick={sendMessage} 
-                  disabled={!message.trim() || loading}
-                  className="btn btn-primary"
-                >
-                  {loading ? 'Sending...' : 'Send'}
-                </button>
-              </div>
             </>
           ) : (
             <div className="empty-state">

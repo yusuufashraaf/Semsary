@@ -5,7 +5,8 @@ import {dashboardApi, usersApi, propertiesApi, transactionsApi} from "@api/endpo
 import { QUERY_KEYS } from "@app-types/admin/admin";
 import { useNotifications } from "@store/admin/adminStore";
 import { handleQueryError } from "@lib/queryClient";
-import type { PaginatedResponse, User, UserFilters } from '@app-types/admin/admin';
+import type { PaginatedResponse, UserFilters } from '@app-types/admin/admin';
+import { TFullUser } from "@app-types/users/users.types";
 
 const STALE_TIME = 30 * 1000; // 30 seconds (dashboard stats change frequently)
 const REFRESH_INTERVAL = 60 * 1000; // Refetch every 1 minute
@@ -54,7 +55,7 @@ export const useUsers = (
   limit: number = 10,
   filters?: UserFilters
 ) => {
-  return useQuery<PaginatedResponse<User>>({
+  return useQuery<PaginatedResponse<TFullUser>>({
     queryKey: QUERY_KEYS.USERS.LIST(filters),
     queryFn: () => usersApi.getUsers(page, limit, filters),
     staleTime: STALE_TIME,
