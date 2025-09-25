@@ -39,6 +39,7 @@ import { CsAgentProfilePage } from "@pages/cs-agent/CsAgentProfilePage";
 import { PropertyTaskQueuePage } from "@pages/cs-agent/PropertyTaskQueuePage";
 import { PropertyVerificationPage } from "@pages/cs-agent/PropertyVerificationPage";
 import { CsAgentDashboardPage } from "@pages/cs-agent/CsAgentDashboardPage";
+import { AgentAssignmentModal } from "@components/admin/modals/AgentAssignmentModal";
 
 const router = createBrowserRouter([
   {
@@ -213,15 +214,12 @@ const router = createBrowserRouter([
       },
       {
         path: "analytics",
-        element: (
-          <div className="p-6 text-center">Analytics Page (Coming Soon)</div>
-        ),
+               element: <AgentAssignmentModal />
+
       },
       {
         path: "settings",
-        element: (
-          <div className="p-6 text-center">Settings Page (Coming Soon)</div>
-        ),
+        element: <AgentAssignmentModal />
       },
      
 
