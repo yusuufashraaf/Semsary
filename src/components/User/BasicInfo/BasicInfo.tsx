@@ -43,6 +43,7 @@ const BasicInfo = () => {
         role: user?.role,
         status: user?.status,
         idUpladed: user?.id_image_url ?? null,
+        userId:user?.id ||0,
     };
 
     return (
