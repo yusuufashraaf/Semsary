@@ -1,6 +1,7 @@
-import { Card, ListGroup, ListGroupItem, Badge, Button, } from "react-bootstrap";
+import { Card, ListGroup, ListGroupItem, Badge } from "react-bootstrap";
 import { Mail, Phone, User, CheckCircle, XCircle } from "lucide-react";
-
+import { useEffect, useState } from "react";
+import { getEcho } from "@services/echoManager";
 
 type TUserCardProps = {
   firstName: string;
@@ -11,7 +12,8 @@ type TUserCardProps = {
   isPhoneVerified: boolean;
   role: "user" | "agent" | "owner" | "admin";
   status: "pending" | "active" | "suspended";
-  idUpladed:string | null
+  idUpladed: string | null;
+  userId: number;
 };
 
 const UserCard = ({
@@ -19,7 +21,7 @@ const UserCard = ({
   onVerifyClick,
 }: {
   user: TUserCardProps;
-  onVerifyClick: (type: "email" | "phone"| "id") => void;
+  onVerifyClick: (type: "email" | "phone" | "id") => void;
 }) => {
   const {
     firstName,
@@ -29,9 +31,12 @@ const UserCard = ({
     isEmailVerified,
     isPhoneVerified,
     role,
-    status,
-    idUpladed
+    idUpladed,
+    userId,
   } = user;
+
+
+  const [status, setStatus] = useState<TUserCardProps["status"]>(user.status);
 
   const getStatusVariant = (status: TUserCardProps["status"]) => {
     switch (status) {
@@ -45,6 +50,24 @@ const UserCard = ({
         return "secondary";
     }
   };
+
+  useEffect(() => {
+    const echo = getEcho();
+    if (!echo) {
+      console.warn("Echo is not initialized yet");
+      return;
+    }
+    
+    const channel = echo.private(`user.${userId}`);
+
+    channel.listen(".user.updated", (event: { status: string }) => {
+      setStatus(event.status as TUserCardProps["status"]);
+    });
+
+    return () => {
+      echo.leave(`user.${userId}`);
+    };
+  }, [userId]);
 
   return (
     <Card className="shadow-sm">
@@ -64,7 +87,7 @@ const UserCard = ({
             <strong>Last Name:</strong> {lastName}
           </ListGroupItem>
 
-          {/* Email Row */}
+          {/* Email */}
           <ListGroupItem className="d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
               <Mail size={18} className="me-2" />
@@ -87,7 +110,7 @@ const UserCard = ({
             )}
           </ListGroupItem>
 
-          {/* Phone Row */}
+          {/* Phone */}
           <ListGroupItem className="d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
               <Phone size={18} className="me-2" />
@@ -110,7 +133,7 @@ const UserCard = ({
             )}
           </ListGroupItem>
 
-
+          {/* ID */}
           <ListGroupItem className="d-flex justify-content-between align-items-center">
             <strong>ID Document:</strong>
             {idUpladed ? (
@@ -129,7 +152,8 @@ const UserCard = ({
               </Badge>
             )}
           </ListGroupItem>
-                    {/* Role */}
+
+          {/* Role */}
           <ListGroupItem>
             <strong>Role:</strong>{" "}
             {role ? role.charAt(0).toUpperCase() + role.slice(1) : "N/A"}
@@ -140,12 +164,10 @@ const UserCard = ({
             <strong>Status:</strong>
             <Badge bg={getStatusVariant(status)}>{status}</Badge>
           </ListGroupItem>
-
         </ListGroup>
       </Card.Body>
     </Card>
   );
 };
-
 
 export default UserCard;
