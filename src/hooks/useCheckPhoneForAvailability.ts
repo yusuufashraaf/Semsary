@@ -1,48 +1,31 @@
-import api from "@services/axios-global";
-import axiosErrorHandle from "@utils/axiosErrorHandler";
 import { useState } from "react";
+import { changePropertyStatus } from "@services/PropertiesFetch";
+import axiosErrorHandle from "@utils/axiosErrorHandler";
 
+function useChangePropertyStatus(jwt: string) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-type TStatus = "idle" | "checking" | "available" | "notAvailable" | "failed";
+  const updateStatus = async (
+    propertyId: number,
+    newStatus: "Valid" | "Invalid" | "Pending" | "Rented" | "Sold"
+  ) => {
+    setLoading(true);
+    setError(null);
 
-function useCheckPhoneForAvailability() {
+    try {
+      const response = await changePropertyStatus(propertyId, newStatus, jwt);
+      return response; // return API response to caller
+    } catch (err) {
+      axiosErrorHandle(err);
+      setError("Failed to update status");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const [phoneAvailabilityStatus, setPhoneAvailabilityStatus] = useState<TStatus>('idle');
-    const [enteredPhone, setEnteredPhone] = useState<null | string>(null);
-
-
-    const checkPhoneAvailability = async (phone: string) => {
-        setEnteredPhone(phone);
-        setPhoneAvailabilityStatus("checking");
-
-        try {
-
-            const response = await api.get(`/check-availability/phone?phone=${phone}`);
-            
-            if (response.data.isAvailable === true) {
-                setPhoneAvailabilityStatus("available");
-            } else {
-                setPhoneAvailabilityStatus("notAvailable");
-            }
-
-        } catch (error) {
-            setPhoneAvailabilityStatus("failed");
-            axiosErrorHandle(error); 
-        }
-    };
-
-
-    const resetPhoneAvailability = () => {
-        setEnteredPhone(null);
-        setPhoneAvailabilityStatus("idle");
-    };
-
-    return { 
-        checkPhoneAvailability, 
-        phoneAvailabilityStatus, 
-        enteredPhone, 
-        resetPhoneAvailability 
-    };
+  return { updateStatus, loading, error };
 }
 
-export default useCheckPhoneForAvailability;
+export default useChangePropertyStatus;

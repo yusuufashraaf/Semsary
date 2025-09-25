@@ -14,7 +14,7 @@ export function useWallet() {
         setError(null);
       })
       .catch((err) => {
-        setError("Login Please... ");
+        setError("Login To See the propery ");
         setWallet(null);
       })
       .finally(() => setLoading(false));

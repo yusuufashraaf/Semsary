@@ -86,6 +86,25 @@ export type Property = Omit<BaseProperty, "images" | "coordinates" | "host"> & {
   coordinates: Coordinates;
   host: Host;
 };
+export interface PropertyImage {
+  id: number | string;
+  image_url: string;
+  description?: string;
+  order_index?: number;
+  original_filename?: string;
+  size?: number;
+  width?: number;
+  height?: number;
+}
+
+export interface PropertyDocument {
+  id: number | string;
+  document_url: string;
+  document_type?: string;
+  original_filename?: string;
+  size?: number;
+  uploaded_at?: string;
+}
 
 // ---------------- Filters ----------------
 
