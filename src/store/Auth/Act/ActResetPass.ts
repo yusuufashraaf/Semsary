@@ -18,13 +18,13 @@ const ActResetPass =createAsyncThunk('Auth/resetpass',
         const token = data.token;
      
         try {
-            const response = await api.post('/forgot-password',{password: data.password,
+            const response = await api.post('/reset-password',{password: data.password,
                 password_confirmation:data.password_confirmation,token,email});
             
             return fulfillWithValue(response.data)
 
         } catch (error) {
-            console.error("forgot password error:", error);
+            console.error("reset password error:", error);
             if (isAxiosError(error)) {
                 return rejectWithValue(error.response?.data.message || error.message);
             } else {
