@@ -35,9 +35,9 @@ const OAuthCallback = () => {
                     token 
                 });
                 
-                dispatch(ActCheckAuth()); 
                 dispatch(setAccessToken(response.data.access_token)) ;
                 dispatch(setUser(response.data.user))   
+                dispatch(ActCheckAuth()); 
                 // navigate('/');
                 navigateByRole(response.data.user);
 
@@ -48,7 +48,7 @@ const OAuthCallback = () => {
         };
 
         handleCallback();
-    }, [searchParams, navigate, dispatch, navigateByRole]);
+    }, [searchParams, navigate, dispatch]);
 
     return (
         <div className="flex items-center justify-center min-h-screen">
