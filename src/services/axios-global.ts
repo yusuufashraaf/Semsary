@@ -90,6 +90,7 @@ export const fetchUserProperties = async (userId: number) => {
 
 export const fetchUserNotifications = async (userId: number) => {
   const response = await api.get(`/user/${userId}/notifications`);
+  console.log("API response for notifications:", response);
   return response.data;
 };
 
@@ -112,14 +113,12 @@ export const markNotificationAsRead = async (
   userId: number,
   notificationId: number
 ) => {
-  const response = await api.patch(
-    `/user/${userId}/notifications/${notificationId}/read`
-  );
-  return response.data;
+  const response = await api.get(`/user/${userId}/notificationread/${notificationId}`);
+  return response;
 };
 
 export const messageService = {
-  getUserChats: async (userId:number): Promise<{chats: Chat[]}> => {
+  getUserChats: async (userId:number): Promise<{chats: any[]}> => {
     const response = await api.get('/fetch-chats/' + userId);
     return response.data;
   },
@@ -133,6 +132,12 @@ export const messageService = {
   //   const response = await api.post(`user/chats/${chatId}/messages`, { content });
   //   return response.data;
   // },
+  getAvailableNewChats: async (userId: number): Promise<{ properties: any[] }> => {
+    const response = await api.get(`/fetch-available-chats/${userId}`);
+    console.log(response);
+    return response.data;
+  },
+  
 
   startChat: async (
     propertyId: number,
@@ -160,8 +165,9 @@ export const reviewService = {
     return response.data;
   },
 
-  getReviewableProperties: async (): Promise<{ properties: Property[] }> => {
+  getReviewableProperties: async (): Promise<{ properties: any[] }> => {
     const response = await api.get("/user/reviewable-properties");
+    console.log(response);
     return response.data;
   },
 

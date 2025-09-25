@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'; // Use useNavigate from React Ro
 import { fetchUserPurchases, fetchUserBookings } from '@services/axios-global';
 import { TFullUser } from 'src/types/users/users.types';
 import Loader from '@components/common/Loader/Loader';
+import { useAppSelector } from '@store/hook';
+import { PurchaseResponse } from '@app-types/index';
 
 type TabType = 'purchases' | 'bookings';
 
@@ -66,19 +68,20 @@ interface Booking {
   property: Property;
 }
 
-const UserPurchases = ({ user }: {user: TFullUser })=> {
+const UserPurchases = ()=> {
   const navigate = useNavigate(); // Use useNavigate instead of useRouter
   const [activeTab, setActiveTab] = useState<TabType>('purchases');
-  const [purchases, setPurchases] = useState<Purchase[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [purchases, setPurchases] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const {jwt, user} = useAppSelector(state => state.Authslice);
 
   useEffect(() => {
     const getPurchasesData = async () => {
       try {
         setLoading(true);
-        const data = await fetchUserPurchases(user.id);
+        const data = await fetchUserPurchases(user?.id || 1);
         setPurchases(data);
       } catch (err) {
         setError('Failed to fetch purchases');
@@ -91,7 +94,7 @@ const UserPurchases = ({ user }: {user: TFullUser })=> {
     const getBookingsData = async () => {
       try {
         setLoading(true);
-        const data = await fetchUserBookings(7);
+        const data = await fetchUserBookings(user?.id || 1);
         setBookings(data);
       } catch (err) {
         setError('Failed to fetch bookings');
@@ -177,7 +180,7 @@ const UserPurchases = ({ user }: {user: TFullUser })=> {
             {purchases.length > 0 ? (
               purchases.map(purchase => (
                 <div 
-                  key={purchase.purchase_id} 
+                  key={purchase.id} 
                   className="card card-hover"
                   onClick={() => handlePropertyClick(purchase.property.id)}
                   style={{ cursor: 'pointer' }}
@@ -249,7 +252,7 @@ const UserPurchases = ({ user }: {user: TFullUser })=> {
                 >
                   <div className="booking-header">
                     <span className="booking-dates">
-                      {formatDate(booking.start_date)} - {formatDate(booking.end_date)}
+                      {formatDate(booking.check_in)} - {formatDate(booking.check_out)}
                     </span>
                     <span className={`status-badge ${booking.status}`}>
                       {booking.status}
@@ -276,7 +279,7 @@ const UserPurchases = ({ user }: {user: TFullUser })=> {
                   
                   <div className="property-actions">
                     <span className="property-price">
-                      {formatCurrency(booking.total_price)}
+                      {formatCurrency(booking.property.price)}
                     </span>
                     <span>
                       {booking.property.price_type}

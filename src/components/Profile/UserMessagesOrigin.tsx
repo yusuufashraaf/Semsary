@@ -2,13 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import Pusher from 'pusher-js';
 import { useAppSelector } from '@store/hook';
 import { Chat, Message } from '@app-types/index';
+import { messageService } from '@services/axios-global';
 
 const UserMessagesOrigin = () => {
   // State for current message input and message history
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [currentchatid, setCurrentchatId] = useState<number | null>(1);
+  const [currentchatid, setCurrentchatId] = useState<number | null>(0);
   const [allchats, setAllchats] = useState<Chat[]>([]);
+  const [availablechats, setavailablechats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const {jwt, user} = useAppSelector(state => state.Authslice);
@@ -136,6 +138,29 @@ const UserMessagesOrigin = () => {
     }
   };
 
+  const fetchAvailableChats = async (userId: number) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await messageService.getAvailableNewChats(userId);
+      if (!response) throw new Error('Failed to fetch chats');
+      console.log(response);
+      // const data = await response.json();
+      // const chatsData = data.chats || [];
+      // setAllchats(chatsData);
+      setavailablechats(response.rentrequests);
+      console.log(response.rentrequests)
+      // console.log('Fetched all chats:', chatsData);
+    } catch (error) {
+      console.error('Failed to fetch chats:', error);
+      setError('Failed to load chats');
+      setAllchats([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
   useEffect(() => {
     if (user?.id) {
       fetchAllChats(user.id);
@@ -147,6 +172,12 @@ const UserMessagesOrigin = () => {
       fetchMessages(currentchatid);
     }
   }, [currentchatid]);
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchAvailableChats(user.id);
+    }
+  }, [user?.id]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
