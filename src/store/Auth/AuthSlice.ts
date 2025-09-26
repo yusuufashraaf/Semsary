@@ -19,6 +19,7 @@ import ActGetUsersData from "./Act/ActGetUsersData";
 import ActChangePassword from "./Act/ActChangePassword";
 import ActChangeEmail from "./Act/ActChangeEmail";
 import ActChangePhone from "./Act/ActChangePhone";
+import ActSendWhatsOTP from "./Act/ActSendWhatsOTP";
 
 
 
@@ -158,6 +159,18 @@ const AuthSlice = createSlice({
       })
       .addCase(ActReSendOTP.rejected, (state, action) => {
         state.loadingResend = "failed";
+        if (typeof action.payload === "string") state.error = action.payload;
+      });
+
+       builder
+      .addCase(ActSendWhatsOTP.pending, (state) => {
+        state.loading = "pending";
+      })
+      .addCase(ActSendWhatsOTP.fulfilled, (state) => {
+        state.loading = "succeeded";
+      })
+      .addCase(ActSendWhatsOTP.rejected, (state, action) => {
+        state.loading = "failed";
         if (typeof action.payload === "string") state.error = action.payload;
       });
 

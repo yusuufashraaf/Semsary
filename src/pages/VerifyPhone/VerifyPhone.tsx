@@ -32,7 +32,7 @@ const VerifyPhone = () => {
       await dispatch(ActSendWhatsOTP({ phone_number: phoneNumber })).unwrap();
       setTimer(60);
     } catch (err) {
-      console.error(err);
+
     }
   };
 

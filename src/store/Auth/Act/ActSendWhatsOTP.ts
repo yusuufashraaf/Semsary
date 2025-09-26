@@ -22,12 +22,10 @@ const ActSendWhatsOTP = createAsyncThunk(
         phone_number: payload.phone_number,
       });
       return response.data;
-    } catch (error) {
-      if (isAxiosError(error)) {
-        return rejectWithValue(error.response?.data.message || error.message);
-      } else {
-        return rejectWithValue("An unexpected error");
-      }
+    } catch (err:any) {
+     const message =
+        err.response?.data?.message || "Failed to send OTP. Try again.";
+      return rejectWithValue(message);
     }
   }
 );
