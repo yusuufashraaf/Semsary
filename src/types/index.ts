@@ -732,7 +732,7 @@ export interface PropertyPurchase {
   buyer_id: number;
   seller_id: number;
   amount: string;
-  status: "pending" | "paid" | "cancelled" | "refunded";
+  status: "pending" | "paid" | "cancelled" | "refunded" | "failed";
   payment_gateway: string;
   transaction_ref: string;
   idempotency_key: string;

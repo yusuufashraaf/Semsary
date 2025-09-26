@@ -21,7 +21,7 @@ export default function WalletCard() {
       <div className={styles.walletBalance}>
         <span className={styles.balanceLabel}>Available Now</span>
         <h2 className={styles.balanceValue}>
-          {formatCurrency(wallet.data.available_now)}
+          {formatCurrency(wallet.data.wallet)}
         </h2>
       </div>
 
@@ -46,7 +46,7 @@ export default function WalletCard() {
       {/* Total */}
       <div className={styles.totalRow}>
         <span>Total Money in App</span>
-        <strong>{formatCurrency(wallet.data.total_in_app)}</strong>
+        <strong>{formatCurrency(wallet.data.wallet)}</strong>
       </div>
     </div>
   );
