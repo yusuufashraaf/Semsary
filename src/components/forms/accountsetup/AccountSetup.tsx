@@ -112,7 +112,7 @@ const emailOnBlurHandler =async (e:React.FocusEvent<HTMLInputElement>)=>{
             label="Phone Number"
             name="phone_number"
             register={register}
-            
+            error={errors.phone_number?.message}
           />
       <Input
         label="Password"
