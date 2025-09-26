@@ -593,7 +593,7 @@ const handleRemoveDocument = (index: number) => {
                   </Form.Control>
                   {(errors?.status || validationErrors.size) && (
                   <div className="invalid-feedback">
-                    {errors?.status ? errors.status[0] : validationErrors.size}
+                    {errors?.status ? errors.status[0] : validationErrors.status}
                   </div>
                 )}
                 </Form.Group>
