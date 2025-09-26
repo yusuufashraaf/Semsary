@@ -10,7 +10,6 @@ import ActSignUp from "@store/Auth/Act/ActSignUp";
 import { resetUI } from "@store/Auth/AuthSlice";
 import styles from "./AccountSetup.module.css";
 import useCheckEmailForAvailability from "@hooks/useCheckEmailForAvailability";
-import useCheckPhoneForAvailability from "@hooks/useCheckPhoneForAvailability";
 
 type StepStatus = "pending" | "completed" | "skipped";
 interface IAccountSetupProps {
@@ -26,7 +25,6 @@ const AccountSetup = ({
   const persistedData = useAppSelector((state) => state.form);
   const { loading, error } = useAppSelector((state) => state.Authslice);
   const {emailAvailabilityStatus,enteredEmail,checkEmailAvailability,resetEmailAvailability} =useCheckEmailForAvailability();
-    const {phoneAvailabilityStatus, enteredPhone, checkPhoneAvailability, resetPhoneAvailability} = useCheckPhoneForAvailability();
   const {
     register,
     handleSubmit,
@@ -60,7 +58,6 @@ const AccountSetup = ({
 
 
 const emailValue = watch("email");
-const phoneValue = watch("phone_number");
 
 useEffect(() => {
   if (!emailValue) {
@@ -68,11 +65,6 @@ useEffect(() => {
   }
 }, [emailValue, resetEmailAvailability]);
 
-useEffect(() => {
-  if (!phoneValue) {
-    resetPhoneAvailability();
-  }
-}, [phoneValue, resetPhoneAvailability]);
 
 const emailOnBlurHandler =async (e:React.FocusEvent<HTMLInputElement>)=>{
   await trigger('email');
@@ -86,19 +78,6 @@ const emailOnBlurHandler =async (e:React.FocusEvent<HTMLInputElement>)=>{
   }
   
 }
-const phoneOnBlurHandler = async (e: React.FocusEvent<HTMLInputElement>) => {
-  await trigger('phone_number'); // Trigger validation for the phone field
-  const { invalid, isDirty } = getFieldState('phone_number');
-  const value = e.target.value;
-
-  if (!invalid && isDirty && value !== enteredPhone) {
-    checkPhoneAvailability(value);
-  }
-
-  if (enteredPhone && isDirty && invalid) {
-    resetPhoneAvailability();
-  }
-};
 
 
 
@@ -133,15 +112,7 @@ const phoneOnBlurHandler = async (e: React.FocusEvent<HTMLInputElement>) => {
             label="Phone Number"
             name="phone_number"
             register={register}
-            onBlur={phoneOnBlurHandler} 
-            error={
-              errors.phone_number?.message ? errors.phone_number.message :
-              phoneAvailabilityStatus === "notAvailable" ? "This phone number is already in use." :
-              phoneAvailabilityStatus === "failed" ? "Error from the server." : ""
-            }
-            success={phoneAvailabilityStatus === "available" ? "This phone number is available." : ""}
-            formText={phoneAvailabilityStatus === "checking" ? "Checking phone number availability..." : ""}
-            disabled={phoneAvailabilityStatus === "checking"}
+            
           />
       <Input
         label="Password"
