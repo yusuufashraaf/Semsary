@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col, Card, Button, Nav, Tab } from "react-bootstrap";
-import { EdittProperty } from "../../store/Owner/ownerDashboardSlice";
+import { EdittProperty, getProperties } from "../../store/Owner/ownerDashboardSlice";
 import { RootState, AppDispatch } from "../../store";
 import { useAppSelector } from "@store/hook";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +16,11 @@ const DashboardOverview: React.FC = () => {
     (state: RootState) => state.ownerDashboard
   );
   const { user } = useAppSelector((state) => state.Authslice);
+
+  useEffect(()=>{
+  dispatch(getProperties());
+  },[dispatch])
+
 
   const [activeKey, setActiveKey] = useState<string>("all");
   // Local state to track property states for immediate UI updates
