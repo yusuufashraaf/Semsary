@@ -30,6 +30,11 @@ export const updateProperty = async (propertyId: string, formData: FormData) => 
   const response = await api.post(`/properties/${propertyId}?_method=PUT`, formData);
   return response.data;
 };
+//Update Property State (Valid, Invalid, Pending, Sold, Rented)
+export const updatePropertyState = async (propertyId: string, state: string) => {
+  const response = await api.put(`/properties/${propertyId}/change-status`, { property_state: state });
+  return response.data;
+};
 // Delete Property
 export const deleteProperty = async (propertyId: number) =>{
   const response = await api.delete(`/properties/${propertyId}`);
