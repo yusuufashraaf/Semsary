@@ -15,6 +15,9 @@ export const useRoleBasedNavigation = () => {
       case "admin":
         navigate("/admin/dashboard");
         break;
+      case "agent":
+        navigate("/cs-agent/dashboard");
+        break;
       case "owner":
         navigate("/owner-dashboard");
         break;

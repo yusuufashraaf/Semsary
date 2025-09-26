@@ -232,7 +232,7 @@ export const CsAgentHeader: React.FC = () => {
                   </div>
                   <div className="py-1">
                     <button
-                      onClick={() => navigate("/cs-agent/profile")}
+                      onClick={() => navigate("/profile/home")}
                       className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                     >
                       <UserCircleIcon className="mr-3 h-5 w-5" />
