@@ -1,4 +1,3 @@
-// src/components/CsAgentDashboard.tsx
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -6,258 +5,335 @@ import {
   changePropertyStatus,
   type Property,
 } from "@services/PropertiesFetch";
+import { getOwner, type Owner } from "@services/OwnersFetch";
+import { Spinner, Table, Button, Form } from "react-bootstrap";
 
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper/modules";
+type VerificationStatus = "Valid" | "Rejected";
 
-import styles from "./CsAgentDashboard.module.css"; // CSS Module
+// Define the full set of possible property states
+type PropertyState = "Valid" | "Invalid" | "Pending" | "Rented" | "Sold" | "Rejected";
 
 interface Props {
   jwt: string | null;
   className?: string;
 }
 
-const STATUSES: Property["property_state"][] = [
-  "Valid",
-  "Invalid",
-  "Pending",
-  "Rented",
-  "Sold",
-];
-
-/**
- * Ensure the returned URL ends with .pdf (sanitize .tmp -> .pdf and avoid double-appending)
- * Keeps query string if present.
- */
-function ensurePdfUrl(url: string | undefined | null): string {
-  if (!url) return "";
-
-  // Split to keep query string
-  const [pathPart, queryPart] = url.split("?");
-  // If already a pdf, return original full url (with query)
-  if (/\.pdf$/i.test(pathPart)) {
-    return queryPart ? `${pathPart}?${queryPart}` : pathPart;
-  }
-
-  // Remove trailing .tmp or any other extension (last dot segment) and append .pdf
-  // If there is no extension, just append .pdf
-  const cleanedPath = pathPart.replace(/(\.tmppdf|\.tmp|(\.[^/.?#]+$))/i, "");
-  const finalPath = cleanedPath + ".pdf";
-  return queryPart ? `${finalPath}?${queryPart}` : finalPath;
-}
-
-/** Suggest a download filename that ends with .pdf */
-function suggestedDownloadName(originalFilename?: string | null, id?: number) {
-  if (!originalFilename) return `document-${id ?? "file"}.pdf`;
-  return /\.pdf$/i.test(originalFilename) ? originalFilename : `${originalFilename}.pdf`;
-}
-
 const CsAgentDashboard: React.FC<Props> = ({ jwt, className }) => {
   const queryClient = useQueryClient();
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [selectedOwnerId, setSelectedOwnerId] = useState<number | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<Record<number, string>>({});
+  const [warning, setWarning] = useState<Record<number, string>>({});
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [updateErrors, setUpdateErrors] = useState<Record<number, string>>({});
+  
 
+  const [propertyStateFilter, setPropertyStateFilter] = useState<PropertyState | "">("Pending");
+  
+  const propertyStateOptions: (PropertyState | "")[] = [
+    "", // Empty string for "All"
+    "Pending", 
+    "Valid", 
+    "Rejected", 
+    "Invalid", 
+    "Rented", 
+    "Sold"
+  ];
+
+  // 📌 Properties query
   const {
     data: propertiesResponse,
     isLoading,
     error,
-    refetch,
   } = useQuery({
-    queryKey: ["properties"],
-    queryFn: () => getProperties(jwt),
-    staleTime: 30_000,
-    refetchInterval: 60_000,
+    // 2. ✅ MODIFIED: Added propertyStateFilter to queryKey
+    queryKey: ["properties", propertyStateFilter], 
+    // 3. ✅ MODIFIED: Pass propertyStateFilter to queryFn (assuming getProperties accepts it)
+    queryFn: () => getProperties(jwt, { property_state: propertyStateFilter || undefined }), 
     enabled: !!jwt,
+    staleTime: 30_000,
   });
 
+  // 📌 Owner query (runs only if selectedOwnerId set)
+  const {
+    data: ownerData,
+    isLoading: ownerLoading,
+    error: ownerError,
+  } = useQuery({
+    queryKey: ["owner", selectedOwnerId],
+    queryFn: () => getOwner(selectedOwnerId!, jwt),
+    enabled: !!selectedOwnerId && !!jwt,
+  });
+
+  // 📌 Mutation for property status
   const mutation = useMutation({
-    mutationFn: (vars: { id: number; status: Property["property_state"] }) =>
+    mutationFn: (vars: { id: number; status: VerificationStatus }) =>
       changePropertyStatus(vars.id, vars.status, jwt),
+    onMutate: (vars) => {
+      setUpdatingId(vars.id); 
+      setUpdateErrors((prev) => {
+        const copy = { ...prev };
+        delete copy[vars.id]; // clear old error for this property
+        return copy;
+      });
+    },
+    onError: (err, vars) => {
+      setUpdateErrors((prev) => ({
+        ...prev,
+        [vars.id]: "❌ Update failed. Try again.",
+      }));
+    },
+    onSettled: () => {
+      setUpdatingId(null);
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["properties"] });
+      // Invalidate all queries starting with "properties" to refetch the current filtered list
+      queryClient.invalidateQueries({ queryKey: ["properties"], exact: false }); 
     },
   });
 
-  const [selected, setSelected] = useState<Record<number, Property["property_state"]>>({});
-  const [warning, setWarning] = useState<Record<number, string>>({});
+  // Helper function to handle filter change
+  const handleFilterChange = (newFilter: PropertyState | "") => {
+    setPropertyStateFilter(newFilter);
+  };
+
+  if (!jwt) return <div className={className}>No JWT provided.</div>;
+  if (isLoading) return <Spinner animation="border" />;
+  if (error) return <div className="text-danger">Failed to load properties</div>;
 
   const properties: Property[] = propertiesResponse?.data ?? [];
 
-  if (!jwt) return <div className={className}>No JWT provided.</div>;
-  if (isLoading) return <div className={className}>Loading properties…</div>;
+  // 🔹 Owner Detail View (unchanged)
+  if (selectedOwnerId) {
+    if (ownerLoading) return <Spinner animation="border" />;
+    if (ownerError) return <div className="text-danger">Failed to load owner</div>;
 
-  if (error)
+    const owner: Owner = ownerData;
+
     return (
       <div className={className}>
-        <div className="text-red-600 mb-2">
-          Failed to load properties: {error instanceof Error ? error.message : "Unknown error"}
-        </div>
-        <button
-          onClick={() => refetch()}
-          className="px-3 py-1 bg-[var(--accent-color)] text-white rounded"
-        >
-          Retry
-        </button>
+        <h3>Owner Details</h3>
+        <p><b>ID:</b> {owner.id}</p>
+        <p><b>Name:</b> {owner.first_name} {owner.last_name}</p>
+        <p><b>Email:</b> {owner.email}</p>
+        <p><b>Phone:</b> {owner.phone_number}</p>
+        <p><b>Status:</b> {owner.status}</p>
+
+        <Button variant="secondary" onClick={() => setSelectedOwnerId(null)}>
+          ← Back to Properties
+        </Button>
       </div>
     );
+  }
 
-  return (
-    <div className={`grid gap-6 sm:grid-cols-2 lg:grid-cols-3 ${className}`}>
-      {properties.length === 0 ? (
-        <div>No properties found.</div>
-      ) : (
-        properties.map((p) => {
-          const current = selected[p.id] ?? "";
-          const images = (p as any).images ?? [];
-          const documents = (p as any).documents ?? [];
+  // 🔹 Property Detail View (unchanged)
+  if (selectedProperty) {
+    return (
+      <div className={className}>
+        <h3>{selectedProperty.title}</h3>
+        <p><b>ID:</b> {selectedProperty.id}</p>
+        <p>
+          <b>Owner:</b>{" "}
+          <Button
+            variant="link"
+            className="p-0"
+            onClick={() => setSelectedOwnerId(selectedProperty.owner?.id ?? null)}
+          >
+            Owner #{selectedProperty.owner?.id}
+          </Button>
+        </p>
+        <p><b>Type:</b> {selectedProperty.type}</p>
+        <p><b>Price:</b> {selectedProperty.property_details.price} ({selectedProperty.property_details.price_type})</p>
+        <p><b>Size:</b> {selectedProperty.property_details.size}</p>
+        <p>
+          <b>Location:</b>{" "}
+          {selectedProperty.location?.city}, {selectedProperty.location?.state}
+        </p>
+        <p><b>Property State:</b> {selectedProperty.status}</p>
+        <p><b>Status:</b> {selectedProperty.status}</p>
+        <p><b>Description:</b> {selectedProperty.description}</p>
 
-          return (
-            <div
-              key={p.id}
-              className="rounded-2xl border shadow-sm flex flex-col bg-white overflow-hidden"
-            >
-              {/* 🔹 Image Slider */}
-              {images.length > 0 ? (
-                <div>
-                  <Swiper
-                    spaceBetween={10}
-                    slidesPerView={1}
-                    pagination={{ clickable: true }}
-                    navigation
-                    modules={[Pagination, Navigation]}
-                    className={`${styles.brownSwiper} w-full h-56`}
-                  >
-                    {images.map((img: any, index: number) => (
-                      <SwiperSlide key={img.id} className="relative">
-                        <img
-                          src={img.url}
-                          alt={p.title}
-                          loading="lazy"
-                          className="w-full h-56 object-cover"
-                        />
-                        <div className={styles.imageCounter}>
-                          {index + 1} / {images.length}
-                        </div>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                  <div className="text-center text-sm text-gray-600 mt-1">
-                    Total Images: {images.length}
-                  </div>
-                </div>
-              ) : (
-                <div className="w-full h-56 flex items-center justify-center text-gray-500">
-                  No Images
-                </div>
-              )}
-
-              {/* 🔹 Card Body */}
-              <div className="p-4 flex flex-col gap-4">
-                <div>
-                  <h3 className="text-lg font-semibold">{p.title}</h3>
-                  <p className="text-gray-600">{p.price}</p>
-                </div>
-
-                <div className="text-sm">
-                  <p>
-                    <span className="font-medium">Owner: </span>
-                    {p.owner
-                      ? `${(p as any).owner.first_name ?? ""} ${(p as any).owner.last_name ?? ""}`
-                      : p.owner_id ?? "N/A"}
-                  </p>
-                  <p>
-                    <span className="font-medium">Phone: </span>
-                    {(p as any).owner?.phone_number ?? "N/A"}
-                  </p>
-                  <p>
-                    <span className="font-medium">Email: </span>
-                    {(p as any).owner?.email ?? "N/A"}
-                  </p>
-                </div>
-
-                {/* 🔹 Documents */}
-                <div>
-                  <span className="font-medium text-sm">Documents:</span>
-                  <ul className="mt-2 space-y-3">
-                    {documents.length > 0 ? (
-                      documents.map((doc: any) => {
-                        // backend field might be "document_url" (preferred) or "url" (fallback)
-                        const baseUrl = doc.document_url ?? doc.url ?? "";
-                        const docUrl = ensurePdfUrl(baseUrl);
-                        const downloadName = suggestedDownloadName(doc.original_filename, doc.id);
-
-                        return (
-                          <li key={doc.id} className="flex flex-col gap-1">
-                            <a
-                              href={docUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`${styles.docLink}`}
-                              // suggest a filename for download; note: cross-origin servers/headers may override this
-                              download={downloadName}
-                            >
-                              {doc.original_filename || "Document"}
-                            </a>
-
-                            {/* Inline preview - may still trigger download if server sends Content-Disposition: attachment */}
-                            <iframe
-                              src={docUrl}
-                              className="w-full h-40 border rounded"
-                              title={`doc-${doc.id}`}
-                            />
-                          </li>
-                        );
-                      })
-                    ) : (
-                      <li className="text-gray-500 text-sm">No documents</li>
-                    )}
-                  </ul>
-                </div>
-
-                {/* 🔹 Status changer */}
-                <div className="mt-auto">
-                  <label className="block text-sm font-medium mb-1">Change Status</label>
-                  <div className="flex items-center gap-2">
-                    <select
-                      value={current}
-                      onChange={(e) => {
-                        setSelected((s) => ({ ...s, [p.id]: e.target.value as Property["property_state"] }));
-                        setWarning((w) => ({ ...w, [p.id]: "" }));
-                      }}
-                      className="p-2 border rounded w-full"
-                    >
-                      <option value="">-- Select Status --</option>
-                      {STATUSES.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
-
-                    <button
-                      onClick={() => {
-                        if (!current) {
-                          setWarning((w) => ({ ...w, [p.id]: "⚠️ Please choose a status first" }));
-                          return;
-                        }
-                        mutation.mutate({ id: p.id, status: current });
-                      }}
-                      className="px-3 py-2 bg-[var(--primary-color)] text-white rounded disabled:opacity-60"
-                      disabled={mutation.isPending}
-                    >
-                      {mutation.isPending ? "Updating…" : "Update"}
-                    </button>
-                  </div>
-
-                  {warning[p.id] && <div className="text-yellow-600 mt-2 text-sm">{warning[p.id]}</div>}
-                  {mutation.error && <div className="text-red-600 mt-2">Update failed</div>}
-                </div>
-              </div>
+        {/* 📸 Property Photos */}
+        {selectedProperty.image && selectedProperty.image.length > 0 ? (
+          <div className="mt-3">
+            <h5>Photos</h5>
+            <div className="d-flex flex-wrap gap-3">
+              {selectedProperty.image.map((img, idx) => (
+                <img
+                  key={idx}
+                  src={typeof img === "string" ? img : img}
+                  alt={`Property ${selectedProperty.id} - ${idx + 1}`}
+                  style={{
+                    width: "200px",
+                    height: "150px",
+                    objectFit: "cover",
+                    borderRadius: "8px",
+                  }}
+                />
+              ))}
             </div>
-          );
-        })
-      )}
+          </div>
+        ) : (
+          <p className="text-muted mt-3">No photos available for this property.</p>
+        )}
+
+        {/* 📄 Property Documents */}
+        {selectedProperty.documents && selectedProperty.documents.length > 0 ? (
+          <div className="mt-4">
+            <h5>Documents</h5>
+            <ul>
+              {selectedProperty.documents.map((doc, idx) => (
+                <li key={idx}>
+                  <a
+                    href={typeof doc === "string" ? doc : doc}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    📄 Document {idx + 1}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p className="text-muted mt-3">No documents available for this property.</p>
+        )}
+
+        <Button
+          variant="secondary"
+          className="mt-3"
+          onClick={() => setSelectedProperty(null)}
+        >
+          ← Back to Properties
+        </Button>
+      </div>
+    );
+  }
+
+
+  // 🔹 Table View
+  return (
+    <div className={className}>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h3>Properties</h3>
+        
+        {/* 4. ✅ ADDED: Filter Control */}
+        <Form.Group className="d-flex align-items-center mb-0">
+          <Form.Label className="me-2 mb-0 small text-muted">Filter by State:</Form.Label>
+          <Form.Select
+            size="sm"
+            value={propertyStateFilter}
+            onChange={(e) => 
+              handleFilterChange(e.target.value as PropertyState | "")
+            }
+            style={{ width: "150px" }}
+          >
+            {propertyStateOptions.map((state) => (
+              <option key={state} value={state}>
+                {state === "" ? "All States" : state}
+              </option>
+            ))}
+          </Form.Select>
+        </Form.Group>
+      </div>
+      
+      <Table striped bordered hover responsive>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Owner</th>
+            <th>Property State</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {properties.length > 0 ? (
+            properties.map((p) => {
+              const current = selectedStatus[p.id] ?? "";
+
+              return (
+                <tr key={p.id}>
+                  <td>{p.id}</td>
+                  <td>
+                    <Button
+                      variant="link"
+                      className="p-0"
+                      onClick={() => setSelectedProperty(p)}
+                    >
+                      {p.title}
+                    </Button>
+                  </td>
+                  <td>
+                    <Button
+                      variant="link"
+                      className="p-0"
+                      onClick={() => setSelectedOwnerId(p.owner?.id ?? null)}
+                    >
+                      Owner #{p.owner?.id}
+                    </Button>
+                  </td>
+                  <td>{p.status}</td>
+                  <td>
+                    {p.status === "Pending" ? (
+                      <div className="d-flex gap-2 align-items-center">
+                        <Form.Select
+                          size="sm"
+                          value={current}
+                          onChange={(e) => {
+                            setSelectedStatus((s) => ({ ...s, [p.id]: e.target.value }));
+                            setWarning((w) => ({ ...w, [p.id]: "" }));
+                          }}
+                        >
+                          <option value="">-- Select --</option>
+                          <option value="Valid">Valid</option>
+                          <option value="Rejected">Rejected</option>
+                        </Form.Select>
+
+                        <Button
+                          size="sm"
+                          variant="primary"
+                          disabled={updatingId === p.id && mutation.isPending}
+                          onClick={() => {
+                            if (!current) {
+                              setWarning((w) => ({
+                                ...w,
+                                [p.id]: "⚠️ Please choose a status first",
+                              }));
+                              return;
+                            }
+                            mutation.mutate({
+                              id: p.id,
+                              status: current as VerificationStatus,
+                            });
+                          }}
+                        >
+                          {updatingId === p.id && mutation.isPending ? "Updating…" : "Update"}
+                        </Button>
+                      </div>
+                    ) : (
+                      <span className="text-muted small">No actions (state: {p.status})</span>
+                    )}
+
+                    {warning[p.id] && (
+                      <div className="text-warning small mt-1">{warning[p.id]}</div>
+                    )}
+                    {updateErrors[p.id] && (
+                      <div className="text-danger small mt-1">{updateErrors[p.id]}</div>
+                    )}
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+                <td colSpan={5} className="text-center py-4">
+                    No properties found
+                </td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
     </div>
   );
 };
