@@ -1,5 +1,5 @@
-// src/pages/admin/UsersPage.tsx - Updated with Status Select and Clickable Rows
-import React, { useState } from 'react';
+// src/pages/admin/UsersPage.tsx - Fixed version
+import React, { useState, useEffect } from 'react';
 import { Button } from '@components/ui/Button';
 import { Badge } from '@components/ui/Badge';
 import { LoadingSpinner } from '@components/ui/LoadingSpinner';
@@ -7,9 +7,7 @@ import { Input } from '@components/ui/Input';
 import { Select } from '@components/ui/Select';
 import { Card } from '@components/ui/Card';
 import { useUsers, useUserProperties, useUserTransactions } from '@hooks/useAdminQueries';
-import { useActivateUser, useSuspendUser } from '@hooks/useUserMutations';
 import { formatCurrency, formatDate } from '@utils/formatters';
-
 import Swal from 'sweetalert2';
 import { 
   UserIcon, 
@@ -24,11 +22,10 @@ import {
   PhotoIcon
 } from '@heroicons/react/24/outline';
 import { Property } from '@app-types/index';
-import { fetchUserProperties } from '@services/axios-global';
 import { TFullUser } from '@app-types/users/users.types';
+import { adminService } from '@services/axios-global';
 
 const USERS_PER_PAGE = 15;
-
 
 interface Transaction {
   id: number;
@@ -39,35 +36,35 @@ interface Transaction {
   created_at: string;
 }
 
+interface UserFilters {
+  search?: string;
+  role?: string;
+  status?: string;
+  sort_by?: string;
+  sort_order?: string;
+  date_from?: string;
+  date_to?: string;
+  per_page?: number;
+}
+
 export const UsersPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [filters, setFilters] = useState<UserFilters>({
+    sort_by: 'created_at',
+    sort_order: 'desc',
+    per_page: USERS_PER_PAGE
+  });
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'info' | 'properties' | 'transactions' | 'image'>('info');
   const [showFilters, setShowFilters] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [isButtonLoading, setIsButtonLoading] = useState<number | null>(null); // Track loading per user
 
-  // Build filters object
-  const filters = {
-    search: search || undefined,
-    role: roleFilter || undefined,
-    status: statusFilter || undefined,
-    sort_by: 'created_at',
-    sort_order: 'desc'
-  };
-
+  // Use the filters in the query
   const { data: usersData, isLoading, error, refetch } = useUsers(currentPage, USERS_PER_PAGE, filters);
-  //const { any: userProperties } = (){await fetchUserProperties(selectedUserId);}//useUserProperties(selectedUserId!, !!selectedUserId); 
-  const userProperties = ()=>{const response = fetchUserProperties(selectedUserId);
-    console.log(response + "");
-  }
-  const { data: userTransactions } = useUserTransactions(selectedUserId!, !!selectedUserId);
-  
-  const activateUserMutation = useActivateUser();
-  const suspendUserMutation = useSuspendUser();
+  const { data: userProperties, isLoading: propertiesLoading } = useUserProperties(selectedUserId!, !!selectedUserId);
+  const { data: userTransactions, isLoading: transactionsLoading } = useUserTransactions(selectedUserId!, !!selectedUserId);
   
   const users = usersData?.data || [];
   const totalUsers = usersData?.total || 0;
@@ -79,7 +76,9 @@ export const UsersPage: React.FC = () => {
     const colors: { [key: string]: string } = {
       active: 'success',
       pending: 'warning',
-      suspended: 'danger'
+      suspended: 'danger',
+      valid: 'success',
+      rejected: 'danger'
     };
     return colors[status] || 'secondary';
   };
@@ -93,106 +92,318 @@ export const UsersPage: React.FC = () => {
     return colors[role] || 'secondary';
   };
 
+  // Update filters
+  const updateFilter = (key: keyof UserFilters, value: any) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value || undefined
+    }));
+    setCurrentPage(1); // Reset to first page when filters change
+  };
+
   // Clear all filters
   const clearFilters = () => {
-    setSearch('');
-    setRoleFilter('');
-    setStatusFilter('');
+    setFilters({
+      sort_by: 'created_at',
+      sort_order: 'desc',
+      per_page: USERS_PER_PAGE
+    });
     setCurrentPage(1);
   };
 
-  const hasActiveFilters = search || roleFilter || statusFilter;
+  const hasActiveFilters = Object.values(filters).some(value => 
+    value !== undefined && value !== null && value !== '' && 
+    !['sort_by', 'sort_order', 'per_page'].includes(value as string)
+  );
 
-  // User actions
-  const handleActivateUser = async (user: TFullUser) => {
-    const result = await Swal.fire({
-      title: 'Activate User',
-      text: `Are you sure you want to activate ${user.first_name} ${user.last_name}?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#10b981',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Yes, Activate',
-      cancelButtonText: 'Cancel',
-    });
-
-    if (result.isConfirmed) {
-      try {
-        await activateUserMutation.mutateAsync({ 
-          userId: user.id, 
-          reason: user.status === 'suspended' ? 'Reactivated by admin' : 'Activated by admin' 
-        });
-        refetch();
-        Swal.fire('Activated!', 'User has been activated successfully.', 'success');
-      } catch (error) {
-        Swal.fire('Error!', 'Failed to activate user.', 'error');
+  const handleUserActivationStates = async (user: TFullUser, newActivationState: string) => {
+    // Prevent multiple clicks on the same user
+    if (isButtonLoading === user.id) return;
+    
+    setIsButtonLoading(user.id);
+    
+    try {
+      if (user.status === newActivationState) {
+        Swal.fire('No Change Needed', 'User status is already ' + newActivationState, 'info');
+        setIsButtonLoading(null);
+        return;
       }
-    }
-  };
 
-  const handleSuspendUser = async (user: TFullUser) => {
-    const { value: reason } = await Swal.fire({
-      title: 'Suspend User',
-      text: `Please provide a reason for suspending ${user.first_name} ${user.last_name}:`,
-      input: 'textarea',
-      inputPlaceholder: 'Enter suspension reason...',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Suspend User',
-      cancelButtonText: 'Cancel',
-      inputValidator: (value) => {
-        if (!value || value.trim().length === 0) {
-          return 'You need to provide a reason for suspension!';
-        }
-        if (value.trim().length < 10) {
-          return 'Reason must be at least 10 characters long!';
-        }
-      },
-    });
-
-    if (reason) {
-      try {
-        await suspendUserMutation.mutateAsync({ userId: user.id, reason: reason.trim() });
-        refetch();
-        Swal.fire('Suspended!', 'User has been suspended successfully.', 'success');
-      } catch (error) {
-        Swal.fire('Error!', 'Failed to suspend user.', 'error');
+      let confirmationConfig;
+      
+      switch (newActivationState) {
+        case "suspended":
+          confirmationConfig = {
+            title: 'Suspend User',
+            text: `Are you sure you want to suspend ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#b94010ff',
+            confirmButtonText: 'Yes, Suspend',
+          };
+          break;
+        case "active":
+          confirmationConfig = {
+            title: 'Activate User',
+            text: `Are you sure you want to activate ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#10b981',
+            confirmButtonText: 'Yes, Activate',
+          };
+          break;
+        case "pending":
+          confirmationConfig = {
+            title: 'Pending User State',
+            text: `Are you sure you want to switch user ${user.first_name} ${user.last_name} state to pending for revision?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#eeea04ff',
+            confirmButtonText: 'Yes, Switch to Pending State',
+          };
+          break;
+        default:
+          setIsButtonLoading(null);
+          return;
       }
+
+      const result = await Swal.fire({
+        ...confirmationConfig,
+        showCancelButton: true,
+        cancelButtonColor: '#6b7280',
+        cancelButtonText: 'Cancel',
+      });
+
+      if (result.isConfirmed) {
+        const res = await adminService.updateUserStatus(user.id, newActivationState);
+        console.log(res);
+        
+        // CRITICAL FIX: Refetch the data to update the UI
+        await refetch();
+        
+        let successMessage = '';
+        let check = true;
+        switch (newActivationState) {
+          case "suspended":
+            successMessage = 'User has been suspended successfully.';
+            break;
+          case "active":
+            if(!selectedUser?.email_verified_at == null){
+              check = false;
+              successMessage = 'User Email is Not Verified, User status will be pending.';
+            }
+            else if(!selectedUser?.phone_verified_at == null){
+              check = false;
+              successMessage = 'User Phone is Not Verified, User status will be pending.';
+            }
+            else if(selectedUser?.id_state != "valid"){
+              check = false;
+              successMessage = 'User ID is Not Verified, User status will be pending.';
+            }
+            else
+              successMessage = 'User has been activated successfully.';
+            break;
+          case "pending":
+            successMessage = 'User state has been set to pending successfully.';
+            break;
+        }
+        if(check){
+          Swal.fire('Success!', successMessage,'success');
+        }
+        else{
+          Swal.fire("Can't Validate User", successMessage,'error');
+        }
+        //Swal.fire('Error!', 'Failed to update user status.', 'error');
+        
+        // Close details modal if open for the same user
+        if (showDetailsModal && selectedUserId === user.id) {
+          setShowDetailsModal(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating user status:', error);
+      Swal.fire('Error!', 'Failed to update user status.', 'error');
+    } finally {
+      setIsButtonLoading(null);
     }
   };
 
   const handleRoleChange = async (user: TFullUser, newRole: string) => {
-    if (user.role === newRole) return;
+    // Prevent multiple clicks on the same user
+    if (isButtonLoading === user.id) return;
+    
+    setIsButtonLoading(user.id);
+    
+    try {
+      if (user.role === newRole) {
+        Swal.fire('No Change Needed', 'User role is already ' + newRole, 'info');
+        setIsButtonLoading(null);
+        return;
+      }
 
-    const result = await Swal.fire({
-      title: 'Change Role',
-      text: `Change ${user.first_name}'s role to ${newRole}?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#3b82f6',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Change Role',
-      cancelButtonText: 'Cancel',
-    });
+      let confirmationConfig;
+      
+      switch (newRole) {
+        case "admin":
+          confirmationConfig = {
+            title: 'Assign Admin Role',
+            text: `Are you sure you want to assign admin role to ${user.first_name} ${user.last_name}? This will give them full system access.`,
+            icon: 'warning' as const,
+            confirmButtonColor: '#dc2626',
+            confirmButtonText: 'Yes, Make Admin',
+          };
+          break;
+        case "agent":
+          confirmationConfig = {
+            title: 'Assign Agent Role',
+            text: `Are you sure you want to assign agent role to ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#3b82f6',
+            confirmButtonText: 'Yes, Make Agent',
+          };
+          break;
+        case "user":
+          confirmationConfig = {
+            title: 'Assign User Role',
+            text: `Are you sure you want to assign user role to ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, Make User',
+          };
+          break;
+        default:
+          setIsButtonLoading(null);
+          return;
+      }
 
-    if (result.isConfirmed) {
-      // Implement role change logic here
-      console.log(`Changing user ${user.id} role to ${newRole}`);
-      refetch();
-      Swal.fire('Updated!', `Role changed to ${newRole}.`, 'success');
+      const result = await Swal.fire({
+        ...confirmationConfig,
+        showCancelButton: true,
+        cancelButtonColor: '#6b7280',
+        cancelButtonText: 'Cancel',
+      });
+
+      if (result.isConfirmed) {
+        await adminService.updateUserRole(user.id, newRole);
+        
+        // CRITICAL FIX: Refetch the data to update the UI
+        await refetch();
+        
+        let successMessage = '';
+        switch (newRole) {
+          case "admin":
+            successMessage = 'User has been assigned admin role successfully.';
+            break;
+          case "agent":
+            successMessage = 'User has been assigned agent role successfully.';
+            break;
+          case "user":
+            successMessage = 'User has been assigned user role successfully.';
+            break;
+        }
+        
+        Swal.fire('Success!', successMessage, 'success');
+        
+        // Close details modal if open for the same user
+        if (showDetailsModal && selectedUserId === user.id) {
+          setShowDetailsModal(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating user role:', error);
+      Swal.fire('Error!', 'Failed to update user role.', 'error');
+    } finally {
+      setIsButtonLoading(null);
     }
   };
 
-  // NEW: Handle status change (valid, pending, rejected)
-  const handleStatusChange = (user: TFullUser, newStatus: string) => {
-    console.log(`Changing user ${user.id} status from ${user.status} to ${newStatus}`);
-    // Here you would typically make an API call to update the user status
-    // For now, we'll just log it to the console
+  const handleIdStatusChange = async (user: TFullUser, newStatus: string) => {
+    // Prevent multiple clicks on the same user
+    if (isButtonLoading === user.id) return;
+    
+    setIsButtonLoading(user.id);
+    
+    try {
+      if (user.id_state === newStatus) {
+        Swal.fire('No Change Needed', 'User ID status is already ' + newStatus, 'info');
+        setIsButtonLoading(null);
+        return;
+      }
+
+      let confirmationConfig;
+      
+      switch (newStatus) {
+        case "valid":
+          confirmationConfig = {
+            title: 'Validate ID Document',
+            text: `Are you sure you want to validate the ID document for ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#10b981',
+            confirmButtonText: 'Yes, Validate ID',
+          };
+          break;
+        case "rejected":
+          confirmationConfig = {
+            title: 'Reject ID Document',
+            text: `Are you sure you want to reject the ID document for ${user.first_name} ${user.last_name}?`,
+            icon: 'warning' as const,
+            confirmButtonColor: '#dc2626',
+            confirmButtonText: 'Yes, Reject ID',
+          };
+          break;
+        case "pending":
+          confirmationConfig = {
+            title: 'Set ID to Pending',
+            text: `Are you sure you want to set ID status to pending for ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#eeea04ff',
+            confirmButtonText: 'Yes, Set to Pending',
+          };
+          break;
+        default:
+          setIsButtonLoading(null);
+          return;
+      }
+
+      const result = await Swal.fire({
+        ...confirmationConfig,
+        showCancelButton: true,
+        cancelButtonColor: '#6b7280',
+        cancelButtonText: 'Cancel',
+      });
+
+      if (result.isConfirmed) {
+        await adminService.updateUserIDStatus(user.id, newStatus);
+        
+        // CRITICAL FIX: Refetch the data to update the UI
+        await refetch();
+        
+        let successMessage = '';
+        switch (newStatus) {
+          case "valid":
+            successMessage = 'ID document has been validated successfully.';
+            break;
+          case "rejected":
+            successMessage = 'ID document has been rejected successfully.';
+            break;
+          case "pending":
+            successMessage = 'ID status has been set to pending successfully.';
+            break;
+        }
+        
+        Swal.fire('Success!', successMessage, 'success');
+        
+        // Close details modal if open for the same user
+        if (showDetailsModal && selectedUserId === user.id) {
+          setShowDetailsModal(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating ID status:', error);
+      Swal.fire('Error!', 'Failed to update ID status.', 'error');
+    } finally {
+      setIsButtonLoading(null);
+    }
   };
 
   const handleRowClick = (user: TFullUser) => {
-    console.log(user);
     setSelectedUserId(user.id);
     setShowDetailsModal(true);
     setActiveTab('info');
@@ -225,18 +436,15 @@ export const UsersPage: React.FC = () => {
         <p className="text-gray-600">Manage system users and their permissions</p>
       </div>
 
-      {/* Search and Filters */}
+      {/* Enhanced Search and Filters */}
       <div className="bg-white rounded-lg border p-4 space-y-4">
         <div className="relative">
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
           <Input
             type="text"
             placeholder="Search users by name, email, or phone..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
+            value={filters.search || ''}
+            onChange={(e) => updateFilter('search', e.target.value)}
             className="pl-10"
           />
         </div>
@@ -248,7 +456,7 @@ export const UsersPage: React.FC = () => {
             onClick={() => setShowFilters(!showFilters)}
           >
             <FunnelIcon className="h-4 w-4 mr-2" />
-            Filters
+            Advanced Filters
             {hasActiveFilters && (
               <span className="ml-2 h-2 w-2 rounded-full bg-blue-600" />
             )}
@@ -257,46 +465,103 @@ export const UsersPage: React.FC = () => {
           {hasActiveFilters && (
             <Button variant="ghost" size="sm" onClick={clearFilters}>
               <XMarkIcon className="h-4 w-4 mr-1" />
-              Clear Filters
+              Clear All
             </Button>
           )}
         </div>
 
         {showFilters && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
-            <div>
-              <label className="block text-sm font-medium mb-2">Role</label>
-              <Select
-                value={roleFilter}
-                onChange={(e) => {
-                  setRoleFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                options={[
-                  { value: '', label: 'All Roles' },
-                  { value: 'user', label: 'User' },
-                  { value: 'agent', label: 'Agent' },
-                  { value: 'admin', label: 'Admin' }
-                ]}
-              />
+          <div className="border-t pt-4 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Role</label>
+                <Select
+                  value={filters.role || ''}
+                  onChange={(e) => updateFilter('role', e.target.value)}
+                  options={[
+                    { value: '', label: 'All Roles' },
+                    { value: 'user', label: 'User' },
+                    { value: 'agent', label: 'Agent' },
+                    { value: 'admin', label: 'Admin' }
+                  ]}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Status</label>
+                <Select
+                  value={filters.status || ''}
+                  onChange={(e) => updateFilter('status', e.target.value)}
+                  options={[
+                    { value: '', label: 'All Statuses' },
+                    { value: 'active', label: 'Active' },
+                    { value: 'pending', label: 'Pending' },
+                    { value: 'suspended', label: 'Suspended' }
+                  ]}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Results Per Page</label>
+                <Select
+                  value={filters.per_page?.toString() || USERS_PER_PAGE.toString()}
+                  onChange={(e) => updateFilter('per_page', parseInt(e.target.value))}
+                  options={[
+                    { value: '10', label: '10 per page' },
+                    { value: '15', label: '15 per page' },
+                    { value: '25', label: '25 per page' },
+                    { value: '50', label: '50 per page' },
+                  ]}
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">Status</label>
-              <Select
-                value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                options={[
-                  { value: '', label: 'All Statuses' },
-                  { value: 'active', label: 'Active' },
-                  { value: 'pending', label: 'Pending' },
-                  { value: 'suspended', label: 'Suspended' }
-                ]}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Registered From</label>
+                <Input
+                  type="date"
+                  value={filters.date_from || ''}
+                  onChange={(e) => updateFilter('date_from', e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Registered To</label>
+                <Input
+                  type="date"
+                  value={filters.date_to || ''}
+                  onChange={(e) => updateFilter('date_to', e.target.value)}
+                />
+              </div>
             </div>
+
+            {/* Active Filters Summary */}
+            {hasActiveFilters && (
+              <div className="pt-4 border-t">
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-sm text-gray-500">Active filters:</span>
+                  
+                  {filters.role && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      Role: {filters.role}
+                    </span>
+                  )}
+
+                  {filters.status && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Status: {filters.status}
+                    </span>
+                  )}
+
+                  {filters.search && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                      Search: "{filters.search}"
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -331,23 +596,21 @@ export const UsersPage: React.FC = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">
                         <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                          
-                          {/* <UserIcon className="h-5 w-5 text-gray-500" /> */}
-                          {user.id_image_url && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => {
-                            setSelectedUserId(user.id);
-                            setShowImageModal(true);
-                          }}
-                        >
-                          <IdentificationIcon className="h-4 w-4 mr-1" />
-                        </Button>)}{
-                          <UserIcon className="h-5 w-5 text-gray-500" />
-                        }
+                          {user.id_image_url ? (
+                            <img 
+                              src={user.id_image_url} 
+                              alt="User" 
+                              className="h-10 w-10 rounded-full object-cover cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedUserId(user.id);
+                                setShowImageModal(true);
+                              }}
+                            />
+                          ) : (
+                            <UserIcon className="h-5 w-5 text-gray-500" />
+                          )}
                         </div>
-                        
                         <div>
                           <div className="font-medium text-gray-900">
                             {user.first_name} {user.last_name}
@@ -370,7 +633,8 @@ export const UsersPage: React.FC = () => {
                           getRoleColor(user.role) === 'primary' ? 'text-blue-700 border-blue-200' :
                           'text-gray-700 border-gray-200'
                         }`}
-                        onClick={(e) => e.stopPropagation()} // Prevent row click when selecting
+                        onClick={(e) => e.stopPropagation()}
+                        disabled={isButtonLoading !== null}
                       >
                         <option value="user">User</option>
                         <option value="agent">Agent</option>
@@ -378,12 +642,12 @@ export const UsersPage: React.FC = () => {
                       </select>
                     </td>
                     <td className="px-6 py-4">
-                      {/* NEW: ID Status Select */}
                       <select
-                        value={user.status} // You might want a separate field for ID status
-                        onChange={(e) => handleStatusChange(user, e.target.value)}
+                        value={user.id_state || "pending"}
+                        onChange={(e) => handleIdStatusChange(user, e.target.value)}
                         className="px-2 py-1 rounded border text-sm font-medium text-gray-700 border-gray-200"
-                        onClick={(e) => e.stopPropagation()} // Prevent row click when selecting
+                        onClick={(e) => e.stopPropagation()}
+                        disabled={isButtonLoading !== null}
                       >
                         <option value="valid">Valid</option>
                         <option value="pending">Pending</option>
@@ -400,27 +664,13 @@ export const UsersPage: React.FC = () => {
                       {formatDate(user.created_at)}
                     </td>
                     <td className="px-6 py-4 space-x-2" onClick={(e) => e.stopPropagation()}>
-                      {/* REMOVED: View button since row is now clickable */}
-                      
-                      {/* {user.id_image_url && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => {
-                            setSelectedUserId(user.id);
-                            setShowImageModal(true);
-                          }}
-                        >
-                          <IdentificationIcon className="h-4 w-4 mr-1" />
-                        </Button>
-                      )} */}
-
                       {user.status === 'active' && (
                         <Button
                           size="sm"
                           variant="danger"
-                          onClick={() => handleSuspendUser(user)}
-                          loading={suspendUserMutation.isPending}
+                          onClick={() => handleUserActivationStates(user, "suspended")}
+                          loading={isButtonLoading === user.id}
+                          disabled={isButtonLoading !== null}
                         >
                           <ExclamationTriangleIcon className="h-4 w-4 mr-1" />
                           Suspend
@@ -431,8 +681,9 @@ export const UsersPage: React.FC = () => {
                         <Button
                           size="sm"
                           variant="success"
-                          onClick={() => handleActivateUser(user)}
-                          loading={activateUserMutation.isPending}
+                          onClick={() => handleUserActivationStates(user, "active")}
+                          loading={isButtonLoading === user.id}
+                          disabled={isButtonLoading !== null}
                         >
                           <CheckCircleIcon className="h-4 w-4 mr-1" />
                           {user.status === 'suspended' ? 'Reactivate' : 'Activate'}
@@ -560,6 +811,14 @@ export const UsersPage: React.FC = () => {
                             </Badge>
                           </div>
                         </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">ID Status</label>
+                          <div className="mt-1">
+                            <Badge variant={getStatusColor(selectedUser.id_state || 'pending')} size="lg">
+                              {selectedUser.id_state || 'pending'}
+                            </Badge>
+                          </div>
+                        </div>
                         <div className="grid grid-cols-2 gap-4">
                           <StatBox label="Properties" value={selectedUser.properties_count || 0} />
                           <StatBox label="Transactions" value={selectedUser.transactions_count || 0} />
@@ -683,8 +942,10 @@ export const UsersPage: React.FC = () => {
                     variant="danger"
                     onClick={() => {
                       setShowDetailsModal(false);
-                      handleSuspendUser(selectedUser);
+                      handleUserActivationStates(selectedUser, "suspended");
                     }}
+                    loading={isButtonLoading === selectedUser.id}
+                    disabled={isButtonLoading !== null}
                   >
                     Suspend User
                   </Button>
@@ -695,8 +956,10 @@ export const UsersPage: React.FC = () => {
                     variant="success"
                     onClick={() => {
                       setShowDetailsModal(false);
-                      handleActivateUser(selectedUser);
+                      handleUserActivationStates(selectedUser, "active");
                     }}
+                    loading={isButtonLoading === selectedUser.id}
+                    disabled={isButtonLoading !== null}
                   >
                     {selectedUser.status === 'suspended' ? 'Reactivate' : 'Activate'}
                   </Button>
@@ -712,7 +975,6 @@ export const UsersPage: React.FC = () => {
             </div>
           </div>
         </div>
-        
       )}
       
       {/* Image Modal */}
@@ -735,21 +997,20 @@ export const UsersPage: React.FC = () => {
               className="max-w-[90vw] max-h-[90vh] object-contain"
               onClick={(e) => e.stopPropagation()}
             />
-            
           </div>
         </div>
       )}
-      
     </div>
   );
 };
 
-// Helper Components
 const InfoRow = ({ label, value, verified }: { label: string; value: string; verified?: boolean }) => (
   <div>
     <p className="text-sm font-medium text-gray-900">{value}</p>
     <p className="text-sm text-gray-500">
-      {label} {verified && <Badge variant="success" className="ml-1">Verified</Badge>}
+      {label} 
+      {verified == true && <Badge variant="success" className="ml-1">Verified</Badge>}
+      {verified == false && <Badge variant="destructive" className="ml-1">Unverified</Badge>}
     </p>
   </div>
 );

@@ -182,7 +182,7 @@ export const usersApi = {
     const response = await api.get<BackendPaginatedResponse<TFullUser>>(
       `/admin/users?${params}`
     );
-    
+    console.log(response);
     // Transform the backend response to match frontend expectations
     return transformPaginatedResponse(response.data);
   },
@@ -203,28 +203,41 @@ export const usersApi = {
   },
 
   // Activate user
-  activateUser: async (id: number): Promise<TFullUser> => {
-    const response = await api.patch<ApiResponse<TFullUser>>(
-      `/admin/users/${id}/activate`
-    );
-    return response.data.data;
-  },
 
-  // Deactivate user
-  deactivateUser: async (id: number): Promise<TFullUser> => {
+  UserStateUpdate: async (id: number,newstate: string): Promise<TFullUser> => {
     const response = await api.patch<ApiResponse<TFullUser>>(
-      `/admin/users/${id}/deactivate`
+      `/admin/users/${id}/state/${newstate}`
     );
+    console.log("activated");
+    console.log(response);
     return response.data.data;
   },
+  // activateUser: async (id: number): Promise<TFullUser> => {
+  //   const response = await api.patch<ApiResponse<TFullUser>>(
+  //     `/admin/users/${id}/actisvate`
+  //   );
+  //   console.log("activated");
+  //   console.log(response);
+  //   return response.data.data;
+  // },
 
-  // Suspend user
-  suspendUser: async (id: number): Promise<TFullUser> => {
-    const response = await api.patch<ApiResponse<TFullUser>>(
-      `/admin/users/${id}/suspend`
-    );
-    return response.data.data;
-  },
+  // // Deactivate user
+  // deactivateUser: async (id: number): Promise<TFullUser> => {
+  //   const response = await api.patch<ApiResponse<TFullUser>>(
+  //     `/admin/users/${id}/deactivate`
+  //   );
+  //   console.log("deactivated");
+  //   console.log(response);
+  //   return response.data.data;
+  // },
+
+  // // Suspend user
+  // suspendUser: async (id: number): Promise<TFullUser> => {
+  //   const response = await api.patch<ApiResponse<TFullUser>>(
+  //     `/admin/users/${id}/suspend`
+  //   );
+  //   return response.data.data;
+  // },
 
   // Get user transactions
   getUserTransactions: async (id: number): Promise<Transaction[]> => {

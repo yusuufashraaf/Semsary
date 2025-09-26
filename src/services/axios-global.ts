@@ -203,7 +203,27 @@ export const adminService = {
     userId: number,
     status: "active" | "suspended" | "pending"
   ): Promise<any> => {
-    const result = await api.put(`/admin/users/${userId}/status/`, { status });
+    const result = await api.put(`/admin/users/${userId}/status/${status}`);
+    console.log("admin service response____");
+    console.log(result);
+    return result.data;
+  },
+  updateUserIDStatus: async (
+    userId: number,
+    status: "valid" | "rejected" | "pending"
+  ): Promise<any> => {
+    const result = await api.put(`/admin/users/${userId}/id_state/${status}`);
+    console.log("admin service response____");
+    console.log(result);
+    return result.data;
+  },
+  updateUserRole: async (
+    userId: number,
+    status: "admin" | "user" | "agent"
+  ): Promise<any> => {
+    const result = await api.put(`/admin/users/${userId}/role/${status}`);
+    console.log("admin service response____");
+    console.log(result);
     return result.data;
   },
 
