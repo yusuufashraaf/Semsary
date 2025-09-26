@@ -77,6 +77,14 @@ const AvatarDropdown = ({ user }: { user: TUser | null }) => {
                 </Link>
               </li>
             )}
+            {user.role === 'agent' && (
+              <li>
+                <Link to="/cs-agent/dashboard" onClick={() => setIsOpen(false)}>
+                  Agent Dashboard
+                </Link>
+              </li>
+            )}
+
             <li>
               <button onClick={handleLogout} className={styles.logoutButton}>
                 Logout
