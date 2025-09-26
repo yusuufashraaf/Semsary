@@ -1,5 +1,7 @@
 // C:\laragon\www\Semsary\src\types\admin\admin.ts
 
+import { TFullUser } from "@app-types/users/users.types";
+
 // Notification Types
 export interface Notification {
   id: string;
@@ -51,32 +53,32 @@ export interface TransactionsByType {
 }
 
 // User Types
-export interface User {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  google_id: string | null;
-  email_verified_at: string | null;
-  email_otp: string | null;
-  email_otp_expires_at: string | null;
-  id_image_url: string | null;
-  role: UserRole;
-  phone_number: string;
-  status: UserStatus;
-  phone_verified_at: string | null;
-  whatsapp_otp: string | null;
-  whatsapp_otp_expires_at: string | null;
-  created_at: string;
-  updated_at: string;
-  full_name?: string; // Computed property
-  avatar?: string; // Profile image URL
-  last_login_at?: string;
-  properties_count?: number;
-  transactions_count?: number;
-}
+// export interface User {
+//   id: number;
+//   first_name: string;
+//   last_name: string;
+//   email: string;
+//   google_id: string | null;
+//   email_verified_at: string | null;
+//   email_otp: string | null;
+//   email_otp_expires_at: string | null;
+//   id_image_url: string | null;
+//   role: UserRole;
+//   phone_number: string;
+//   status: UserStatus;
+//   phone_verified_at: string | null;
+//   whatsapp_otp: string | null;
+//   whatsapp_otp_expires_at: string | null;
+//   created_at: string;
+//   updated_at: string;
+//   full_name?: string; // Computed property
+//   avatar?: string; // Profile image URL
+//   last_login_at?: string;
+//   properties_count?: number;
+//   transactions_count?: number;
+// }
 
-export type UserRole = "user" | "owner" | "agent" | "admin";
+export type UserRole = "user" | "agent" | "admin";
 export type UserStatus = "active" | "pending" | "suspended";
 
 // Agent Types - Updated for the new API structure
@@ -118,7 +120,7 @@ export interface Property {
   bathrooms: number;
   is_in_wishlist: boolean;
   transactions_count?: number;
-  owner?: User;
+  owner?: TFullUser;
   images?: PropertyImage[];
   amenities?: PropertyAmenity[];
   view_count?: number;
@@ -203,7 +205,7 @@ export interface Transaction {
   payment_gateway: PaymentGateway;
   created_at: string;
   updated_at: string;
-  user: User;
+  user: TFullUser;
   property: Property;
   reference_number?: string;
   notes?: string;
@@ -357,8 +359,8 @@ export interface ActivityLog {
   ip_address?: string;
   user_agent?: string;
   created_at: string;
-  user?: User;
-  admin?: User;
+  user?: TFullUser;
+  admin?: TFullUser;
 }
 
 export type ActivityAction = 

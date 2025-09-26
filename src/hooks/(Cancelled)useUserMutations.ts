@@ -5,7 +5,8 @@ import { usersApi } from "@api/endpoints/users";
 import { QUERY_KEYS } from "@app-types/admin/admin";
 import { useNotifications } from "@store/admin/adminStore";
 import { handleQueryError } from "@lib/queryClient";
-import type { User } from "@app-types/admin/admin";
+import { TFullUser } from "@app-types/users/users.types";
+//import type { User } from "@app-types/admin/admin";
 
 // User Action Mutations - Only using available backend routes
 
@@ -24,7 +25,7 @@ export const useActivateUser = () => {
       const previousUser = queryClient.getQueryData(QUERY_KEYS.USERS.DETAIL(userId));
       
       // Optimistically update to the new value
-      queryClient.setQueryData(QUERY_KEYS.USERS.DETAIL(userId), (old: User | undefined) => 
+      queryClient.setQueryData(QUERY_KEYS.USERS.DETAIL(userId), (old: TFullUser | undefined) => 
         old ? { ...old, status: 'active' as const } : old
       );
       
@@ -61,7 +62,7 @@ export const useSuspendUser = () => {
       
       const previousUser = queryClient.getQueryData(QUERY_KEYS.USERS.DETAIL(userId));
       
-      queryClient.setQueryData(QUERY_KEYS.USERS.DETAIL(userId), (old: User | undefined) => 
+      queryClient.setQueryData(QUERY_KEYS.USERS.DETAIL(userId), (old: TFullUser | undefined) => 
         old ? { ...old, status: 'suspended' as const } : old
       );
       

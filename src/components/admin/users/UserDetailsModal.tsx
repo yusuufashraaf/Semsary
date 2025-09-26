@@ -8,6 +8,7 @@ import { Card } from '@components/ui/Card';
 import { useUser } from '@hooks/useAdminQueries';
 import { formatCurrency, formatDate } from '@utils/formatters';
 import { UserIcon, EnvelopeIcon, PhoneIcon, CalendarIcon, BuildingOfficeIcon, CreditCardIcon, IdentificationIcon } from '@heroicons/react/24/outline';
+import { TFullUser } from '@app-types/users/users.types';
 
 interface UserDetailsModalProps {
   userId: number | null;
@@ -36,7 +37,7 @@ interface User {
 export const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ userId, isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState('info');
   const [showImageModal, setShowImageModal] = useState(false);
-  const { data: user, isLoading } = useUser(userId!, !!userId) as { data: User | undefined; isLoading: boolean };
+  const { data: user, isLoading } = useUser(userId!, !!userId) as { data: TFullUser | undefined; isLoading: boolean };
 
   const handleStatusChange = (action: string) => {
     console.log(`${action} pressed for user ${userId}`);
