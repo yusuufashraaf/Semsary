@@ -37,9 +37,10 @@ const OAuthCallback = () => {
                 
                 dispatch(setAccessToken(response.data.access_token)) ;
                 dispatch(setUser(response.data.user))   
-                dispatch(ActCheckAuth()); 
-                // navigate('/');
-                navigateByRole(response.data.user);
+                dispatch(ActCheckAuth()).unwrap().then(()=>{
+                    navigateByRole(response.data.user);
+                })
+                
 
             } catch (error) {
                 console.error('Token exchange failed:', error);

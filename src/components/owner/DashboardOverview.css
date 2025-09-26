@@ -253,3 +253,30 @@
     font-size: 0.8rem;
   }
 }
+
+.custom-tabs .nav-link {
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #6c757d;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.custom-tabs .nav-link:hover {
+  color: #c79194;
+  border-bottom: 2px solid #c79194;
+}
+
+.custom-tabs .nav-link.active {
+  color: #c79194;
+  border-bottom: 2px solid #c79194;
+  background: transparent;
+}
+
+.form-select-sm {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.85rem;
+  border-radius: 0.5rem;
+}
+

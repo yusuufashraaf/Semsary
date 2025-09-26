@@ -57,7 +57,7 @@ const OwnerRequests: React.FC<RequestsProps> = ({ userId }) => {
       },
       cancelled_by_owner: {
         className: "status-cancelled",
-        label: "Cancelled by Owner",
+        label: "Cancelled",
         icon: "fas fa-user-times",
       },
       paid: {
@@ -207,7 +207,9 @@ const OwnerRequests: React.FC<RequestsProps> = ({ userId }) => {
                       {getStatusBadge(req.status)}
                     </div>
 
-                    <h4 className="property-title">
+                    <h4 className="property-title"
+                    onClick={() => navigate(`/property/${req.property?.id}`)}
+                    >
                       {req.property?.title || "Property Title"}
                     </h4>
                     <div className="location">
