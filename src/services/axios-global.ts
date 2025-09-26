@@ -2,7 +2,7 @@ import { AppStore } from "@store/index";
 import axios from "axios";
 import type { InternalAxiosRequestConfig } from "axios";
 import type { AxiosError } from "axios";
-import { Chat, CreateReviewData, Message, Review } from "src/types";
+import { Chat, CreateReviewData, Message, Property, Review } from "src/types";
 
 let store: AppStore; // Reference to the Redux store
 
@@ -54,19 +54,7 @@ const responseInterceptor = async (error: AxiosError) => {
     originalRequest._retry = true;
 
     try {
-      // FIX: send the old token in refresh request
-      const oldToken = store.getState().Authslice.jwt;
-
-      const refreshResponse = await api.post(
-        "/refresh",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${oldToken}`,
-          },
-        }
-      );
-
+      const refreshResponse = await api.post("/refresh");
       const newAccessToken = refreshResponse.data.access_token;
 
       store.dispatch({
@@ -88,15 +76,16 @@ const responseInterceptor = async (error: AxiosError) => {
   return Promise.reject(error);
 };
 
-// -------- Services --------
+// -------- Services (no console.* now) --------
 
 export const fetchUserReviews = async (userId: number) => {
   const response = await api.get(`/user/${userId}/reviews`);
   return response.data;
 };
 
-export const fetchUserProperties = async (userId: number) => {
+export const fetchUserProperties = async (userId: number|null) => {
   const response = await api.get(`/user/${userId}/properties`);
+  console.log(response.data);
   return response.data;
 };
 
@@ -129,24 +118,26 @@ export const markNotificationAsRead = async (
 };
 
 export const messageService = {
-  getUserChats: async (userId: number): Promise<{ chats: any[] }> => {
-    const response = await api.get("/fetch-chats/" + userId);
+  getUserChats: async (userId:number): Promise<{chats: any[]}> => {
+    const response = await api.get('/fetch-chats/' + userId);
     return response.data;
   },
 
-  getChatMessages: async (
-    chatId: number
-  ): Promise<{ messages: Message[] }> => {
+  getChatMessages: async (chatId: number): Promise<{ messages: Message[];}> => {
     const response = await api.get(`/fetch-messages/${chatId}`);
     return response.data;
   },
 
-  getAvailableNewChats: async (
-    userId: number
-  ): Promise<{ properties: any[] }> => {
+  // sendMessage: async (chatId: number, content: string): Promise<{ message: Message; chat: Chat }> => {
+  //   const response = await api.post(`user/chats/${chatId}/messages`, { content });
+  //   return response.data;
+  // },
+  getAvailableNewChats: async (userId: number): Promise<{ properties: any[] }> => {
     const response = await api.get(`/fetch-available-chats/${userId}`);
+    console.log(response);
     return response.data;
   },
+  
 
   startChat: async (
     propertyId: number,
@@ -176,6 +167,7 @@ export const reviewService = {
 
   getReviewableProperties: async (): Promise<{ properties: any[] }> => {
     const response = await api.get("/user/reviewable-properties");
+    console.log(response);
     return response.data;
   },
 
@@ -205,6 +197,17 @@ export const reviewService = {
     return response.data;
   },
 };
+
+export const adminService = {
+  updateUserStatus: async (
+    userId: number,
+    status: "active" | "suspended" | "pending"
+  ): Promise<any> => {
+    const result = await api.put(`/admin/users/${userId}/status/`, { status });
+    return result.data;
+  },
+
+}
 
 // Attach interceptors
 api.interceptors.request.use(requestInterceptor);

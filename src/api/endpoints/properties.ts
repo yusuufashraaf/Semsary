@@ -4,14 +4,14 @@ import {
   Property,
   ApiResponse,
   PaginatedResponse,
-  User,
   PropertyImage,
   Agent,
 } from "@app-types/admin/admin";
+import { TFullUser } from "@app-types/users/users.types";
 
 // Enhanced Property interface with additional admin fields
 export interface AdminProperty extends Property {
-  owner: User;
+  owner: TFullUser;
   images: PropertyImage[];
   verification_status: 'Pending' | 'Approved' | 'Rejected';
   verification_notes?: string;
@@ -51,7 +51,7 @@ interface PropertyStatistics {
     count: number;
   }>;
   top_owners: Array<{
-    owner: User;
+    owner: TFullUser;
     properties_count: number;
   }>;
 }

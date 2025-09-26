@@ -31,11 +31,11 @@ const EmailVerification = ({
   const [timer, setTimer] = useState(0);
   const [resendLoading, setResendLoading] = useState(false);
   const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector((state) => state.Authslice);
+  const { loading, error,loadingResend } = useAppSelector((state) => state.Authslice);
   const formData = useAppSelector((state) => state.form); // Get form data from store
   const {user} = useAppSelector((state)=> state.Authslice)
   useEffect(()=>{
-    dispatch(ActReSendOTP(user?.email as string));
+    dispatch(ActReSendOTP(user?.email as string || formData.email));
   },[])
 
   useEffect(() => {
@@ -48,12 +48,19 @@ const EmailVerification = ({
     }
     return () => {
       clearInterval(interval);
+
+    };
+  }, [timer]);
+
+// reset UI only when component unmounts
+  useEffect(() => {
+    return () => {
       dispatch(resetUI());
     };
-  }, [timer, dispatch]);
+  }, [dispatch]);
+
 
   useEffect(() => {
-      console.log(user?.email);
     toast.success("OTP has been sent to your email.");
   },[])
 
@@ -71,7 +78,7 @@ const EmailVerification = ({
   const handleNext = (data: OtpType) => {
     const sent:dataTosend ={
       otp:data,
-      email : user?.email ||formData.email
+      email : user?.email || formData.email
     }
     
     dispatch(ActSendOTP(sent))
@@ -81,18 +88,24 @@ const EmailVerification = ({
         setCurrentStep((prev) => prev + 1);
       });
   };
+  
+const handleClickOnResend = () => {
+  const email = formData.email;
+  setResendLoading(true);
 
-  const handleClickOnResend = () => {
-    const email =formData.email;
-    setResendLoading(true);
-    dispatch(ActReSendOTP(user?.email || email))
-      .unwrap()
-      .then((res) => {
-        toast(res.message)
-        setTimer(60);
-      })
-      .finally(() => setResendLoading(false));
-  };
+  dispatch(resetUI()); 
+
+  dispatch(ActReSendOTP(user?.email || email))
+    .unwrap()
+    .then((res) => {
+      setTimer(60);
+      toast.success(res.message || "OTP has been resent successfully ✅");
+    })
+    .catch(() => {
+      toast.error("Failed to resend OTP, please try again.");
+    })
+    .finally(() => setResendLoading(false));
+};
 
   return (
     <Form onSubmit={handleSubmit(handleNext)}>
@@ -115,7 +128,7 @@ const EmailVerification = ({
           onClick={() => {
             handleClickOnResend();
           }}
-          disabled={loading === "pending" ||  timer > 0 }
+          disabled={loadingResend === "pending" ||  timer > 0 }
         >
           {resendLoading ? (
             <Spinner animation="border" size="sm" />
@@ -132,7 +145,7 @@ const EmailVerification = ({
           className={`${styles.verifyEmail}`}
           disabled={loading === "pending" || !isValid || otpValue.length < 6}
         >
-          {loading === "pending" && otpValue ? (
+          {loading === "pending"  ? (
             <>
               <Spinner animation="border" size="sm" />
               Verifying...

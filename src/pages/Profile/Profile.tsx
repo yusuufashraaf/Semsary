@@ -14,6 +14,7 @@ import RentRequests from '@components/owner/RentRequests';
 import { useAppSelector, useAppDispatch } from '@store/hook';
 import UserMessages from '@components/Profile/UserMessages';
 import UserMessagesOrigin from '@components/Profile/UserMessagesOrigin';
+import UserTest from '@components/Profile/UserTest';
 
 const Profile = () => {
   const { section } = useParams<{ section: string }>();
@@ -32,34 +33,14 @@ const Profile = () => {
 
   // Validate section and redirect if invalid
   useEffect(() => {
-    const validSections = [
-      'home', 'owner-dashboard', 'reviews', 'notifications', 
-      'rentRequests', 'account', 'purchases', 'wishlist', 
-      'changeEmail', 'changePhone', 'changePassword', 'messages'
-    ];
+  const validSections = ['home','owner-dashboard' ,'reviews', 
+    'notifications', 'rentRequests' , 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword', 'messages','Test'];
+  
+  if (!section || !validSections.includes(section)) {
+    navigate('/profile/home', { replace: true });
+  }
+}, [section, navigate]); // Add dependencies
 
-    if (!section || !validSections.includes(section)) {
-      navigate('/profile/home', { replace: true });
-    }
-  }, [section, navigate]);
-
-  // Refresh data when section changes
-  useEffect(() => {
-    if (user?.id && section) {
-      // Force re-render of components by updating key
-      setRefreshKey(prev => prev + 1);
-      
-      // Optionally refresh user data from server
-      // dispatch(refreshUserData(user.id));
-    }
-  }, [section, user?.id]);
-
-  // Callback to handle unread count updates
-  const handleUnreadCountChange = useCallback((count: number) => {
-    setUnreadCount(count);
-  }, []);
-
-  // Render section with dynamic key for proper re-mounting
   const renderSection = () => {
     if (!user) return null;
 
@@ -104,6 +85,8 @@ const Profile = () => {
       
       case 'owner-dashboard':
         return <OwnerDashboard key={componentKey} />;
+      case 'Test':
+        return <UserTest />;
       
       default:
         return <BasicInfo key={componentKey} />;

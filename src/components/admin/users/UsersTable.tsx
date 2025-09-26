@@ -32,7 +32,6 @@ interface UsersTableProps {
 const roles = [
   { value: "admin", label: "Admin", color: "bg-red-100 text-red-700 border-red-200" },
   { value: "agent", label: "Agent", color: "bg-blue-100 text-blue-700 border-blue-200" },
-  { value: "owner", label: "Owner", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
   { value: "user", label: "User", color: "bg-gray-100 text-gray-700 border-gray-200" },
 ];
 
@@ -221,6 +220,24 @@ export const UsersTable: React.FC<UsersTableProps> = ({
 {
   key: "role",
   label: "Role",
+  render: (_: string, user: User) => (
+    <div onClick={(e) => e.stopPropagation()}>   {/* ⬅️ wrap dropdown */}
+      <RoleDropdown
+        user={user}
+        disabled={loading}
+        onRoleChanged={(updated) => {
+          console.log("Role changed:", updated);
+          onUserChangeRole?.(updated.id, updated.role);
+        }}
+      />
+    </div>
+  ),
+  align: "center" as const,
+  width: "170px",
+},
+{
+  key: "idstate",
+  label: "ID State",
   render: (_: string, user: User) => (
     <div onClick={(e) => e.stopPropagation()}>   {/* ⬅️ wrap dropdown */}
       <RoleDropdown
