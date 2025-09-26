@@ -3,6 +3,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import styles from "./BookingCard.module.css";
 import { formatCurrency } from "@utils/HelperFunctions";
 import { Property, GuestOption } from "src/types";
+import { useState } from "react";
 
 interface BookingCardProps {
   property: Property;
@@ -51,14 +52,16 @@ function BookingCard({
     booking.checkIn && booking.checkOut && booking.guests && booking.nights > 0;
 
   // Check if we should show the buy button
-  const shouldShowBuyButton = () => {
-    return isSell && !hasActivePurchase && property.status === "Valid";
-  };
+const shouldShowBuyButton = () => {
+  if (!isSell) return false;
+  if (activePurchase && ['pending', 'paid'].includes(activePurchase.status)) return false;
+  return property.status === "Valid";
+};
 
   // Check if we should show cancel button (pending or paid status)
   const shouldShowCancelButton = () => {
     if (!hasActivePurchase || !activePurchase) return false;
-    return [ 'paid'].includes(activePurchase.status);
+    return [ 'paid' , "pending"].includes(activePurchase.status);
   };
 
   // Check if we should show owner info (only for buy properties with pending/paid status)
@@ -81,7 +84,7 @@ function BookingCard({
       'cancelled': 'Purchase Cancelled'
     };
 
-    return statusMessages[activePurchase.status as keyof typeof statusMessages] || `Status: ${activePurchase.status}`;
+    return statusMessages[activePurchase.status as keyof typeof statusMessages] ;
   };
 
 

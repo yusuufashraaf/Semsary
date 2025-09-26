@@ -12,6 +12,7 @@ interface PaymentDetails {
   currency?: string;
   status?: string;
   completed_at?: string;
+  order_id?: string;
   raw_response?: {
     message?: string;
   };
@@ -30,27 +31,54 @@ const PaymentCallback: React.FC = () => {
 
   useEffect(() => {
     const handlePaymentCallback = async () => {
-      const token = searchParams.get("token");
+      // Check for direct success/failed parameters first (from PaymentController redirects)
+      const orderId = searchParams.get("order_id");
+      const transactionId = searchParams.get("transaction_id");
+      const amount = searchParams.get("amount");
+      const currency = searchParams.get("currency");
+      const status = searchParams.get("status");
       const error = searchParams.get("error");
+      const message = searchParams.get("message");
 
-      if (error) {
-        setPaymentStatus("failed");
-        setPaymentDetails({ raw_response: { message: error } });
+      // Handle direct success parameters (from PaymentController redirect)
+      if (orderId && transactionId && amount && status === "completed") {
+        setPaymentStatus("success");
+        setPaymentDetails({
+          transaction_id: transactionId,
+          amount: parseFloat(amount),
+          currency: currency || "EGP",
+          status: status,
+          order_id: orderId,
+          completed_at: new Date().toISOString(),
+        });
         setLoading(false);
         return;
       }
 
+      // Handle direct error parameters (from PaymentController redirect)
+      if (error || message) {
+        setPaymentStatus("failed");
+        setPaymentDetails({
+          raw_response: { message: message || error || "Payment failed" },
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Fallback to token-based flow (for backward compatibility)
+      const token = searchParams.get("token");
+
       if (!token) {
         setPaymentStatus("failed");
-        setPaymentDetails({ raw_response: { message: "No token found." } });
+        setPaymentDetails({ raw_response: { message: "No payment information found." } });
         setLoading(false);
         return;
       }
 
       try {
         const response = await api.get(`/exchange-payment-token?token=${token}`);
-
         const data = response.data;
+        console.log(data);
 
         if (data.success && data.payment) {
           setPaymentStatus("success");
@@ -84,7 +112,7 @@ const PaymentCallback: React.FC = () => {
   }, [searchParams]);
 
   const handleGoHome = () => {
-    navigate("/");
+    navigate("/property");
   };
 
   const statusColors = {
@@ -141,9 +169,14 @@ const PaymentCallback: React.FC = () => {
               Transaction Details
             </h2>
             <div className="space-y-2 text-gray-700">
+              {paymentDetails.order_id && (
+                <p>
+                  <strong>Order ID:</strong> {paymentDetails.order_id}
+                </p>
+              )}
               <p>
                 <strong>Transaction ID:</strong>{" "}
-                {paymentDetails.transaction_id || "N/A"}
+                {paymentDetails.transaction_id || "No transaction ID"}
               </p>
               <p>
                 <strong>Amount:</strong>{" "}
@@ -204,6 +237,11 @@ const PaymentCallback: React.FC = () => {
                 <strong>Reason:</strong>{" "}
                 {paymentDetails.raw_response?.message || "Unknown"}
               </p>
+              {paymentDetails.order_id && (
+                <p>
+                  <strong>Order ID:</strong> {paymentDetails.order_id}
+                </p>
+              )}
               <p>
                 <strong>Transaction ID:</strong>{" "}
                 {paymentDetails.transaction_id || "N/A"}

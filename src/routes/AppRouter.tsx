@@ -89,7 +89,11 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path:"payment/callback",
+        path:"payment/success",
+        element:<PaymentCallback />
+      },
+      {
+        path: "payment/failed",
         element:<PaymentCallback />
       },
       {
