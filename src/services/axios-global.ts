@@ -83,8 +83,9 @@ export const fetchUserReviews = async (userId: number) => {
   return response.data;
 };
 
-export const fetchUserProperties = async (userId: number) => {
+export const fetchUserProperties = async (userId: number|null) => {
   const response = await api.get(`/user/${userId}/properties`);
+  console.log(response.data);
   return response.data;
 };
 
@@ -197,6 +198,17 @@ export const reviewService = {
     return response.data;
   },
 };
+
+export const adminService = {
+  updateUserStatus: async (
+    userId: number,
+    status: "active" | "suspended" | "pending"
+  ): Promise<any> => {
+    const result = await api.put(`/admin/users/${userId}/status/`, { status });
+    return result.data;
+  },
+
+}
 
 // Attach interceptors
 api.interceptors.request.use(requestInterceptor);

@@ -77,7 +77,7 @@ export interface User {
 }
 
 export type UserRole = "user" | "owner" | "agent" | "admin";
-export type UserStatus = "active" | "pending" | "suspended" | "blocked";
+export type UserStatus = "active" | "pending" | "suspended";
 
 // Agent Types - Updated for the new API structure
 export interface Agent {

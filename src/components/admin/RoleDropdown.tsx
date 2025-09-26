@@ -13,7 +13,6 @@ interface RoleDropdownProps {
 const roles = [
   { value: "admin", label: "Admin", color: "text-red-600" },
   { value: "agent", label: "Agent", color: "text-blue-600" },
-  { value: "owner", label: "Owner", color: "text-yellow-600" },
   { value: "user", label: "User", color: "text-gray-600" },
 ];
 
@@ -35,7 +34,7 @@ export const RoleDropdown: React.FC<RoleDropdownProps> = ({
 
   const handleChange = async (newRole: string) => {
     if (newRole === currentRole) return;
-    await updateRole(user.id, newRole, "Role changed via dropdown");
+    //await updateRole(user.id, newRole, "Role changed via dropdown");
   };
 
   return (

@@ -2,11 +2,11 @@
 // src/api/endpoints/users.ts - Corrected to match actual backend routes
 import api from "@services/axios-global";
 import {
-  User,
   ApiResponse,
   PaginatedResponse,
   UserFilters,
 } from "@app-types/admin/admin";
+import { TFullUser } from "@app-types/users/users.types";
 
 // Backend response structure (what the API actually returns)
 interface BackendPaginatedResponse<T> {
@@ -56,7 +56,7 @@ export const usersApi = {
     page: number = 1,
     perPage: number = 15,
     filters?: UserFilters
-  ): Promise<PaginatedResponse<User>> => {
+  ): Promise<PaginatedResponse<TFullUser>> => {
     const params = createSearchParams({
       page: page.toString(),
       per_page: perPage.toString(),
@@ -69,7 +69,7 @@ export const usersApi = {
       date_to: filters?.date_to,
     });
 
-    const response = await api.get<BackendPaginatedResponse<User>>(
+    const response = await api.get<BackendPaginatedResponse<TFullUser>>(
       `/admin/users?${params}`
     );
     
@@ -79,15 +79,15 @@ export const usersApi = {
 
   // Get single user details with comprehensive information
   // ✅ AVAILABLE: GET /admin/users/{id}
-  getUser: async (id: number): Promise<User> => {
-    const response = await api.get<ApiResponse<User>>(`/admin/users/${id}`);
+  getUser: async (id: number): Promise<TFullUser> => {
+    const response = await api.get<ApiResponse<TFullUser>>(`/admin/users/${id}`);
     return response.data.data;
   },
 
   // Activate user account with reason logging
   // ✅ AVAILABLE: POST /admin/users/{id}/activate
-  activateUser: async (id: number, reason?: string): Promise<User> => {
-    const response = await api.post<ApiResponse<User>>(
+  activateUser: async (id: number, reason?: string): Promise<TFullUser> => {
+    const response = await api.post<ApiResponse<TFullUser>>(
       `/admin/users/${id}/activate`,
       { reason: reason || "User account activated by admin" }
     );
@@ -96,8 +96,8 @@ export const usersApi = {
 
   // Suspend user account temporarily with reason logging
   // ✅ AVAILABLE: POST /admin/users/{id}/suspend
-  suspendUser: async (id: number, reason: string): Promise<User> => {
-    const response = await api.post<ApiResponse<User>>(
+  suspendUser: async (id: number, reason: string): Promise<TFullUser> => {
+    const response = await api.post<ApiResponse<TFullUser>>(
       `/admin/users/${id}/suspend`,
       { reason }
     );

@@ -70,6 +70,13 @@ const AvatarDropdown = ({ user }: { user: TUser | null }) => {
                 Show Profile
               </Link>
             </li>
+            {user.role === 'admin' && (
+              <li>
+                <Link to="/admin/dashboard" onClick={() => setIsOpen(false)}>
+                  Admin Dashboard
+                </Link>
+              </li>
+            )}
             <li>
               <button onClick={handleLogout} className={styles.logoutButton}>
                 Logout

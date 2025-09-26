@@ -14,6 +14,7 @@ import RentRequests from '@components/owner/RentRequests';
 import { useAppSelector } from '@store/hook';
 import UserMessages from '@components/Profile/UserMessages';
 import UserMessagesOrigin from '@components/Profile/UserMessagesOrigin';
+import UserTest from '@components/Profile/UserTest';
 
 const Profile = () => {
   const { section } = useParams<{ section: string }>();
@@ -29,7 +30,7 @@ const Profile = () => {
     
   useEffect(() => {
   const validSections = ['home','owner-dashboard' ,'reviews', 
-    'notifications', 'rentRequests' , 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword', 'messages'];
+    'notifications', 'rentRequests' , 'account', 'purchases', 'wishlist', 'changeEmail', 'changePhone', 'changePassword', 'messages','Test'];
   
   if (!section || !validSections.includes(section)) {
     navigate('/profile/home', { replace: true });
@@ -61,6 +62,8 @@ const Profile = () => {
       return <ChangePassword />;
     case 'owner-dashboard':
       return <OwnerDashboard />;
+      case 'Test':
+        return <UserTest />;
     default:
         return <BasicInfo />;
   }
