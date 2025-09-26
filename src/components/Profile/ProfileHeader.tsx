@@ -4,6 +4,7 @@ import { Collapse } from 'react-bootstrap';
 import '../../styles/themes.css';
 import './ProfileHeader.css';
 import { TFullUser } from 'src/types/users/users.types';
+import { useAppSelector } from '@store/hook';
 
 type ProfileHeaderProps = {
   section: string;
@@ -12,6 +13,7 @@ type ProfileHeaderProps = {
 };
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({  unreadCount }) => {
+  const {user} = useAppSelector(state => state.Authslice)
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen] = useState(true);
@@ -42,15 +44,19 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({  unreadCount }) => {
             <i className="fas fa-home nav-icon"></i>
             <span>Your Info</span>
           </button>         
-          {/* {role === 'owner' && ( */}
-            {/* <> */}
-            <button
+
+
+            { user?.status === "active" && 
+             <button
               onClick={() => handleNavigation('owner-dashboard')}
               className={`nav-link ${isActive('owner-dashboard') ? 'active' : ''}`}
             >
               <i className="fas fa-tachometer-alt nav-icon"></i>
               <span>Dashboard</span>
             </button>
+            
+            }
+           
           <button 
             onClick={() => handleNavigation('rentRequests')}
             className={`nav-link ${isActive('rentRequests') ? 'active' : ''}`}

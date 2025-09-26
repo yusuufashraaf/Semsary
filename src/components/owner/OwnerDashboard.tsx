@@ -2,13 +2,16 @@ import React, { useState, useEffect } from "react";
 import { Container, Nav } from "react-bootstrap";
 import "./OwnerDashboard.css";
 import Overview from "./DashboardOverview";
-import ManageProperties from "./ManageProperties";
 import AddProperty from "./AddPropertyForm";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store";
 import { getDashboardData, getProperties } from "../../store/Owner/ownerDashboardSlice";
+import { useAppSelector } from "@store/hook";
+import { useNavigate } from "react-router-dom";
 const OwnerDashboard: React.FC = () => {
    const dispatch = useDispatch<AppDispatch>();
+   const navigate = useNavigate();
+   const {user} = useAppSelector(state => state.Authslice)
   const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
@@ -19,6 +22,13 @@ const OwnerDashboard: React.FC = () => {
   const handleTabChange = (tabKey: string) => {
     setActiveTab(tabKey);
   };
+
+  useEffect(()=>{
+    if(user?.status !== "active"){
+      navigate('/');
+    }
+  },[])
+
 
   const renderTabContent = () => {
     switch (activeTab) {
