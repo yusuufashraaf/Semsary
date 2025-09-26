@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Row, Col, Card, Button, Nav, Tab } from "react-bootstrap";
-import { EdittProperty, getProperties } from "../../store/Owner/ownerDashboardSlice";
+import { Row, Col, Card, Button, Nav, Tab, Modal} from "react-bootstrap";
+import { EdittProperty, getProperties, removeProperty } from "../../store/Owner/ownerDashboardSlice";
 import { RootState, AppDispatch } from "../../store";
 import { useAppSelector } from "@store/hook";
 import { useNavigate } from "react-router-dom";
 import "./DashboardOverview.css";
+import { toast } from "react-toastify";
 import { Building, Calendar, DollarSign, Home, Eye } from "lucide-react";
 import Loader from "@components/common/Loader/Loader";
 
@@ -16,6 +17,9 @@ const DashboardOverview: React.FC = () => {
     (state: RootState) => state.ownerDashboard
   );
   const { user } = useAppSelector((state) => state.Authslice);
+
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+  const [propertyToDelete, setPropertyToDelete] = React.useState<number | null>(null);
 
   useEffect(()=>{
   dispatch(getProperties());
@@ -110,6 +114,41 @@ const DashboardOverview: React.FC = () => {
     </div>
   );
 
+  // Handle Delete
+      const handleDeleteClick = (id: number) => {
+        setPropertyToDelete(id);
+        setShowDeleteModal(true);
+      };
+    
+      const confirmDelete = async () => {
+      if (propertyToDelete) {
+        try {
+          // Remove any existing toasts first
+          toast.dismiss();
+          
+          const result = await dispatch(removeProperty(propertyToDelete)).unwrap();
+          
+          // Only show toast here, not in Redux slice
+          toast.success("Property deleted successfully", {
+            toastId: `delete-${propertyToDelete}`, // Unique ID to prevent duplicates
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+          });
+          
+          setShowDeleteModal(false);
+          setPropertyToDelete(null);
+        } catch (error) {
+          toast.error("Failed to delete property", {
+            toastId: `delete-error-${propertyToDelete}`, // Unique ID
+            autoClose: 3000,
+          });
+          console.error("Delete error:", error);
+        }
+      }
+    };
+
   const renderPropertiesTable = (list: any[]) => {
     if (list.length === 0) {
       return (
@@ -161,7 +200,9 @@ const DashboardOverview: React.FC = () => {
                       <td className="py-2">
                         {isEditable ? (
                           <select
-                            className="status-badge"
+                            className={`status-badge ${
+                              currentState === "Valid" ? "status-valid" : "status-invalid"
+                            }`}
                             value={currentState}
                             onChange={(e) => handlePropertyStateChange(property.id, e.target.value)}
                           >
@@ -173,6 +214,8 @@ const DashboardOverview: React.FC = () => {
                             className={`status-badge ${
                               currentState === "Valid"
                                 ? "status-valid"
+                                : currentState === "Invalid"
+                                ? "status-invalid"
                                 : currentState === "Rented"
                                 ? "status-rented"
                                 : currentState === "Pending"
@@ -190,7 +233,8 @@ const DashboardOverview: React.FC = () => {
                         </div>
                       </td>
                       <td className="py-2 pe-3">
-                        <Button
+                        <div className="d-flex gap-2">
+                          <Button
                           size="sm"
                           variant="outline-primary"
                           className="view-btn"
@@ -199,6 +243,18 @@ const DashboardOverview: React.FC = () => {
                           <Eye size={12} className="me-1" />
                           View
                         </Button>
+                        {property.property_state !== "Rented" && (
+                          <Button 
+                              size="sm" 
+                              variant="outline-danger"
+                              onClick={() => handleDeleteClick(property.id)}
+                              title="Delete Property"
+                            >
+                              <i className="fas fa-trash">Delete</i>
+                            </Button>
+                        )}
+                        </div>
+                        
                       </td>
                     </tr>
                   );
@@ -309,6 +365,35 @@ const DashboardOverview: React.FC = () => {
           </Tab.Pane>
         </Tab.Content>
       </Tab.Container>
+      {/* Delete Confirmation Modal */}
+            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+              <Modal.Header closeButton>
+                <Modal.Title>Confirm Delete</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="text-center">
+                  <i className="fas fa-exclamation-triangle text-danger mb-3" style={{fontSize: '48px'}}></i>
+                  <h5>Are you sure?</h5>
+                  <p className="text-muted">
+                    This action cannot be undone. The property will be permanently removed 
+                    from your listings along with all associated data.
+                  </p>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  variant="danger" 
+                  onClick={confirmDelete}
+                  style={{backgroundColor: '#dc3545', borderColor: '#dc3545'}}
+                >
+                  <i className="fas fa-trash me-2"></i>
+                  Delete Property
+                </Button>
+              </Modal.Footer>
+            </Modal>
     </>
   );
 };

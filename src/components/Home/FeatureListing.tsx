@@ -1,15 +1,20 @@
-// FeatureListing.tsx
 import ListingCard from "./ListingCard";
 import styles from "./FeatureListing.module.css";
 import { useFeaturedListings } from "@hooks/useFeatureListing";
 import Loader from "@components/common/Loader/Loader";
 import ErrorMessage from "@components/common/ErrorMessage/ErrorMessage";
+import { useAppSelector } from "@store/hook";
 
 export default function FeatureListing() {
   const { listings, loading, error } = useFeaturedListings();
+  const { user } = useAppSelector((state) => state.Authslice); 
 
-  if (loading) return <Loader message="Loading featured listings..." /> 
-  if (error) return <ErrorMessage message={error} /> 
+  if (loading) return <Loader message="Loading featured listings..." />;
+  if (error) return <ErrorMessage message={error} />;
+
+  const filteredListings = listings?.filter(
+    (listing) => listing.owner_id !== user?.id
+  );
 
   return (
     <section className={styles.featuredSection}>
@@ -17,7 +22,7 @@ export default function FeatureListing() {
         <h2 className={styles.sectionTitle}>Featured Listings</h2>
 
         <div className="row g-4">
-          {listings?.map((listing) => (
+          {filteredListings?.map((listing) => (
             <div key={listing.id} className="col-12 col-md-6 col-xl-4">
               <ListingCard {...listing} />
             </div>
