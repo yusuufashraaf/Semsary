@@ -49,6 +49,7 @@ export type Amenities = string[];
 
 export interface BaseProperty {
   id: string|number;
+  owner_id:string|number;
   title?: string;
   address?: string;
   price: number;
@@ -75,7 +76,7 @@ export interface BaseProperty {
 
 export interface Listing extends BaseProperty {
   image: string | null;
-    property_state?: string;
+  property_state?: string;
   pending_buyer_id?: number;
   owner?: any | undefined; // Allow undefined
 

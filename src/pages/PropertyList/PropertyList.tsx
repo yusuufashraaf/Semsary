@@ -18,6 +18,8 @@ import { useFilterOptions } from "@hooks/useFilterOptions";
 import { getProperties } from "@services/PropertyListServices";
 import ErrorMessage from "@components/common/ErrorMessage/ErrorMessage";
 import Loader from "@components/common/Loader/Loader";
+import { useAppSelector } from "@store/hook";
+import { property } from "zod";
 
 export default function PropertyList() {
   // ---------------------- State ----------------------
@@ -26,7 +28,7 @@ export default function PropertyList() {
   const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
-
+  const { user } = useAppSelector(state => state.Authslice);
   // URL Sync
   const [searchParams, setSearchParams] = useSearchParams();
   const [isInitialized, setIsInitialized] = useState(false);
@@ -143,14 +145,18 @@ export default function PropertyList() {
         amenities: filters.amenities,
         page: currentPage,
         per_page: itemsPerPage,
-          sortBy: filters.sortBy,
-  sortOrder: filters.sortOrder,
+        sortBy: filters.sortBy,
+       sortOrder: filters.sortOrder,
 
       });
-
+    
       if (!data?.data) throw new Error("Invalid response from backend");
+      
+          const filteredListings = data.data.filter(
+         (property: Listing) => property.owner_id !== user?.id
+      );
 
-      setBackendListings(data.data);
+      setBackendListings(filteredListings);
       setTotalPages(data.last_page || 1);
       setTotalResults(data.total || 0);
     } catch (err: any) {

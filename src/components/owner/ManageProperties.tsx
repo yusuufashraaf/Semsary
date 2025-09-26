@@ -217,7 +217,7 @@ const ManageProperties: React.FC = () => {
                               <i className="fas fa-trash">Delete</i>
                             </Button>
                           </>
-                        )}
+                          )}
                       </div>
                     </td>
                   </tr>

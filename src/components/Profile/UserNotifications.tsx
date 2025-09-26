@@ -1,57 +1,44 @@
-import  { useState, useEffect } from "react";
-import { fetchUserNotifications, markNotificationAsRead } from "@services/axios-global";
+import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../../store";
+import { fetchNotifications, markAsRead } from "@store/Noifications/notificationsSlice";
 import { useNotifications } from "@hooks/useNotifications";
 import { TFullUser } from "src/types/users/users.types";
-import './UserNotifications.css';
+import "./UserNotifications.css";
 
-type NotificationType = 'all' | 'unread';
+type NotificationType = "all" | "unread";
 
-interface Notification {
-  id: number;
-  user_id: number;
-  title: string;
-  message: string;
-  is_read: boolean;
-  created_at: string;
-  updated_at: string;
-  property_id?: number;
-}
+const UserNotifications = ({
+  user,
+  onUnreadCountChange,
+}: {
+  user: TFullUser;
+  onUnreadCountChange?: (count: number) => void;
+}) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const [activeTab, setActiveTab] = useState<NotificationType>("all");
 
-const UserNotifications = ({ user, onUnreadCountChange }: {user: TFullUser, onUnreadCountChange?: (count: number) => void }) => {
-  const [activeTab, setActiveTab] = useState<NotificationType>('all');
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // get notifications from Redux store
+  const { items: notifications, loading, error } = useSelector(
+    (state: RootState) => state.notifications
+  );
 
-  // 🔌 Subscribe to WebSocket
+  // 🔌 subscribe to WebSocket (adds new notifications to Redux)
   useNotifications(user?.id ?? null);
 
+  // ⏬ fetch history from API once
   useEffect(() => {
-    const getNotificationsData = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchUserNotifications(user.id);
-        setNotifications(data); // API loads history
-      } catch (err) {
-        setError("Failed to fetch notifications");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getNotificationsData();
-  }, [user.id]);
+    if (user?.id) {
+      dispatch(fetchNotifications(user.id));
+    }
+  }, [dispatch, user.id]);
 
   const handleTabChange = (tab: NotificationType) => {
     setActiveTab(tab);
   };
 
-  const markAsRead = (id: number) => {
-    setNotifications(notifications.map(notification => 
-      notification.id === id ? { ...notification, is_read: true } : notification
-    ));
-    markNotificationAsRead(user.id, id);
+  const handleMarkAsRead = (id: number) => {
+    dispatch(markAsRead({ userId: user.id, notificationId: id }));
   };
 
   const formatDate = (dateString: string) => {
@@ -65,15 +52,14 @@ const UserNotifications = ({ user, onUnreadCountChange }: {user: TFullUser, onUn
   };
 
   const filteredNotifications = notifications
-  .filter(notification => {
-    if (activeTab === 'unread') return !notification.is_read;
-    return true;
-  })
-  .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    .filter((n) => (activeTab === "unread" ? !n.is_read : true))
+    .sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
 
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
-  const unreadCount = notifications.filter(n => !n.is_read).length;
-  
   useEffect(() => {
     if (onUnreadCountChange) {
       onUnreadCountChange(unreadCount);
@@ -110,65 +96,60 @@ const UserNotifications = ({ user, onUnreadCountChange }: {user: TFullUser, onUn
           <span className="total-unread-badge">{unreadCount} unread</span>
         )}
       </div>
-      
+
       <div className="notifications-tabs">
-        <button 
-          className={`notification-tab ${activeTab === 'all' ? 'active' : ''}`}
-          onClick={() => handleTabChange('all')}
+        <button
+          className={`notification-tab ${activeTab === "all" ? "active" : ""}`}
+          onClick={() => handleTabChange("all")}
         >
           All Notifications
         </button>
-        <button 
-          className={`notification-tab ${activeTab === 'unread' ? 'active' : ''}`}
-          onClick={() => handleTabChange('unread')}
+        <button
+          className={`notification-tab ${
+            activeTab === "unread" ? "active" : ""
+          }`}
+          onClick={() => handleTabChange("unread")}
         >
           Unread
-          {unreadCount > 0 && (
-            <span className="tab-badge">{unreadCount}</span>
-          )}
+          {unreadCount > 0 && <span className="tab-badge">{unreadCount}</span>}
         </button>
       </div>
-      
+
       <div className="notifications-list">
         {filteredNotifications.length === 0 ? (
           <div className="empty-notifications">
             <i className="fas fa-bell-slash"></i>
             <h4>No notifications</h4>
             <p>
-              {activeTab === 'unread' 
-                ? 'All caught up! No unread notifications.' 
-                : 'You have no notifications at the moment.'
-              }
+              {activeTab === "unread"
+                ? "All caught up! No unread notifications."
+                : "You have no notifications at the moment."}
             </p>
           </div>
         ) : (
-          filteredNotifications.map(notification => (
-            <div 
-              key={notification.id} 
-              className={`notification-item ${!notification.is_read ? 'unread' : ''}`}
+          filteredNotifications.map((notification) => (
+            <div
+              key={notification.id}
+              className={`notification-item ${
+                !notification.is_read ? "unread" : ""
+              }`}
             >
-              {/* <div className="notification-icon">
-                <i className={getNotificationIcon(notification.title)}></i>
-              </div> */}
-              
               <div className="notification-body">
                 <div className="notification-header-content">
                   <h4 className="notification-title">{notification.title}</h4>
                   <span className="notification-time">
                     {formatDate(notification.created_at)}
                   </span>
-                  {!notification.is_read && (
-                    <div className="unread-dot"></div>
-                  )}
+                  {!notification.is_read && <div className="unread-dot"></div>}
                 </div>
-                
+
                 <p className="notification-message">{notification.message}</p>
-                
+
                 {!notification.is_read && (
                   <div className="notification-actions">
-                    <button 
+                    <button
                       className="mark-read-btn"
-                      onClick={() => markAsRead(notification.id)}
+                      onClick={() => handleMarkAsRead(notification.id)}
                     >
                       Mark as read
                     </button>
