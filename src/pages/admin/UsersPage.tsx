@@ -172,7 +172,8 @@ export const UsersPage: React.FC = () => {
       });
 
       if (result.isConfirmed) {
-        await adminService.updateUserStatus(user.id, newActivationState);
+        const res = await adminService.updateUserStatus(user.id, newActivationState);
+        console.log(res);
         
         // CRITICAL FIX: Refetch the data to update the UI
         await refetch();
