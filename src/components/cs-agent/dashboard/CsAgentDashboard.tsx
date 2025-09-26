@@ -26,6 +26,7 @@ const CsAgentDashboard: React.FC<Props> = ({ jwt, className }) => {
   const [warning, setWarning] = useState<Record<number, string>>({});
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [updateErrors, setUpdateErrors] = useState<Record<number, string>>({});
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   
 
   const [propertyStateFilter, setPropertyStateFilter] = useState<PropertyState | "">("Pending");
@@ -152,52 +153,67 @@ const CsAgentDashboard: React.FC<Props> = ({ jwt, className }) => {
         <p><b>Property State:</b> {selectedProperty.status}</p>
         <p><b>Status:</b> {selectedProperty.status}</p>
         <p><b>Description:</b> {selectedProperty.description}</p>
-
+        
         {/* 📸 Property Photos */}
-        {selectedProperty.image && selectedProperty.image.length > 0 ? (
+        <>
+        {selectedProperty.images && selectedProperty.images.length > 0 ? (
           <div className="mt-3">
             <h5>Photos</h5>
             <div className="d-flex flex-wrap gap-3">
-              {selectedProperty.image.map((img, idx) => (
-                <img
-                  key={idx}
-                  src={typeof img === "string" ? img : img}
-                  alt={`Property ${selectedProperty.id} - ${idx + 1}`}
-                  style={{
-                    width: "200px",
-                    height: "150px",
-                    objectFit: "cover",
-                    borderRadius: "8px",
-                  }}
-                />
-              ))}
+              {selectedProperty.images.map((img, idx) => {
+                const url = typeof img === "string" ? img : img.url;
+                return (
+                  <img
+                    key={idx}
+                    src={url}
+                    alt={`Property ${selectedProperty.id} - ${idx + 1}`}
+                    style={{
+                      width: "200px",
+                      height: "150px",
+                      objectFit: "cover",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => setSelectedImage(url)} // Open image
+                  />
+                );
+              })}
             </div>
           </div>
         ) : (
           <p className="text-muted mt-3">No photos available for this property.</p>
         )}
 
-        {/* 📄 Property Documents */}
-        {selectedProperty.documents && selectedProperty.documents.length > 0 ? (
-          <div className="mt-4">
-            <h5>Documents</h5>
-            <ul>
-              {selectedProperty.documents.map((doc, idx) => (
-                <li key={idx}>
-                  <a
-                    href={typeof doc === "string" ? doc : doc}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    📄 Document {idx + 1}
-                  </a>
-                </li>
-              ))}
-            </ul>
+        {/* Modal for enlarged image */}
+        {selectedImage && (
+          <div
+            onClick={() => setSelectedImage(null)}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              backgroundColor: "rgba(0,0,0,0.8)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 9999,
+              cursor: "zoom-out",
+            }}
+          >
+            <img
+              src={selectedImage}
+              alt="Enlarged"
+              style={{
+                maxWidth: "90%",
+                maxHeight: "90%",
+                borderRadius: "8px",
+              }}
+            />
           </div>
-        ) : (
-          <p className="text-muted mt-3">No documents available for this property.</p>
         )}
+      </>
 
         <Button
           variant="secondary"

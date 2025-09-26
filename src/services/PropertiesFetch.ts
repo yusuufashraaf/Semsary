@@ -35,7 +35,10 @@ export interface Property {
     email: string;
   };
   documents?: string[];
-  image?: string[];
+  images?: {
+    id:number,
+    url:string
+  }[];
 }
 
 export interface PropertiesResponse {
