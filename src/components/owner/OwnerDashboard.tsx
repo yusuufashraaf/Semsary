@@ -1,11 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Nav } from "react-bootstrap";
 import "./OwnerDashboard.css";
 import Overview from "./DashboardOverview";
 import ManageProperties from "./ManageProperties";
 import AddProperty from "./AddPropertyForm";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../store";
+import { getDashboardData, getProperties } from "../../store/Owner/ownerDashboardSlice";
 const OwnerDashboard: React.FC = () => {
+   const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState("overview");
+
+  useEffect(() => {
+    dispatch(getDashboardData());
+    dispatch(getProperties());
+  }, [dispatch]);
 
   const handleTabChange = (tabKey: string) => {
     setActiveTab(tabKey);
@@ -15,10 +24,6 @@ const OwnerDashboard: React.FC = () => {
     switch (activeTab) {
       case "overview":
         return <Overview />;
-        
-      case "manage-properties":
-        return <ManageProperties />;
-        
       case "add-property":
         return <AddProperty />;
         
@@ -42,18 +47,6 @@ const OwnerDashboard: React.FC = () => {
             Overview
           </Nav.Link>
         </Nav.Item>
-        
-        <Nav.Item>
-          <Nav.Link
-            active={activeTab === "manage-properties"}
-            onClick={() => handleTabChange("manage-properties")}
-            className={`custom-tab ${activeTab === "manage-properties" ? "active" : ""}`}
-          >
-            <i className="fas fa-building me-2"></i>
-            Manage Properties
-          </Nav.Link>
-        </Nav.Item>
-        
         <Nav.Item>
           <Nav.Link
             active={activeTab === "add-property"}

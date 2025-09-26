@@ -217,4 +217,11 @@
     font-size: 13px;
   }
 }
+.upload-box.is-invalid {
+  border-color: #dc3545;
+}
+
+.upload-box.is-invalid:hover {
+  border-color: #dc3545;
+}
 

@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchOwnerDashboard, fetchOwnerProperties, fetchPropertyById ,addProperty, deleteProperty, updateProperty  } from "../../services/ownerDashboard";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { fetchOwnerDashboard, fetchOwnerProperties, fetchPropertyById ,addProperty, deleteProperty, updateProperty, updatePropertyState} from "../../services/ownerDashboard";
 
 interface DashboardState {
   loading: boolean;
@@ -71,13 +71,39 @@ export const createProperty = createAsyncThunk(
 
 export const EdittProperty = createAsyncThunk(
   "ownerDashboard/updateProperty",
-  async ({ id, data }: { id: string; data: FormData }, { rejectWithValue }) => {
+  async ({ id, data }: { id: string | number; data: FormData }, { rejectWithValue }) => {
     try {
-      const response = await updateProperty(id, data);
+      // Convert id to string to ensure consistency
+      const stringId = id.toString();
+      const response = await updateProperty(stringId, data);
+      
+      // Make sure we return the updated property object
+      // If the API returns { data: property }, extract the property
+      const updatedProperty = response?.data || response;
+      
+      console.log("API Response:", response);
+      console.log("Updated property data:", updatedProperty);
+      
+      return updatedProperty;
+    } catch (err: any) {
+      console.error("Update property error:", err);
+      if (err.response && err.response.status === 422) {
+        return rejectWithValue(err.response.data.errors);
+      }
+      return rejectWithValue({ general: ["Something went wrong"] });
+    }
+  }
+);
+
+export const UpdatePropertyState = createAsyncThunk(
+  "ownerDashboard/updatePropertyState",
+  async ({ id, state }: { id: string; state: string }, { rejectWithValue }) => {
+    try {
+      const response = await updatePropertyState(id, state);
       return response;
     } catch (err: any) {
       if (err.response && err.response.status === 422) {
-        return rejectWithValue(err.response.data.errors); //validation errors
+        return rejectWithValue(err.response.data.errors); 
       }
       return rejectWithValue({ general: ["Something went wrong"] });
     }
@@ -88,7 +114,7 @@ export const removeProperty = createAsyncThunk(
   "ownerDashboard/deleteProperty",
   async (propertyId: number, { rejectWithValue }) => {
     try {
-      await deleteProperty(propertyId);
+      const response = await deleteProperty(propertyId);
       return propertyId; // Return the deleted property's ID
     } catch (err: any) {
       if (err.response && err.response.status === 422) {
@@ -145,23 +171,46 @@ const ownerDashboardSlice = createSlice({
       })
       // updateProperty
       .addCase(EdittProperty.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(EdittProperty.fulfilled, (state, action) => {
-        state.loading = false;
-        state.properties = state.properties.map((p) =>
-          p.id === action.payload.id ? action.payload : p
-        );
-        state.selectedProperty = action.payload;
-      })
-      .addCase(EdittProperty.rejected, (state, action) => {
-        state.loading = false;
-        if (action.payload) {
-          state.errors = action.payload as Record<string, string[]>;
-        }
-      })
+      state.loading = true;
+      state.errors = {}; // Clear previous errors
+    })
+    .addCase(EdittProperty.fulfilled, (state, action) => {
+      state.loading = false;
+      const updatedProperty = action.payload;
       
-  },
-});
+      console.log("Payload received in reducer:", updatedProperty);
+      
+      // Find and update the property in the array
+      const propertyIndex = state.properties.findIndex(
+        (p) => p.id.toString() === updatedProperty.id.toString()
+      );
+      
+      if (propertyIndex !== -1) {
+        // Update the existing property
+        state.properties[propertyIndex] = {
+          ...state.properties[propertyIndex],
+          ...updatedProperty
+        };
+        console.log("Property updated at index:", propertyIndex);
+        console.log("New property state:", state.properties[propertyIndex].property_state);
+      } else {
+        console.error("Property not found in array for update");
+      }
+      
+      // Update selectedProperty if it exists
+      if (state.selectedProperty && state.selectedProperty.id.toString() === updatedProperty.id.toString()) {
+        state.selectedProperty = { ...state.selectedProperty, ...updatedProperty };
+      }
+    })
+    .addCase(EdittProperty.rejected, (state, action) => {
+      state.loading = false;
+      console.error("Edit property rejected:", action.payload);
+      if (action.payload) {
+        state.errors = action.payload as Record<string, string[]>;
+      }
+    })
+          
+      },
+    });
 
 export default ownerDashboardSlice.reducer;

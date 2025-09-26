@@ -91,7 +91,6 @@ export const fetchUserProperties = async (userId: number|null) => {
 
 export const fetchUserNotifications = async (userId: number) => {
   const response = await api.get(`/user/${userId}/notifications`);
-  console.log("API response for notifications:", response);
   return response.data;
 };
 
@@ -114,7 +113,7 @@ export const markNotificationAsRead = async (
   userId: number,
   notificationId: number
 ) => {
-  const response = await api.get(`/user/${userId}/notificationread/${notificationId}`);
+  const response = await api.patch(`/user/${userId}/notifications/${notificationId}/read`);
   return response;
 };
 
