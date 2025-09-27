@@ -6,7 +6,7 @@ import {
   type Property,
 } from "@services/PropertiesFetch";
 import { getOwner, type Owner } from "@services/OwnersFetch";
-import { Spinner, Table, Button, Form } from "react-bootstrap";
+import { Spinner, Table, Button, Form, Modal } from "react-bootstrap";
 
 type VerificationStatus = "Valid" | "Rejected";
 
@@ -31,6 +31,13 @@ const CsAgentDashboard: React.FC<Props> = ({ jwt, className }) => {
 
   const [propertyStateFilter, setPropertyStateFilter] = useState<PropertyState | "">("Pending");
   
+  // modal feedback
+
+const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+const [feedbackText, setFeedbackText] = useState("");
+const [feedbackPropertyId, setFeedbackPropertyId] = useState<number | null>(null);
+
+
   const propertyStateOptions: (PropertyState | "")[] = [
     "", // Empty string for "All"
     "Pending", 
@@ -67,31 +74,35 @@ const CsAgentDashboard: React.FC<Props> = ({ jwt, className }) => {
   });
 
   // 📌 Mutation for property status
-  const mutation = useMutation({
-    mutationFn: (vars: { id: number; status: VerificationStatus }) =>
-      changePropertyStatus(vars.id, vars.status, jwt),
-    onMutate: (vars) => {
-      setUpdatingId(vars.id); 
-      setUpdateErrors((prev) => {
-        const copy = { ...prev };
-        delete copy[vars.id]; // clear old error for this property
-        return copy;
-      });
-    },
-    onError: (err, vars) => {
-      setUpdateErrors((prev) => ({
-        ...prev,
-        [vars.id]: "❌ Update failed. Try again.",
-      }));
-    },
-    onSettled: () => {
-      setUpdatingId(null);
-    },
-    onSuccess: () => {
-      // Invalidate all queries starting with "properties" to refetch the current filtered list
-      queryClient.invalidateQueries({ queryKey: ["properties"], exact: false }); 
-    },
-  });
+ const mutation = useMutation({
+mutationFn: (vars: { id: number; status: VerificationStatus; feedback?: string }) =>
+  changePropertyStatus({
+    propertyId: vars.id,
+    newState: vars.status,
+    feedback: vars.feedback,
+    jwt: jwt!,
+  }),
+  onMutate: (vars) => {
+    setUpdatingId(vars.id); 
+    setUpdateErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[vars.id];
+      return copy;
+    });
+  },
+  onError: (err, vars) => {
+    setUpdateErrors((prev) => ({
+      ...prev,
+      [vars.id]: "❌ Update failed. Try again.",
+    }));
+  },
+  onSettled: () => {
+    setUpdatingId(null);
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["properties"], exact: false }); 
+  },
+})
 
   // Helper function to handle filter change
   const handleFilterChange = (newFilter: PropertyState | "") => {
@@ -318,10 +329,9 @@ const CsAgentDashboard: React.FC<Props> = ({ jwt, className }) => {
                               }));
                               return;
                             }
-                            mutation.mutate({
-                              id: p.id,
-                              status: current as VerificationStatus,
-                            });
+                            // Open feedback modal instead of immediately mutating
+                            setFeedbackPropertyId(p.id);
+                            setShowFeedbackModal(true);
                           }}
                         >
                           {updatingId === p.id && mutation.isPending ? "Updating…" : "Update"}
@@ -350,7 +360,59 @@ const CsAgentDashboard: React.FC<Props> = ({ jwt, className }) => {
           )}
         </tbody>
       </Table>
+      <Modal
+        show={showFeedbackModal}
+        onHide={() => setShowFeedbackModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Provide Feedback</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group>
+            <Form.Label>Feedback</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              value={feedbackText}
+              onChange={(e) => setFeedbackText(e.target.value)}
+              placeholder="Enter your feedback here..."
+            />
+          </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={() => setShowFeedbackModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => {
+                if (feedbackPropertyId && selectedStatus[feedbackPropertyId]) {
+                  // Perform the mutation here
+                  mutation.mutate({
+                    id: feedbackPropertyId,
+                    status: selectedStatus[feedbackPropertyId] as VerificationStatus,
+                    feedback: feedbackText,
+                  });
+                  // Optionally save feedback somewhere or send to API
+                  console.log("Feedback for property", feedbackPropertyId, ":", feedbackText);
+
+                  // Reset modal
+                  setFeedbackText("");
+                  setFeedbackPropertyId(null);
+                  setShowFeedbackModal(false);
+                }
+              }}
+            >
+              Submit
+            </Button>
+          </Modal.Footer>
+        </Modal>
     </div>
+    
   );
 };
 

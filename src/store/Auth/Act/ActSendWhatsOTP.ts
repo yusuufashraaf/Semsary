@@ -1,7 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@services/axios-global";
 import { RootState } from "@store/index";
-import { isAxiosError } from "axios";
 
 interface SendOtpPayload {
   phone_number: string;
