@@ -1,260 +1,406 @@
- import LocationMap from "@components/PropertyDetails/LocationMap";
-import React, { useState, useEffect } from "react";
-import "./AddPropertyForm.css";
-import { Form, Button, Row, Col, Alert, Modal } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import { createProperty } from "../../store/Owner/ownerDashboardSlice";
-import { AppDispatch, RootState } from "../../store";
-import api from "../../services/axios-global"; 
-import { useNavigate } from "react-router-dom";
-import { generateDescription } from "../../services/ownerDashboard";
-import { useAppSelector } from "@store/hook";
+  import LocationMap from "@components/PropertyDetails/LocationMap";
+  import React, { useState, useEffect } from "react";
+  import "./AddPropertyForm.css";
+  import { Form, Button, Row, Col, Alert } from "react-bootstrap";
+  import { useDispatch, useSelector } from "react-redux";
+  import { createProperty } from "../../store/Owner/ownerDashboardSlice";
+  import { AppDispatch, RootState } from "../../store";
+  import api from "../../services/axios-global"; 
+  import { toast } from "react-toastify";
+  import { useNavigate } from "react-router-dom";
+  import {generateDescription} from "../../services/ownerDashboard"
+  import { string } from "zod";
 
-const AddPropertyForm: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
-  const { errors } = useSelector((state: RootState) => state.ownerDashboard);
-  const { user } = useAppSelector((state) => state.Authslice);
+  const AddPropertyForm: React.FC = () => {
+    const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
+    const { errors } = useSelector((state: RootState) => state.ownerDashboard);
 
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    bedrooms: 1,
-    bathrooms: 1,
-    type: "Apartment",
-    price: "",
-    priceType: "FullPay",
-    size: "",
-    status: "sale",
-    query: "",
-    selectedLocation: null as any,
-    selectedFeatures: [] as number[],
-    images: [] as File[],
-    previewUrls: [] as string[],
-    documents: [] as File[],
-    previewUrlsdocs: [] as string[],
-  });
+    const [formData, setFormData] = useState({
+      title: "",
+      description: "",
+      bedrooms: 1,
+      bathrooms: 1,
+      type: "Apartment",
+      price: "",
+      priceType: "FullPay",
+      size: "",
+      status: "sale",
+      query: "",
+      selectedLocation: null as any,
+      selectedFeatures: [] as number[],
+      images: [] as File[],
+      previewUrls: [] as string[],
+      documents: [] as File[] , 
+      previewUrlsdocs: [] as string[] 
+    });
 
-  const [results, setResults] = useState<any[]>([]);
-  const [features, setFeatures] = useState<{ id: number; name: string }[]>([]);
-  const [validationErrors, setValidationErrors] = useState<any>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+    const [results, setResults] = useState<any[]>([]);
+    const [features, setFeatures] = useState<{ id: number; name: string }[]>([]);
+    const [validationErrors, setValidationErrors] = useState<any>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 🔔 Modal state
-  const [modal, setModal] = useState<{
-    show: boolean;
-    title: string;
-    body: string;
-    variant: "success" | "danger";
-  }>({ show: false, title: "", body: "", variant: "success" });
+    // Client-side validation function
+    const validateForm = () => {
+      const errors: any = {};
 
-  const validateForm = () => {
-    const errors: any = {};
-    if (!formData.title.trim()) errors.title = "Title is required";
-    if (!formData.description.trim()) errors.description = "Description is required";
-    if (!formData.selectedLocation) errors.location = "Please select a location";
-    if (formData.previewUrls.length === 0) errors.images = "At least one image is required";
-    if (formData.previewUrlsdocs.length === 0) errors.documents = "Property documents are required";
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
+      // Title validation
+      if (!formData.title.trim()) {
+        errors.title = "Title is required";
+      } else if (formData.title.trim().length < 5) {
+        errors.title = "Title must be at least 5 characters long";
+      } else if (formData.title.trim().length > 100) {
+        errors.title = "Title must be less than 100 characters";
+      }
 
-  const handleChange = (key: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
-    if (validationErrors[key]) {
-      setValidationErrors((prev: any) => {
-        const newErrors = { ...prev };
-        delete newErrors[key];
-        return newErrors;
-      });
+      // Description validation
+      if (!formData.description.trim()) {
+        errors.description = "Description is required";
+      } else if (formData.description.trim().length < 10) {
+        errors.description = "Description must be at least 10 characters long";
+      } else if (formData.description.trim().length > 1000) {
+        errors.description = "Description must be less than 1000 characters";
+      }
+
+      // Bedrooms validation
+      if (!formData.bedrooms || formData.bedrooms < 1) {
+        errors.bedrooms = "At least 1 bedroom is required";
+      } else if (formData.bedrooms > 20) {
+        errors.bedrooms = "Maximum 20 bedrooms allowed";
+      }
+
+      // Bathrooms validation
+      if (!formData.bathrooms || formData.bathrooms < 1) {
+        errors.bathrooms = "At least 1 bathroom is required";
+      } else if (formData.bathrooms > 20) {
+        errors.bathrooms = "Maximum 20 bathrooms allowed";
+      }
+
+      // Price validation
+      if (!formData.price || Number(formData.price) <= 1000) {
+        errors.price = "Price must be greater than 1000";
+      } else if (Number(formData.price) > 100000000) {
+        errors.price = "Price is too high";
+      }
+
+      // Size validation
+      if (!formData.size || Number(formData.size) <= 60) {
+        errors.size = "Size must be greater than 60";
+      } else if (Number(formData.size) > 50000) {
+        errors.size = "Size is too large";
+      }
+      
+      // Location validation
+      if (!formData.selectedLocation) {
+        errors.location = "Please select a location";
+      }
+
+      // Images validation
+      if (formData.previewUrls.length === 0) {
+      errors.images = "At least one image is required";
+    } else if (formData.previewUrls.length > 10) {
+      errors.images = "Maximum 10 images allowed";
+    } else if (formData.images.some((file) => file.size > 5 * 1024 * 1024)) {
+      errors.images = "Each image must be less than 5MB";
     }
-  };
+      //contract validation
+       if (formData.previewUrlsdocs.length === 0) {
+    errors.documents = "Property documents are required"; 
+  } else if (formData.previewUrlsdocs.length > 5) {
+    errors.documents = "Maximum 5 documents allowed"; 
+  }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      const urls = files.map((file) => URL.createObjectURL(file));
-      setFormData((prev) => ({
-        ...prev,
-        images: [...prev.images, ...files],
-        previewUrls: [...prev.previewUrls, ...urls],
-      }));
-    }
-  };
+      setValidationErrors(errors);
+      return Object.keys(errors).length === 0;
+    };
 
-  const handleRemoveImage = (index: number) => {
-    URL.revokeObjectURL(formData.previewUrls[index]);
-    const newFiles = [...formData.images];
-    const newPreviews = [...formData.previewUrls];
-    newFiles.splice(index, 1);
-    newPreviews.splice(index, 1);
-    setFormData((prev) => ({
-      ...prev,
-      images: newFiles,
-      previewUrls: newPreviews,
-    }));
-  };
-
-  const handleDocumentsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      setFormData((prev) => ({
-        ...prev,
-        documents: [...prev.documents, ...files],
-        previewUrlsdocs: [...prev.previewUrlsdocs, ...files.map((f) => f.name)],
-      }));
-    }
-  };
-
-  const handleRemoveDocument = (index: number) => {
-    const newDocs = [...formData.documents];
-    const newPreviewNames = [...formData.previewUrlsdocs];
-    newDocs.splice(index, 1);
-    newPreviewNames.splice(index, 1);
-    setFormData((prev) => ({
-      ...prev,
-      documents: newDocs,
-      previewUrlsdocs: newPreviewNames,
-    }));
-  };
-
-  useEffect(() => {
-    const fetchFeatures = async () => {
-      try {
-        const res = await api.get("/features");
-        setFeatures(res.data?.data || res.data || []);
-      } catch (err) {
-        console.error(err);
-        setModal({
-          show: true,
-          title: "Error",
-          body: "Failed to fetch features",
-          variant: "danger",
+    // Real-time validation on field change
+    const handleChange = (key: string, value: any) => {
+      setFormData((prev) => ({ ...prev, [key]: value }));
+      
+      // Clear validation error for this field
+      if (validationErrors[key]) {
+        setValidationErrors((prev: any) => {
+          const newErrors = { ...prev };
+          delete newErrors[key];
+          return newErrors;
         });
       }
     };
-    fetchFeatures();
-  }, []);
 
-  const handleFeatureToggle = (featureId: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      selectedFeatures: prev.selectedFeatures.includes(featureId)
-        ? prev.selectedFeatures.filter((id) => id !== featureId)
-        : [...prev.selectedFeatures, featureId],
-    }));
-  };
+    // Improved file input with better preview
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+        const files = Array.from(e.target.files);
+        
+        // Validate file types and sizes
+        const validFiles = files.filter(file => {
+          if (!file.type.startsWith('image/')) {
+            toast.error(`${file.name} is not a valid image file`);
+            return false;
+          }
+          if (file.size > 5 * 1024 * 1024) { // 5MB limit
+            toast.error(`${file.name} is too large. Maximum size is 5MB`);
+            setValidationErrors((prev: any) => ({
+            ...prev,
+            documents: "Each document must be less than 5MB."
+          }));
+            return false;
+          }
+          return true;
+        });
 
-  const handleSearch = async (value: string) => {
-    handleChange("query", value);
-    if (value.length < 3) {
+        const urls = validFiles.map((file) => URL.createObjectURL(file));
+
+        setFormData((prev) => ({
+          ...prev,
+          images: [...prev.images, ...validFiles],
+          previewUrls: [...prev.previewUrls, ...urls],
+        }));
+
+        // Clear images validation error if exists
+        if (validationErrors.images && (formData.previewUrls.length + validFiles.length) > 0) {
+          setValidationErrors((prev: any) => {
+            const newErrors = { ...prev };
+            delete newErrors.images;
+            return newErrors;
+          });
+        }
+      }
+      e.target.value = "";
+    };
+
+    const handleRemoveImage = (index: number) => {
+      // Revoke the object URL to free memory
+      URL.revokeObjectURL(formData.previewUrls[index]);
+      
+      const newFiles = [...formData.images];
+      const newPreviews = [...formData.previewUrls];
+      newFiles.splice(index, 1);
+      newPreviews.splice(index, 1);
+
+      setFormData((prev) => ({
+        ...prev,
+        images: newFiles,
+        previewUrls: newPreviews,
+      }));
+      
+    };
+
+    // Handle contract file
+const handleDocumentsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  if (e.target.files) {
+    const files = Array.from(e.target.files);
+
+    const allowedTypes = [
+      "application/pdf",
+      "application/msword", // .doc
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+      "application/vnd.ms-excel", // .xls
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+    ];
+
+    const validFiles = files.filter(file => {
+      if (!allowedTypes.includes(file.type)) {
+        toast.error(`${file.name} is not a valid document. Only PDF, Word, and Excel files are allowed.`);
+        return false;
+      }
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast.error(`${file.name} is too large. Maximum size is 5MB.`);
+        return false;
+      }
+      return true;
+    });
+
+    if (validFiles.length > 0) {
+      setFormData(prev => ({
+        ...prev,
+        documents: [...prev.documents, ...validFiles],
+        previewUrlsdocs: [...prev.previewUrlsdocs, ...validFiles.map(f => f.name)],
+      }));
+
+      // Clear documents validation error if files are added
+      if (validationErrors.documents) {
+        setValidationErrors((prev: any) => {
+          const newErrors = { ...prev };
+          delete newErrors.documents;
+          return newErrors;
+        });
+      }
+    }
+  }
+};
+
+
+const handleRemoveDocument = (index: number) => {
+  const newDocs = [...formData.documents];
+  const newPreviewNames = [...formData.previewUrlsdocs];
+  newDocs.splice(index, 1);
+  newPreviewNames.splice(index, 1);
+
+  setFormData(prev => ({
+    ...prev,
+    documents: newDocs,
+    previewUrlsdocs: newPreviewNames,
+  }));
+};
+
+
+
+    useEffect(() => {
+      const fetchFeatures = async () => {
+        try {
+          const res = await api.get("/features");
+          setFeatures(res.data?.data || res.data || []);
+        } catch (err) {
+          console.error(err);
+          toast.error("Failed to fetch features");
+        }
+      };
+      fetchFeatures();
+    }, []);
+
+    const handleFeatureToggle = (featureId: number) => {
+      setFormData((prev) => ({
+        ...prev,
+        selectedFeatures: prev.selectedFeatures.includes(featureId)
+          ? prev.selectedFeatures.filter((id) => id !== featureId)
+          : [...prev.selectedFeatures, featureId],
+      }));
+    };
+
+    const handleSearch = async (value: string) => {
+      handleChange("query", value);
+
+      if (value.length < 3) {
+        setResults([]);
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${value}`
+        );
+        const data = await res.json();
+        setResults(data);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+    };
+
+    const handleSelect = (place: any) => {
+      setFormData((prev) => ({
+        ...prev,
+        query: place.display_name,
+        selectedLocation: {
+          lat: parseFloat(place.lat),
+          lng: parseFloat(place.lon),
+          address: place.display_name,
+        },
+      }));
       setResults([]);
-      return;
-    }
-    try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${value}`);
-      const data = await res.json();
-      setResults(data);
-    } catch (err) {
-      console.error("Error fetching data:", err);
-    }
-  };
 
-  const handleSelect = (place: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      query: place.display_name,
-      selectedLocation: {
-        lat: parseFloat(place.lat),
-        lng: parseFloat(place.lon),
-        address: place.display_name,
-      },
-    }));
-    setResults([]);
-  };
+      // Clear location validation error
+      if (validationErrors.location) {
+        setValidationErrors((prev: any) => {
+          const newErrors = { ...prev };
+          delete newErrors.location;
+          return newErrors;
+        });
+      }
+    };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    if (!validateForm()) {
-      setModal({
-        show: true,
-        title: "Validation Error",
-        body: "Please fix the form errors before submitting",
-        variant: "danger",
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsSubmitting(true);
+
+      // Run client-side validation
+      if (!validateForm()) {
+        toast.error("Please fix the form errors before submitting");
+        setIsSubmitting(false);
+        return;
+      }
+
+      try {
+        const data = new FormData();
+        data.append("title", formData.title.trim());
+        data.append("description", formData.description.trim());
+        data.append("bedrooms", formData.bedrooms.toString());
+        data.append("bathrooms", formData.bathrooms.toString());
+        data.append("type", formData.type);
+        data.append("status", formData.status);
+        data.append("price", formData.price);
+        data.append("price_type", formData.priceType);
+        data.append("size", formData.size);
+        data.append("location[address]", formData.selectedLocation.address);
+        data.append("location[lat]", formData.selectedLocation.lat);
+        data.append("location[lng]", formData.selectedLocation.lng);
+
+        formData.selectedFeatures.forEach((f, i) => {
+          data.append(`features[${i}]`, f.toString());
+        });
+
+        formData.images.forEach((file, i) => {
+          data.append(`images[${i}]`, file);
+        });
+       formData.documents.forEach((file) => {
+          data.append("documents[]", file);
+        });
+
+        await dispatch(createProperty(data)).unwrap();
+        toast.success("Property saved successfully");
+        
+        // Clean up object URLs
+        formData.previewUrls.forEach(url => URL.revokeObjectURL(url));
+        
+        // Reset form
+        setFormData({
+          title: "",
+          description: "",
+          bedrooms: 1,
+          bathrooms: 1,
+          type: "Apartment",
+          price: "",
+          priceType: "FullPay",
+          size: "",
+          status: "sale",
+          query: "",
+          selectedLocation: null as any,
+          selectedFeatures: [],
+          images: [],
+          previewUrls: [],
+          documents: [],
+          previewUrlsdocs: []
+        });
+        setResults([]);
+        setValidationErrors({});
+        
+        // Navigate to dashboard
+        // navigate('profile/owner-dashboard');
+        
+      }catch (error: any) {
+     
+      if (error?.errors) {
+        const serverErrors: any = {};
+
+        Object.keys(error.errors).forEach(key => {
+        if (key.startsWith('documents.')) {
+          serverErrors.documents = error.errors[key];
+        } else {
+          serverErrors[key] = error.errors[key];
+        }
       });
-      setIsSubmitting(false);
-      return;
-    }
 
-    try {
-      const data = new FormData();
-      data.append("title", formData.title);
-      data.append("description", formData.description);
-      data.append("bedrooms", formData.bedrooms.toString());
-      data.append("bathrooms", formData.bathrooms.toString());
-      data.append("type", formData.type);
-      data.append("status", formData.status);
-      data.append("price", formData.price);
-      data.append("price_type", formData.priceType);
-      data.append("size", formData.size);
-      data.append("location[address]", formData.selectedLocation.address);
-      data.append("location[lat]", formData.selectedLocation.lat);
-      data.append("location[lng]", formData.selectedLocation.lng);
-      formData.images.forEach((file, i) => data.append(`images[${i}]`, file));
-      formData.documents.forEach((file) => data.append("documents[]", file));
+        setValidationErrors(serverErrors);
+      }
 
-      await dispatch(createProperty(data)).unwrap();
-
-      setModal({
-        show: true,
-        title: "Success 🎉",
-        body: "Your property has been saved successfully. It is now pending review and will be published once approved.",
-        variant: "success",
-      });
-
-      setFormData({
-        title: "",
-        description: "",
-        bedrooms: 1,
-        bathrooms: 1,
-        type: "Apartment",
-        price: "",
-        priceType: "FullPay",
-        size: "",
-        status: "sale",
-        query: "",
-        selectedLocation: null as any,
-        selectedFeatures: [],
-        images: [],
-        previewUrls: [],
-        documents: [],
-        previewUrlsdocs: [],
-      });
-    } catch (error: any) {
-      setModal({
-        show: true,
-        title: "Error ❌",
-        body: "Failed to save property. Please try again.",
-        variant: "danger",
-      });
+      toast.error("Failed to save property. Please check the form for errors.");
     } finally {
       setIsSubmitting(false);
     }
-  };
+    };
 
     return (
-      <>
-      {/* user is not valid he can not access this form User sees Property form is disabled with a message stuck "you are not yet a valid user" */}
-
-      {user?.status !== "active" ? (
-      <div className="text-center py-5">
-        <h4 className="text-danger mb-3">🚫 You are not yet a valid user</h4>
-        <p className="text-muted">
-          Your account is not active. Please contact support or wait until your account gets approved.
-        </p>
-      </div>
-    ) : (
       <>
         {/* Validation Summary */}
         {Object.keys(validationErrors).length > 0 && (
@@ -318,13 +464,7 @@ const AddPropertyForm: React.FC = () => {
               className="generate-btn"
               onClick={async () => {
                 if (!formData.title || !formData.bedrooms || !formData.size || !formData.selectedLocation) {
-                  setModal({
-                      show: true,
-                      title: "Validation Error ⚠️",
-                      body: "Please fill in Title, Rooms, Size, and Location first",
-                      variant: "danger",
-                    });
-
+                  toast.error("Please fill in Title, Rooms, Size, and Location first");
                   return;
                 }
                 try {
@@ -340,20 +480,10 @@ const AddPropertyForm: React.FC = () => {
                   ? result.substring(0, 500).trim()
                   : result;
                   setFormData(prev => ({ ...prev, description: cleanDescription }));
-                  setModal({
-                        show: true,
-                        title: "Success 🎉",
-                        body: "Description generated successfully",
-                        variant: "success",
-                      });
+                  toast.success("Description generated successfully!");
                 } catch (error) {
                   console.error(error);
-                 setModal({
-                        show: true,
-                        title: "Error ❌",
-                        body: "Failed to generate description",
-                        variant: "danger",
-                      });
+                  toast.error("Failed to generate description");
                 } finally {
                   setIsSubmitting(false);
                 }
@@ -635,61 +765,68 @@ const AddPropertyForm: React.FC = () => {
               </div>
             </div>
           )}
+          {(errors?.images || validationErrors.images) && (
+              <div className="invalid-feedback d-block mt-2">
+                {errors?.images ? errors.images[0] : validationErrors.images}
+              </div>
+            )}
         </Form.Group>
 
         {/* contract / documents */}
-         <Form.Group className="mb-4">
-          <Form.Label>
-            Property Documents <span className="text-danger">*</span>
-          </Form.Label>
-          <label 
-            htmlFor="documents-upload" 
-            className={`upload-box ${validationErrors.documents || errors?.documents ? 'is-invalid' : ''}`}
+        <Form.Group className="mb-4">
+  <Form.Label>
+    Property Documents <span className="text-danger">*</span>
+  </Form.Label>
+  <label 
+    htmlFor="documents-upload" 
+    className={`upload-box ${validationErrors.documents || errors?.documents ? 'is-invalid' : ''}`}
+  >
+    <p className="fw-bold mb-1">Upload Documents</p>
+    <span className="upload-btn">Upload</span>
+    <input
+      type="file"
+      id="documents-upload"
+      className="d-none"
+      multiple
+      accept=".pdf,.doc,.docx,.xls,.xlsx"
+      onChange={handleDocumentsChange}
+      disabled={isSubmitting}
+    />
+    <p className="text-muted small mb-0">
+      Supported formats: PDF, Word, Excel <br />
+      Max size: 5MB per file
+    </p>
+  </label>
+
+  {formData.previewUrlsdocs.length > 0 && (
+    <ul className="mt-2 list-group">
+      {formData.previewUrlsdocs.map((name, i) => (
+        <li key={i} className="list-group-item d-flex justify-content-between align-items-center">
+          <span className="text-success">📄 {name}</span>
+          <button
+            type="button"
+            className="btn btn-danger btn-sm"
+            onClick={() => handleRemoveDocument(i)}
+            disabled={isSubmitting}
           >
-            <p className="fw-bold mb-1">Upload Documents</p>
-            <span className="upload-btn">Upload</span>
-            <input
-              type="file"
-              id="documents-upload"
-              className="d-none"
-              multiple
-              accept=".pdf,.doc,.docx,.xls,.xlsx"
-              onChange={handleDocumentsChange}
-              disabled={isSubmitting}
-            />
-            <p className="text-muted small mb-0">
-              Supported formats: PDF, Word, Excel <br />
-              Max size: 5MB per file
-            </p>
-          </label>
+            Remove
+          </button>
+        </li>
+      ))}
+    </ul>
+  )}
 
-            {formData.previewUrlsdocs.length > 0 && (
-              <ul className="mt-2 list-group">
-                {formData.previewUrlsdocs.map((name, i) => (
-                  <li key={i} className="list-group-item d-flex justify-content-between align-items-center">
-                    <span className="text-success">📄 {name}</span>
-                    <button
-                      type="button"
-                      className="btn btn-danger btn-sm"
-                      onClick={() => handleRemoveDocument(i)}
-                      disabled={isSubmitting}
-                    >
-                      Remove
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
+  {(validationErrors.documents || errors?.documents) && (
+    <div className="invalid-feedback d-block mt-2">
+      {errors?.documents ? 
+        (Array.isArray(errors.documents) ? errors.documents[0] : errors.documents) : 
+        validationErrors.documents}
+    </div>
+  )}
+</Form.Group>
 
-            {/* عرض validation errors */}
-            {(validationErrors.documents || errors?.documents) && (
-              <div className="invalid-feedback d-block mt-2">
-                {errors?.documents ? 
-                  (Array.isArray(errors.documents) ? errors.documents[0] : errors.documents) : 
-                  validationErrors.documents}
-              </div>
-            )}
-          </Form.Group>
+
+
           <div className="d-flex gap-3">
             <Button 
               variant="success" 
@@ -708,25 +845,8 @@ const AddPropertyForm: React.FC = () => {
             </Button>
           </div>
       </Form>
-      {/*Modal Notifications */}
-      <Modal show={modal.show} onHide={() => setModal((prev) => ({ ...prev, show: false }))}>
-        <Modal.Header closeButton>
-          <Modal.Title className={modal.variant === "success" ? "text-success" : "text-danger"}>
-            {modal.title}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>{modal.body}</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setModal((prev) => ({ ...prev, show: false }))}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
       </>
-      
-    )}
-  </>
-    )
+    );
   };
 
   export default AddPropertyForm;
