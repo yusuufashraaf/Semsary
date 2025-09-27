@@ -97,10 +97,12 @@
 
       // Images validation
       if (formData.previewUrls.length === 0) {
-        errors.images = "At least one image is required";
-      } else if (formData.previewUrls.length > 10) {
-        errors.images = "Maximum 10 images allowed";
-      }
+      errors.images = "At least one image is required";
+    } else if (formData.previewUrls.length > 10) {
+      errors.images = "Maximum 10 images allowed";
+    } else if (formData.images.some((file) => file.size > 5 * 1024 * 1024)) {
+      errors.images = "Each image must be less than 5MB";
+    }
       //contract validation
        if (formData.previewUrlsdocs.length === 0) {
     errors.documents = "Property documents are required"; 
@@ -165,6 +167,7 @@
           });
         }
       }
+      e.target.value = "";
     };
 
     const handleRemoveImage = (index: number) => {
@@ -181,6 +184,7 @@
         images: newFiles,
         previewUrls: newPreviews,
       }));
+      
     };
 
     // Handle contract file
@@ -794,7 +798,6 @@ const handleRemoveDocument = (index: number) => {
     </p>
   </label>
 
-  {/* عرض أسماء المستندات المرفوعة */}
   {formData.previewUrlsdocs.length > 0 && (
     <ul className="mt-2 list-group">
       {formData.previewUrlsdocs.map((name, i) => (
