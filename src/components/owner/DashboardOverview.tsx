@@ -9,6 +9,7 @@ import "./DashboardOverview.css";
 import { toast } from "react-toastify";
 import { Building, Calendar, DollarSign, Home, Eye } from "lucide-react";
 import Loader from "@components/common/Loader/Loader";
+import { getEcho } from "@services/echoManager";
 
 const DashboardOverview: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -26,6 +27,33 @@ const DashboardOverview: React.FC = () => {
   dispatch(getDashboardData())
   },[dispatch])
 
+  useEffect(() => {
+  const echo = getEcho();
+  if (!echo || !user) return;
+
+  // Subscribe to user's property updates
+  const channel = echo.private(`user.${user.id}`);
+
+  channel.listen(".property.updated", (e: any) => {
+
+
+    // Update local state immediately
+    setPropertyStates((prev) => ({
+      ...prev,
+      [e.id]: e.property_state,
+    }));
+
+    // Optional toast
+    toast.info(`Property "${e.title}" status updated to ${e.property_state}`, {
+      toastId: `property-update-${e.id}`, // prevent duplicate toasts
+      autoClose: 3000,
+    });
+  });
+
+  return () => {
+    echo.leave(`user.${user.id}`);
+  };
+}, [user]);
 
   const [activeKey, setActiveKey] = useState<string>("all");
   // Local state to track property states for immediate UI updates
