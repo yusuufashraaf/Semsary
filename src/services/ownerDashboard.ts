@@ -3,7 +3,7 @@ import { ReviewAnalysisResponse } from "../types/ReviewAnalysis";
 
 // Get Dashboard data
 export const fetchOwnerDashboard = async () => {
-  const response = await api.get("/owner/dashboard");
+  const response = await api.get("/user/dashboard-stats");
   return response.data.data;
 };
 
