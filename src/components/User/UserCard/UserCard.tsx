@@ -12,9 +12,9 @@ type TUserCardProps = {
   isPhoneVerified: boolean;
   role: "user" | "agent" | "owner" | "admin";
   status: "pending" | "active" | "suspended";
-  idUpladed: string | null;
+  id_state: "valid" | "rejected" | "pending";
+  idUpladed: string | null; // 👀 double-check spelling
   userId: number;
-  id_state: 'pending'|'valid'|'rejected';
 };
 
 const UserCard = ({
@@ -49,9 +49,7 @@ const UserCard = ({
     const channel = echo.private(`user.${user.userId}`);
 
     channel.listen(".user.updated", (event: Partial<TUserCardProps>) => {
-      console.log(event);
-      
-      // Merge incoming event into local state
+      console.log("Realtime Event:", event);
       setUserState((prev) => ({ ...prev, ...event }));
     });
 
@@ -64,15 +62,17 @@ const UserCard = ({
     <Card className="shadow-sm">
       <Card.Header as="h5" className="d-flex align-items-center">
         <User size={24} className="me-2" />
-        User Profile
+        User #{userState.userId} Profile
       </Card.Header>
       <Card.Body>
         <ListGroup variant="flush">
+          {/* First Name */}
           <ListGroupItem className="d-flex align-items-center">
             <User size={18} className="me-2" />
             <strong>First Name:</strong> {userState.firstName}
           </ListGroupItem>
 
+          {/* Last Name */}
           <ListGroupItem className="d-flex align-items-center">
             <User size={18} className="me-2" />
             <strong>Last Name:</strong> {userState.lastName}
@@ -125,12 +125,9 @@ const UserCard = ({
           </ListGroupItem>
 
           {/* ID */}
-        <ListGroupItem className="d-flex justify-content-between align-items-center">
-          <strong>ID Document:</strong>
-
-          {userState.idUpladed ? (
-            // Case 1: User already uploaded an ID
-            <div className="d-flex align-items-center gap-2">
+          <ListGroupItem className="d-flex justify-content-between align-items-center">
+            <strong>ID Document:</strong>
+            {userState.idUpladed ? (
               <Badge
                 bg={
                   userState.id_state === "valid"
@@ -153,42 +150,38 @@ const UserCard = ({
                   </>
                 )}
               </Badge>
-            </div>
-          ) : userState.id_state === "rejected" ? (
-            // Case 2: No ID uploaded, but state is rejected → show upload button
-            <Badge
-              bg="danger"
-              className="d-flex align-items-center"
-              style={{ cursor: "pointer" }}
-              onClick={() => onVerifyClick("id")}
-              title="Click to upload"
-            >
-              Upload Now
-            </Badge>
-          ) : (
-            // Case 3: No ID uploaded but still pending/valid → show state badge
-            <Badge
-              bg={
-                userState.id_state === "valid"
-                  ? "success"
-                  : userState.id_state === "pending"
-                  ? "warning"
-                  : "secondary"
-              }
-              className="d-flex align-items-center"
-            >
-              {userState.id_state === "valid" && (
-                <>
-                  <CheckCircle size={14} className="me-1" /> Valid
-                </>
-              )}
-              {userState.id_state === "pending" && "Pending Review"}
-              {!userState.id_state && "Not Uploaded"}
-            </Badge>
-          )}
-        </ListGroupItem>
-
-          {/* Role */}
+            ) : userState.id_state === "rejected" ? (
+              <Badge
+                bg="danger"
+                className="d-flex align-items-center"
+                style={{ cursor: "pointer" }}
+                onClick={() => onVerifyClick("id")}
+                title="Click to upload"
+              >
+                Upload Now
+              </Badge>
+            ) : (
+              <Badge
+                bg={
+                  userState.id_state === "valid"
+                    ? "success"
+                    : userState.id_state === "pending"
+                    ? "warning"
+                    : "secondary"
+                }
+                className="d-flex align-items-center"
+              >
+                {userState.id_state === "valid" && (
+                  <>
+                    <CheckCircle size={14} className="me-1" /> Valid
+                  </>
+                )}
+                {userState.id_state === "pending" && "Pending Review"}
+                {!userState.id_state && "Not Uploaded"}
+              </Badge>
+            )}
+          </ListGroupItem>
+                  {/* Role */}
           <ListGroupItem>
             <strong>Role:</strong>{" "}
             {userState.role
@@ -208,4 +201,8 @@ const UserCard = ({
     </Card>
   );
 };
+
 export default UserCard;
+
+  
+
