@@ -50,8 +50,6 @@ const UserCard = ({
 
     channel.listen(".user.updated", (event: Partial<TUserCardProps>) => {
 
-      console.log("Realtime Event:", event);
-
       setUserState((prev) => ({ ...prev, ...event }));
     });
 
