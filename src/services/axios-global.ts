@@ -205,7 +205,8 @@ export const adminService = {
   ): Promise<any> => {
     const result = await api.put(`/admin/users/${userId}/status/${status}`);
     console.log("admin service response____");
-    console.log(result);
+    console.log(result.data.data);
+    //console.log(result);
     return result.data;
   },
   updateUserIDStatus: async (
@@ -226,7 +227,25 @@ export const adminService = {
     console.log(result);
     return result.data;
   },
-
+  deleteUser: async (
+    userId: number,
+  ): Promise<any> => {
+    const result = await api.put(`/admin/users/${userId}/delete`);
+    console.log("admin service response____");
+    console.log(result);
+    return result.data;
+  },
+  notifyUser: async (
+  userId: number,
+  message: string
+): Promise<any> => {
+  const result = await api.post(`/admin/users/${userId}/notify`, {
+    message: message
+  });
+  console.log("admin service response____");
+  console.log(result);
+  return result.data;
+},
 }
 
 // Attach interceptors

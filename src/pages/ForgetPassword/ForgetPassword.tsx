@@ -30,9 +30,9 @@ const ForgotPassword = () => {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  if (jwt) {
-    return <Navigate to="/" />;
-  }
+  // if (jwt) {
+  //   return <Navigate to="/" />;
+  // }
 
   const submitForm: SubmitHandler<ForgotPasswordType> = (data) => {
     setSuccessMessage(null);

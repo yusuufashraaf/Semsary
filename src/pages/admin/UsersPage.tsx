@@ -173,23 +173,30 @@ export const UsersPage: React.FC = () => {
 
       if (result.isConfirmed) {
         const res = await adminService.updateUserStatus(user.id, newActivationState);
-        console.log(res);
-        
+        console.log("before refetch");
+        console.log(res.data.user.id);
+        setSelectedUserId(res.data.user.id);
+        console.log(selectedUser);
+        console.log(selectedUserId);
         // CRITICAL FIX: Refetch the data to update the UI
         await refetch();
+        console.log("after refetch");
+        console.log(selectedUser);
+        
         
         let successMessage = '';
         let check = true;
+        console.log(selectedUser);
         switch (newActivationState) {
           case "suspended":
             successMessage = 'User has been suspended successfully.';
             break;
           case "active":
-            if(!selectedUser?.email_verified_at == null){
+            if(selectedUser?.email_verified_at == null){
               check = false;
               successMessage = 'User Email is Not Verified, User status will be pending.';
             }
-            else if(!selectedUser?.phone_verified_at == null){
+            else if(selectedUser?.phone_verified_at == null){
               check = false;
               successMessage = 'User Phone is Not Verified, User status will be pending.';
             }
@@ -197,8 +204,10 @@ export const UsersPage: React.FC = () => {
               check = false;
               successMessage = 'User ID is Not Verified, User status will be pending.';
             }
-            else
+            else{
               successMessage = 'User has been activated successfully.';
+            }
+              
             break;
           case "pending":
             successMessage = 'User state has been set to pending successfully.';
@@ -210,6 +219,10 @@ export const UsersPage: React.FC = () => {
         else{
           Swal.fire("Can't Validate User", successMessage,'error');
         }
+        console.log(selectedUser);
+        // if(selectedUser)
+        // handleUserNotify(selectedUser,"You are now an Active User");
+        console.log("after motification sent");
         //Swal.fire('Error!', 'Failed to update user status.', 'error');
         
         // Close details modal if open for the same user
@@ -220,6 +233,112 @@ export const UsersPage: React.FC = () => {
     } catch (error) {
       console.error('Error updating user status:', error);
       Swal.fire('Error!', 'Failed to update user status.', 'error');
+    } finally {
+      setIsButtonLoading(null);
+    }
+  };
+
+  const handleUserDelete = async (user: TFullUser) => {
+    // Prevent multiple clicks on the same user
+    if (isButtonLoading === user.id) return;
+    
+    setIsButtonLoading(user.id);
+    
+    try {
+      if (!user) {
+        Swal.fire('No Change Needed', 'User not found to be deleted ', 'info');
+        setIsButtonLoading(null);
+        return;
+      }
+
+      let confirmationConfig;
+      
+      confirmationConfig = {
+            title: 'Delete User',
+            text: `Are you sure you want to delete ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#b94010ff',
+            confirmButtonText: 'Yes, Delete',
+          };
+
+      const result = await Swal.fire({
+        ...confirmationConfig,
+        showCancelButton: true,
+        cancelButtonColor: '#6b7280',
+        cancelButtonText: 'Cancel',
+      });
+
+      if (result.isConfirmed) {
+        const res = await adminService.deleteUser(user.id);
+        console.log(res);
+        
+        // CRITICAL FIX: Refetch the data to update the UI
+        await refetch();
+
+        Swal.fire("User Deleted Successfully", res.data.message,'info');
+        //Swal.fire('Error!', 'Failed to update user status.', 'error');
+        
+        // Close details modal if open for the same user
+        if (showDetailsModal && selectedUserId === user.id) {
+          setShowDetailsModal(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating user status:', error);
+      Swal.fire('Error!', 'Failed to update user status.', 'error');
+    } finally {
+      setIsButtonLoading(null);
+    }
+  };
+
+  const handleUserNotify = async (user: TFullUser,message:string) => {
+    // Prevent multiple clicks on the same user
+    if (isButtonLoading === user.id) return;
+    
+    setIsButtonLoading(user.id);
+    
+    try {
+      if (!user) {
+        Swal.fire('No Change Needed', 'User not found to be deleted ', 'info');
+        setIsButtonLoading(null);
+        return;
+      }
+
+      let confirmationConfig;
+      
+      confirmationConfig = {
+            title: 'Send Notification',
+            text: `Are you sure you want to Notify ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#ffee00ff',
+            confirmButtonText: 'Yes, Notify',
+          };
+
+      const result = await Swal.fire({
+        ...confirmationConfig,
+        showCancelButton: true,
+        cancelButtonColor: '#6b7280',
+        cancelButtonText: 'Cancel',
+      });
+
+      if (result.isConfirmed) {
+        const res = await adminService.notifyUser(user.id,message);
+        console.log(res);
+        
+        // CRITICAL FIX: Refetch the data to update the UI
+        await refetch();
+
+        Swal.fire("User Notified Successfully", res.data.message,'info');
+        //Swal.fire('Error!', 'Failed to update user status.', 'error');
+        
+        // Close details modal if open for the same user
+        if (showDetailsModal && selectedUserId === user.id) {
+          setShowDetailsModal(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error notifing user:', error);
+      Swal.fire('Error!', 'Failed to notify.', 'error');
     } finally {
       setIsButtonLoading(null);
     }
@@ -582,6 +701,7 @@ export const UsersPage: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID Status</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Registered</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                 </tr>
@@ -660,12 +780,18 @@ export const UsersPage: React.FC = () => {
                         <CheckCircleIcon className="h-4 w-4 text-green-500 inline ml-1" />
                       )}
                     </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {user.email}
+                      {user.email_verified_at && (
+                        <CheckCircleIcon className="h-4 w-4 text-green-500 inline ml-1" />
+                      )}
+                    </td>
                     <td className="px-6 py-4 text-sm text-gray-500">
                       {formatDate(user.created_at)}
                     </td>
                     <td className="px-6 py-4 space-x-2" onClick={(e) => e.stopPropagation()}>
                       {user.status === 'active' && (
-                        <Button
+                        <Button 
                           size="sm"
                           variant="danger"
                           onClick={() => handleUserActivationStates(user, "suspended")}
@@ -790,6 +916,26 @@ export const UsersPage: React.FC = () => {
                         <InfoRow label="Email" value={selectedUser.email} verified={!!selectedUser.email_verified_at} />
                         <InfoRow label="Phone" value={selectedUser.phone_number} verified={!!selectedUser.phone_verified_at} />
                         <InfoRow label="Registered" value={formatDate(selectedUser.created_at)} />
+                        <Button
+                          size="sm"
+                          variant="danger"
+                          onClick={() => handleUserDelete(selectedUser)}
+                          loading={isButtonLoading === selectedUser.id}
+                          disabled={isButtonLoading !== null}
+                        >
+                          <ExclamationTriangleIcon className="h-4 w-4 mr-1" />
+                          
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleUserNotify(selectedUser,"Notification Test")}
+                          loading={isButtonLoading === selectedUser.id}
+                          disabled={isButtonLoading !== null}
+                        >
+                          <ExclamationTriangleIcon className="h-4 w-4 mr-1" />
+                          
+                        </Button>
                       </div>
                     </Card>
 
@@ -824,6 +970,7 @@ export const UsersPage: React.FC = () => {
                           <StatBox label="Transactions" value={selectedUser.transactions_count || 0} />
                         </div>
                       </div>
+                      
                     </Card>
                   </div>
                 )}
