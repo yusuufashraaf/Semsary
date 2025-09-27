@@ -2,6 +2,7 @@ import { Card, ListGroup, ListGroupItem, Badge } from "react-bootstrap";
 import { Mail, Phone, User, CheckCircle, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getEcho } from "@services/echoManager";
+import { toast } from "react-toastify";
 
 type TUserCardProps = {
   firstName: string;
@@ -48,10 +49,15 @@ const UserCard = ({
 
     const channel = echo.private(`user.${user.userId}`);
 
-    channel.listen(".user.updated", (event: Partial<TUserCardProps>) => {
-
-      setUserState((prev) => ({ ...prev, ...event }));
+   channel.listen(".user.updated", (event: Partial<TUserCardProps>) => {
+    console.log("Realtime event received:", event);
+    setUserState((prev) => {
+      if (event.id_state && event.id_state !== prev.id_state) {
+        toast.info(`Your ID status has been updated to "${event.id_state}"`);
+      }
+      return { ...prev, ...event };
     });
+  });
 
     return () => {
       echo.leave(`user.${user.userId}`);

@@ -40,6 +40,7 @@ import { PropertyTaskQueuePage } from "@pages/cs-agent/PropertyTaskQueuePage";
 import { PropertyVerificationPage } from "@pages/cs-agent/PropertyVerificationPage";
 import { CsAgentDashboardPage } from "@pages/cs-agent/CsAgentDashboardPage";
 import { AgentAssignmentModal } from "@components/admin/modals/AgentAssignmentModal";
+import AppWrapper from "@pages/appWrapper/AppWrapper";
 
 const router = createBrowserRouter([
   {
@@ -306,7 +307,7 @@ const router = createBrowserRouter([
 
 function AppRouter() {
   const dispatch = useAppDispatch();
-  const { isInitialized, loading } = useAppSelector((state) => state.Authslice);
+  const { isInitialized, loading,user } = useAppSelector((state) => state.Authslice);
   const hasRun = useRef(false);
 
   useEffect(() => {
@@ -317,12 +318,13 @@ function AppRouter() {
   }, [dispatch]);
 
 
-  if (!isInitialized) {
+  if (!isInitialized || !user) {
     return <LoadingScreen />;
   }
 
   return (
     <>
+      <AppWrapper currentUser={user}>
       <RouterProvider router={router} />
       <ToastContainer
         position="top-right"
@@ -339,6 +341,7 @@ function AppRouter() {
       <div className="fixed bottom-4 right-4">
         <Chatbot />
       </div>
+      </AppWrapper>
     </>
   );
 }
