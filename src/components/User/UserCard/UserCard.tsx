@@ -23,20 +23,7 @@ const UserCard = ({
   user: TUserCardProps;
   onVerifyClick: (type: "email" | "phone" | "id") => void;
 }) => {
-  const {
-    firstName,
-    lastName,
-    email,
-    phoneNumber,
-    isEmailVerified,
-    isPhoneVerified,
-    role,
-    idUpladed,
-    userId,
-  } = user;
-
-
-  const [status, setStatus] = useState<TUserCardProps["status"]>(user.status);
+  const [userState, setUserState] = useState(user);
 
   const getStatusVariant = (status: TUserCardProps["status"]) => {
     switch (status) {
@@ -57,17 +44,19 @@ const UserCard = ({
       console.warn("Echo is not initialized yet");
       return;
     }
-    
-    const channel = echo.private(`user.${userId}`);
 
-    channel.listen(".user.updated", (event: { status: string }) => {
-      setStatus(event.status as TUserCardProps["status"]);
+    const channel = echo.private(`user.${user.userId}`);
+
+    channel.listen(".user.updated", (event: Partial<TUserCardProps>) => {
+
+      // Merge incoming event into local state
+      setUserState((prev) => ({ ...prev, ...event }));
     });
 
     return () => {
-      echo.leave(`user.${userId}`);
+      echo.leave(`user.${user.userId}`);
     };
-  }, [userId]);
+  }, [user.userId]);
 
   return (
     <Card className="shadow-sm">
@@ -79,21 +68,21 @@ const UserCard = ({
         <ListGroup variant="flush">
           <ListGroupItem className="d-flex align-items-center">
             <User size={18} className="me-2" />
-            <strong>First Name:</strong> {firstName}
+            <strong>First Name:</strong> {userState.firstName}
           </ListGroupItem>
 
           <ListGroupItem className="d-flex align-items-center">
             <User size={18} className="me-2" />
-            <strong>Last Name:</strong> {lastName}
+            <strong>Last Name:</strong> {userState.lastName}
           </ListGroupItem>
 
           {/* Email */}
           <ListGroupItem className="d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
               <Mail size={18} className="me-2" />
-              <strong>Email: </strong> {email}
+              <strong>Email: </strong> {userState.email}
             </div>
-            {isEmailVerified ? (
+            {userState.isEmailVerified ? (
               <Badge bg="success" className="d-flex align-items-center">
                 <CheckCircle size={14} className="me-1" /> Verified
               </Badge>
@@ -114,9 +103,9 @@ const UserCard = ({
           <ListGroupItem className="d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
               <Phone size={18} className="me-2" />
-              <strong>Phone: </strong> {phoneNumber}
+              <strong>Phone: </strong> {userState.phoneNumber}
             </div>
-            {isPhoneVerified ? (
+            {userState.isPhoneVerified ? (
               <Badge bg="success" className="d-flex align-items-center">
                 <CheckCircle size={14} className="me-1" /> Verified
               </Badge>
@@ -136,7 +125,7 @@ const UserCard = ({
           {/* ID */}
           <ListGroupItem className="d-flex justify-content-between align-items-center">
             <strong>ID Document:</strong>
-            {idUpladed ? (
+            {userState.idUpladed ? (
               <Badge bg="success" className="d-flex align-items-center">
                 Uploaded
               </Badge>
@@ -156,18 +145,21 @@ const UserCard = ({
           {/* Role */}
           <ListGroupItem>
             <strong>Role:</strong>{" "}
-            {role ? role.charAt(0).toUpperCase() + role.slice(1) : "N/A"}
+            {userState.role
+              ? userState.role.charAt(0).toUpperCase() + userState.role.slice(1)
+              : "N/A"}
           </ListGroupItem>
 
           {/* Status */}
           <ListGroupItem className="d-flex justify-content-between align-items-center">
             <strong>Status:</strong>
-            <Badge bg={getStatusVariant(status)}>{status}</Badge>
+            <Badge bg={getStatusVariant(userState.status)}>
+              {userState.status}
+            </Badge>
           </ListGroupItem>
         </ListGroup>
       </Card.Body>
     </Card>
   );
 };
-
 export default UserCard;
