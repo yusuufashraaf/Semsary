@@ -4,9 +4,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faHeart, faBell } from "@fortawesome/free-solid-svg-icons";
 import AvatarDropdown from "./AvatarDropDownMenu/AvatarDropDownMenu";
 import { useAppSelector } from "@store/hook";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const user = useAppSelector((state) => state.Authslice.user);
+  const navigate =useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -22,7 +24,7 @@ export default function Navbar() {
   ];
 
   const handleNavClick = (url: string) => {
-    window.location.href = url;
+    navigate(url);
   };
 
   return (
