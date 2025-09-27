@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col, Card, Button, Nav, Tab, Modal} from "react-bootstrap";
-import { EdittProperty, getProperties, removeProperty } from "../../store/Owner/ownerDashboardSlice";
+import { EdittProperty, getProperties, removeProperty, getDashboardData} from "../../store/Owner/ownerDashboardSlice";
 import { RootState, AppDispatch } from "../../store";
 import { useAppSelector } from "@store/hook";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +23,7 @@ const DashboardOverview: React.FC = () => {
 
   useEffect(()=>{
   dispatch(getProperties());
+  dispatch(getDashboardData())
   },[dispatch])
 
 
@@ -293,12 +294,12 @@ const DashboardOverview: React.FC = () => {
             <Card.Body className="p-3">
               <div className="d-flex align-items-center">
                 <div className="stat-icon me-3">
-                  <Calendar size={18} strokeWidth={2} />
+                  <DollarSign size={18} strokeWidth={2} />
                 </div>
                 <div>
-                  <div className="stat-label">Bookings</div>
+                  <div className="stat-label">Rent Income</div>
                   <div className="stat-value">
-                    {overview?.total_bookings || 0}
+                    ${overview?.rent_income || 0}
                   </div>
                 </div>
               </div>
@@ -313,7 +314,24 @@ const DashboardOverview: React.FC = () => {
                   <DollarSign size={18} strokeWidth={2} />
                 </div>
                 <div>
-                  <div className="stat-label">Income</div>
+                  <div className="stat-label">Sales Income</div>
+                  <div className="stat-value">
+                    ${overview?.sales_income || 0}
+                  </div>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+         <Col md={4}>
+          <Card className="stat-card">
+            <Card.Body className="p-3">
+              <div className="d-flex align-items-center">
+                <div className="stat-icon me-3">
+                  <DollarSign size={18} strokeWidth={2} />
+                </div>
+                <div>
+                  <div className="stat-label">Total Income</div>
                   <div className="stat-value">
                     ${overview?.total_income || 0}
                   </div>

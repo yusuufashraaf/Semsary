@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store";
-import { fetchNotifications, markAsRead } from "@store/Noifications/notificationsSlice";
+import { markAsRead } from "@store/Noifications/notificationsSlice";
 import { useNotifications } from "@hooks/useNotifications";
 import { TFullUser } from "src/types/users/users.types";
+import { actFetchNotifications } from "@store/Noifications/Act/actFetchNotifications";
 import "./UserNotifications.css";
+
 
 type NotificationType = "all" | "unread";
 
@@ -18,38 +20,31 @@ const UserNotifications = ({
   const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState<NotificationType>("all");
 
-  // get notifications from Redux store
   const { items: notifications, loading, error } = useSelector(
     (state: RootState) => state.notifications
   );
 
-  // 🔌 subscribe to WebSocket (adds new notifications to Redux)
   useNotifications(user?.id ?? null);
 
-  // ⏬ fetch history from API once
   useEffect(() => {
     if (user?.id) {
-      dispatch(fetchNotifications(user.id));
+      dispatch(actFetchNotifications());
     }
-  }, [dispatch, user.id]);
+  }, [dispatch, user?.id]);
 
-  const handleTabChange = (tab: NotificationType) => {
-    setActiveTab(tab);
-  };
+  const handleTabChange = (tab: NotificationType) => setActiveTab(tab);
 
-  const handleMarkAsRead = (id: number) => {
+  const handleMarkAsRead = (id: string) => {
     dispatch(markAsRead({ userId: user.id, notificationId: id }));
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString("en-US", {
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleString("en-US", {
       month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
 
   const filteredNotifications = notifications
     .filter((n) => (activeTab === "unread" ? !n.is_read : true))
@@ -66,7 +61,7 @@ const UserNotifications = ({
     }
   }, [unreadCount, onUnreadCountChange]);
 
-  if (loading) {
+  if (loading)
     return (
       <div className="notifications-container">
         <div className="loading-state">
@@ -75,9 +70,8 @@ const UserNotifications = ({
         </div>
       </div>
     );
-  }
 
-  if (error) {
+  if (error)
     return (
       <div className="notifications-container">
         <div className="error-state">
@@ -86,7 +80,6 @@ const UserNotifications = ({
         </div>
       </div>
     );
-  }
 
   return (
     <div className="notifications-container">
@@ -136,7 +129,9 @@ const UserNotifications = ({
             >
               <div className="notification-body">
                 <div className="notification-header-content">
-                  <h4 className="notification-title">{notification.title}</h4>
+                  <h4 className="notification-title">
+                    {notification.title || "Property Notification"}
+                  </h4>
                   <span className="notification-time">
                     {formatDate(notification.created_at)}
                   </span>
@@ -144,6 +139,18 @@ const UserNotifications = ({
                 </div>
 
                 <p className="notification-message">{notification.message}</p>
+
+                {notification.feedback && (
+                  <p className="notification-feedback">
+                    <b>Feedback:</b> {notification.feedback}
+                  </p>
+                )}
+
+                {notification.property_id && (
+                  <p className="notification-property">
+                    Property ID: {notification.property_id}
+                  </p>
+                )}
 
                 {!notification.is_read && (
                   <div className="notification-actions">

@@ -349,6 +349,14 @@ const OwnerRequests: React.FC<RequestsProps> = ({ userId }) => {
           </div>
         </>
       )}
+      {userRentRequests.length === 0 && ownerRentRequests.length === 0 &&(
+        <div className="no-requests">
+          <div className="icon-wrapper">
+            <div className="no-requests-icon"></div>
+          </div>
+            <h2 className="no-requests-title">No rent requests found</h2>
+          </div>
+      )}
     </div>
   );
 };

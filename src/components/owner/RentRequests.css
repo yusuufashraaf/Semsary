@@ -483,3 +483,10 @@
   color: #444;
 }
 
+.no-requests {
+  background: var(--primary-bg);
+  border: 2px solid var(--primary-border);
+  border-radius: var(--radius-lg);
+  padding: 3rem 2rem;
+  text-align: center;
+}

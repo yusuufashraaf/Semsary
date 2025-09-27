@@ -73,16 +73,23 @@ export const getProperties = async (
   }
 };
 
-export const changePropertyStatus = async (
-  propertyId: number,
-  newState: "Valid" | "Rejected",
-  jwt: string | null,
-  signal?: AbortSignal
-): Promise<ChangeStatusResponse | undefined> => {
+export const changePropertyStatus = async ({
+  propertyId,
+  newState,
+  feedback,
+  jwt,
+  signal,
+}: {
+  propertyId: number;
+  newState: "Valid" | "Rejected";
+  feedback?: string;
+  jwt: string;
+  signal?: AbortSignal;
+}): Promise<ChangeStatusResponse | undefined> => {
   try {
     const response = await api.patch<ChangeStatusResponse>(
       `/cs-agent/properties/${propertyId}/state`,
-      { status: newState },
+      { status: newState, feedback },
       {
         headers: { Authorization: `Bearer ${jwt}` },
         signal,

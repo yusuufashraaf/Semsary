@@ -111,7 +111,7 @@ export const fetchUserWishlists = async (userId: number) => {
 
 export const markNotificationAsRead = async (
   userId: number,
-  notificationId: number
+  notificationId: string
 ) => {
   const response = await api.patch(`/user/${userId}/notifications/${notificationId}/read`);
   return response;
