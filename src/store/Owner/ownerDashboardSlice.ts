@@ -1,15 +1,35 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { fetchOwnerDashboard, fetchOwnerProperties, fetchPropertyById ,addProperty, deleteProperty, updateProperty, updatePropertyState} from "../../services/ownerDashboard";
 
+
+interface BoughtProperty {
+  id: number;
+  property_id: number;
+  amount: number | string;
+  purchase_date: string;
+  // property: Property;
+}
+
+interface RentedProperty {
+  id: number;
+  property_id: number;
+  amount: number | string;
+  payment_type: string;
+  // property: Property;
+}
 interface DashboardState {
   loading: boolean;
   errors: Record<string, string[]>;
   overview: {
     total_properties: number;
-    total_bookings: number;
-    total_income: number;
+    bookings_count: number;
+    sales_income: number | string;
+    rent_income: number | string;
+    total_income:number | string;
     total_reviews: number;
     average_rating: number;
+    bought_properties:BoughtProperty[];
+    rented_properties: RentedProperty[];
   };
   properties: any[];
   selectedProperty:any|null,
@@ -19,9 +39,13 @@ const initialState: DashboardState = {
   loading: false,
   errors: {},
   overview: {
-    total_properties: 0,
-    total_bookings: 0,
-    total_income: 0,
+    total_properties: 0 ,
+    bookings_count: 0,
+    sales_income: 0,
+    rent_income:0,
+    total_income:0,
+    bought_properties:[],
+    rented_properties: [],
     total_reviews: 0,
     average_rating: 0,
   },
