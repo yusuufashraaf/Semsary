@@ -44,6 +44,7 @@ const BasicInfo = () => {
         status: user?.status,
         idUpladed: user?.id_image_url ?? null,
         userId:user?.id ||0,
+        id_state:user.id_state
     };
 
     return (

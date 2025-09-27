@@ -128,22 +128,6 @@ const emailOnBlurHandler =async (e:React.FocusEvent<HTMLInputElement>)=>{
         register={register}
         error={errors.password_confirmation?.message}
       />
-      {/* <Form.Group className="mb-3" controlId="role">
-        <Form.Label>Role</Form.Label>
-        <Form.Select
-          {...register("role")}
-          isInvalid={!!errors.role}
-          aria-label="Select your role"
-        >
-          <option value="">Select a role...</option>
-          <option value="user">User</option>
-          <option value="agent">Agent</option>
-          <option value="owner">Owner</option>
-        </Form.Select>
-        <Form.Control.Feedback type="invalid">
-          {errors.role?.message}
-        </Form.Control.Feedback>
-      </Form.Group> */}
       <div className="d-flex justify-content-end">
         <Button
           variant="info"

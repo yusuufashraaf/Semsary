@@ -14,6 +14,7 @@ type TUserCardProps = {
   status: "pending" | "active" | "suspended";
   idUpladed: string | null;
   userId: number;
+  id_state: 'pending'|'valid'|'rejected';
 };
 
 const UserCard = ({
@@ -48,7 +49,8 @@ const UserCard = ({
     const channel = echo.private(`user.${user.userId}`);
 
     channel.listen(".user.updated", (event: Partial<TUserCardProps>) => {
-
+      console.log(event);
+      
       // Merge incoming event into local state
       setUserState((prev) => ({ ...prev, ...event }));
     });
@@ -123,24 +125,68 @@ const UserCard = ({
           </ListGroupItem>
 
           {/* ID */}
-          <ListGroupItem className="d-flex justify-content-between align-items-center">
-            <strong>ID Document:</strong>
-            {userState.idUpladed ? (
-              <Badge bg="success" className="d-flex align-items-center">
-                Uploaded
-              </Badge>
-            ) : (
+        <ListGroupItem className="d-flex justify-content-between align-items-center">
+          <strong>ID Document:</strong>
+
+          {userState.idUpladed ? (
+            // Case 1: User already uploaded an ID
+            <div className="d-flex align-items-center gap-2">
               <Badge
-                bg="danger"
+                bg={
+                  userState.id_state === "valid"
+                    ? "success"
+                    : userState.id_state === "pending"
+                    ? "warning"
+                    : "danger"
+                }
                 className="d-flex align-items-center"
-                style={{ cursor: "pointer" }}
-                onClick={() => onVerifyClick("id")}
-                title="Click to upload"
               >
-                Upload Now
+                {userState.id_state === "valid" && (
+                  <>
+                    <CheckCircle size={14} className="me-1" /> Valid
+                  </>
+                )}
+                {userState.id_state === "pending" && "Pending Review"}
+                {userState.id_state === "rejected" && (
+                  <>
+                    <XCircle size={14} className="me-1" /> Rejected
+                  </>
+                )}
               </Badge>
-            )}
-          </ListGroupItem>
+            </div>
+          ) : userState.id_state === "rejected" ? (
+            // Case 2: No ID uploaded, but state is rejected → show upload button
+            <Badge
+              bg="danger"
+              className="d-flex align-items-center"
+              style={{ cursor: "pointer" }}
+              onClick={() => onVerifyClick("id")}
+              title="Click to upload"
+            >
+              Upload Now
+            </Badge>
+          ) : (
+            // Case 3: No ID uploaded but still pending/valid → show state badge
+            <Badge
+              bg={
+                userState.id_state === "valid"
+                  ? "success"
+                  : userState.id_state === "pending"
+                  ? "warning"
+                  : "secondary"
+              }
+              className="d-flex align-items-center"
+            >
+              {userState.id_state === "valid" && (
+                <>
+                  <CheckCircle size={14} className="me-1" /> Valid
+                </>
+              )}
+              {userState.id_state === "pending" && "Pending Review"}
+              {!userState.id_state && "Not Uploaded"}
+            </Badge>
+          )}
+        </ListGroupItem>
 
           {/* Role */}
           <ListGroupItem>
