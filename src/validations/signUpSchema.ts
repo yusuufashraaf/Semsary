@@ -19,10 +19,10 @@ const signUpSchema =z.object({
     .string()
     .min(1, { message: "Confirm Password is required" }),
     }).refine((input) => input.password === input.password_confirmation, {
-        message: "Password and Confirm Password does not match",
-        path: ["confirmPassword"],
+    message: "Password and Confirm Password do not match",
+    path: ["password_confirmation"], 
     })
-
+    
 type signUpType =z.infer<typeof signUpSchema>
 
 export { signUpSchema, type signUpType };
