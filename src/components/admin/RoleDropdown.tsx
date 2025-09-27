@@ -34,7 +34,7 @@ export const RoleDropdown: React.FC<RoleDropdownProps> = ({
 
   const handleChange = async (newRole: string) => {
     if (newRole === currentRole) return;
-    //await updateRole(user.id, newRole, "Role changed via dropdown");
+    await updateRole(user.id, newRole, "Role changed via dropdown");
   };
 
   return (
