@@ -13,7 +13,7 @@ type TUserCardProps = {
   role: "user" | "agent" | "owner" | "admin";
   status: "pending" | "active" | "suspended";
   id_state: "valid" | "rejected" | "pending";
-  idUpladed: string | null; // 👀 double-check spelling
+  idUploaded: string | null; // 👀 double-check spelling
   userId: number;
 };
 
@@ -49,8 +49,6 @@ const UserCard = ({
     const channel = echo.private(`user.${user.userId}`);
 
     channel.listen(".user.updated", (event: Partial<TUserCardProps>) => {
-
-      console.log("Realtime Event:", event);
 
       setUserState((prev) => ({ ...prev, ...event }));
     });
@@ -129,7 +127,7 @@ const UserCard = ({
           {/* ID */}
           <ListGroupItem className="d-flex justify-content-between align-items-center">
             <strong>ID Document:</strong>
-            {userState.idUpladed ? (
+            {userState.idUploaded ? (
               <Badge
                 bg={
                   userState.id_state === "valid"

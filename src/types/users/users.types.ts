@@ -19,7 +19,7 @@ export type TFullUser = {
   email_otp_expires_at: string | null;
   id_image_url: string | null;
   role: "user" | "admin" | "owner" | "agent";
-  id_state: 'pending'|'valid'|'rejected';
+  id_state: "pending"|"valid"|"rejected";
   phone_number: string;
   status: "pending" | "active" | "suspended";
   phone_verified_at: string | null;
