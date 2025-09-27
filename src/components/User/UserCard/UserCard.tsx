@@ -49,7 +49,9 @@ const UserCard = ({
     const channel = echo.private(`user.${user.userId}`);
 
     channel.listen(".user.updated", (event: Partial<TUserCardProps>) => {
+
       console.log("Realtime Event:", event);
+
       setUserState((prev) => ({ ...prev, ...event }));
     });
 
@@ -151,8 +153,9 @@ const UserCard = ({
                 )}
               </Badge>
             ) : userState.id_state === "rejected" ? (
+
               <Badge
-                bg="danger"
+                bg="secondary"
                 className="d-flex align-items-center"
                 style={{ cursor: "pointer" }}
                 onClick={() => onVerifyClick("id")}
@@ -160,6 +163,7 @@ const UserCard = ({
               >
                 Upload Now
               </Badge>
+
             ) : (
               <Badge
                 bg={
@@ -179,6 +183,7 @@ const UserCard = ({
                 {userState.id_state === "pending" && "Pending Review"}
                 {!userState.id_state && "Not Uploaded"}
               </Badge>
+
             )}
           </ListGroupItem>
                   {/* Role */}
@@ -202,7 +207,9 @@ const UserCard = ({
   );
 };
 
+
 export default UserCard;
 
   
+
 
