@@ -153,7 +153,7 @@ export default function PropertyList() {
       if (!data?.data) throw new Error("Invalid response from backend");
       
           const filteredListings = data.data.filter(
-         (property: Listing) => property.owner_id !== user?.id
+         (property: Listing) => property.owner_id !== user?.id && property.status.toLowerCase() !== 'pending' && property.status.toLowerCase() !== 'sold'
       );
 
       setBackendListings(filteredListings);

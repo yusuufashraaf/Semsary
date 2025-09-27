@@ -76,7 +76,6 @@ export interface BaseProperty {
 
 export interface Listing extends BaseProperty {
   image: string | null;
-  property_state?: string;
   pending_buyer_id?: number;
   owner?: any | undefined; // Allow undefined
 

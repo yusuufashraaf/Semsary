@@ -13,7 +13,7 @@ export default function FeatureListing() {
   if (error) return <ErrorMessage message={error} />;
 
   const filteredListings = listings?.filter(
-    (listing) => listing.owner_id !== user?.id
+    (listing) => listing.owner_id !== user?.id && listing.status?.toLowerCase() !== 'pending' && listing.status?.toLowerCase() !== 'sold'
   );
 
   return (
