@@ -29,8 +29,8 @@ const initialState: NotificationsState = {
 
 // 🔹 Mark notification as read
 export const markAsRead = createAsyncThunk<
-  { notificationId: number },
-  { userId: number; notificationId: number },
+  { notificationId: string },
+  { userId: number; notificationId: string },
   { rejectValue: string }
 >(
   "notifications/markAsRead",

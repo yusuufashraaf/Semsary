@@ -34,7 +34,7 @@ const UserNotifications = ({
 
   const handleTabChange = (tab: NotificationType) => setActiveTab(tab);
 
-  const handleMarkAsRead = (id: number) => {
+  const handleMarkAsRead = (id: string) => {
     dispatch(markAsRead({ userId: user.id, notificationId: id }));
   };
 
