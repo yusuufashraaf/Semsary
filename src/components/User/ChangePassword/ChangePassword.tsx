@@ -67,9 +67,9 @@ const ChangePassword = () => {
   <Link to="/forgot-password" className="text-decoration-none">
     Forgot Password?
   </Link>
-  <Link to="/register" className="text-decoration-none">
+  {/* <Link to="/register" className="text-decoration-none">
     Register Here
-  </Link>
+  </Link> */}
 </div>
           <Input
             label="New Password"

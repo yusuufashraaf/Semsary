@@ -24,9 +24,7 @@ const UserCard = ({
   user: TUserCardProps;
   onVerifyClick: (type: "email" | "phone" | "id") => void;
 }) => {
-
   const [userState, setUserState] = useState(user);
-
 
   const getStatusVariant = (status: TUserCardProps["status"]) => {
     switch (status) {
@@ -51,7 +49,6 @@ const UserCard = ({
     const channel = echo.private(`user.${user.userId}`);
 
     channel.listen(".user.updated", (event: Partial<TUserCardProps>) => {
-
       // Merge incoming event into local state
       setUserState((prev) => ({ ...prev, ...event }));
     });
@@ -65,7 +62,7 @@ const UserCard = ({
     <Card className="shadow-sm">
       <Card.Header as="h5" className="d-flex align-items-center">
         <User size={24} className="me-2" />
-        User #{userId} Profile
+        User #{userState.userId} Profile
       </Card.Header>
       <Card.Body>
         <ListGroup variant="flush">
@@ -130,15 +127,43 @@ const UserCard = ({
             <strong>ID Document:</strong>
 
             {userState.idUpladed ? (
-
-            {/* {idUpladed ? (
-
-              <Badge bg="success" className="d-flex align-items-center">
-                Uploaded
-              </Badge>
+              userState.id_state === "valid" ? (
+                <Badge bg="success" className="d-flex align-items-center">
+                  Verified ✅
+                </Badge>
+              ) : userState.id_state === "pending" ? (
+                <Badge 
+                  bg="warning" 
+                  className="d-flex align-items-center" 
+                  onClick={() => onVerifyClick("id")} 
+                  style={{ cursor: "pointer" }}
+                >
+                  Under Review ⏳
+                </Badge>
+              ) : userState.id_state === "rejected" ? (
+                <Badge 
+                  bg="danger" 
+                  className="d-flex align-items-center"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => onVerifyClick("id")}
+                  title="Click to re-upload"
+                >
+                  Rejected - Upload Again
+                </Badge>
+              ) : (
+                <Badge
+                  bg="secondary"
+                  className="d-flex align-items-center"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => onVerifyClick("id")}
+                  title="Click to upload"
+                >
+                  Upload Now
+                </Badge>
+              )
             ) : (
               <Badge
-                bg="danger"
+                bg="secondary"
                 className="d-flex align-items-center"
                 style={{ cursor: "pointer" }}
                 onClick={() => onVerifyClick("id")}
@@ -146,36 +171,7 @@ const UserCard = ({
               >
                 Upload Now
               </Badge>
-            )} */}
-            {id_state === "valid" ? (
-  <Badge bg="success" className="d-flex align-items-center">
-    Verified ✅
-  </Badge>
-) : id_state === "pending" ? (
-  <Badge bg="warning" className="d-flex align-items-center" onClick={() => onVerifyClick("id")} style={{ cursor: "pointer" }}>
-    Under Review ⏳
-  </Badge>
-) : id_state === "rejected" ? (
-  <Badge 
-    bg="danger" 
-    className="d-flex align-items-center"
-    style={{ cursor: "pointer" }}
-    onClick={() => onVerifyClick("id")}
-    title="Click to re-upload"
-  >
-    Rejected - Upload Again
-  </Badge>
-) : (
-  <Badge
-    bg="secondary"
-    className="d-flex align-items-center"
-    style={{ cursor: "pointer" }}
-    onClick={() => onVerifyClick("id")}
-    title="Click to upload"
-  >
-    Upload Now
-  </Badge>
-)}
+            )}
           </ListGroupItem>
 
           {/* Role */}
@@ -198,4 +194,5 @@ const UserCard = ({
     </Card>
   );
 };
+
 export default UserCard;
