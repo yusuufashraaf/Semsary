@@ -62,7 +62,6 @@ const notificationsSlice = createSlice({
       })
       .addCase(actFetchNotifications.fulfilled, (state, action) => {
         state.loading = false;
-        console.log(action.payload);
         
         state.items = action.payload;
       })
