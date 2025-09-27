@@ -75,7 +75,7 @@ const UserCard = ({
     <Card className="shadow-sm">
       <Card.Header as="h5" className="d-flex align-items-center">
         <User size={24} className="me-2" />
-        User Profile
+        User #{userId} Profile
       </Card.Header>
       <Card.Body>
         <ListGroup variant="flush">

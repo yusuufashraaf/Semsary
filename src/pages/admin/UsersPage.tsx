@@ -1,4 +1,4 @@
-// src/pages/admin/UsersPage.tsx - Fixed version
+// src/pages/admin/UsersPage.tsx - Fixed Pagination
 import React, { useState, useEffect } from 'react';
 import { Button } from '@components/ui/Button';
 import { Badge } from '@components/ui/Badge';
@@ -59,16 +59,25 @@ export const UsersPage: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [isButtonLoading, setIsButtonLoading] = useState<number | null>(null); // Track loading per user
+  const [isButtonLoading, setIsButtonLoading] = useState<number | null>(null);
 
-  // Use the filters in the query
-  const { data: usersData, isLoading, error, refetch } = useUsers(currentPage, USERS_PER_PAGE, filters);
+  // FIXED: Use filters.per_page instead of constant
+  const currentPerPage = filters.per_page || USERS_PER_PAGE;
+  
+  const { data: usersData, isLoading, error, refetch } = useUsers(
+    currentPage, 
+    currentPerPage, 
+    filters
+  );
+  
   const { data: userProperties, isLoading: propertiesLoading } = useUserProperties(selectedUserId!, !!selectedUserId);
   const { data: userTransactions, isLoading: transactionsLoading } = useUserTransactions(selectedUserId!, !!selectedUserId);
   
   const users = usersData?.data || [];
   const totalUsers = usersData?.total || 0;
-  const totalPages = Math.ceil(totalUsers / USERS_PER_PAGE);
+  
+  // FIXED: Calculate total pages based on current per_page value
+  const totalPages = Math.ceil(totalUsers / currentPerPage);
   const selectedUser = users.find(u => u.id === selectedUserId);
 
   // Status/Role color mapping
@@ -181,6 +190,7 @@ export const UsersPage: React.FC = () => {
         // CRITICAL FIX: Refetch the data to update the UI
         await refetch();
         console.log("after refetch");
+        setSelectedUserId(res.data.user.id);
         console.log(selectedUser);
         
         
@@ -620,7 +630,7 @@ export const UsersPage: React.FC = () => {
                 />
               </div>
 
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium mb-2">Results Per Page</label>
                 <Select
                   value={filters.per_page?.toString() || USERS_PER_PAGE.toString()}
@@ -632,7 +642,21 @@ export const UsersPage: React.FC = () => {
                     { value: '50', label: '50 per page' },
                   ]}
                 />
-              </div>
+              </div> */}
+              <div className="flex items-center space-x-4">
+  <span className="text-sm text-gray-700">Show:</span>
+  <Select
+    value={currentPerPage.toString()}
+    onChange={(e) => updateFilter('per_page', parseInt(e.target.value))}
+    options={[
+      { value: '10', label: '10' },
+      { value: '15', label: '15' },
+      { value: '25', label: '25' },
+      { value: '50', label: '50' },
+    ]}
+    className="w-20"
+  />
+</div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -842,33 +866,59 @@ export const UsersPage: React.FC = () => {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between bg-white rounded-lg border p-4">
-          <div className="text-sm text-gray-700">
-            Showing {(currentPage - 1) * USERS_PER_PAGE + 1} to {Math.min(currentPage * USERS_PER_PAGE, totalUsers)} of {totalUsers} users
-          </div>
-          <div className="flex space-x-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(currentPage - 1)}
-            >
-              Previous
-            </Button>
-            <span className="px-3 py-2 text-sm text-gray-700">
-              Page {currentPage} of {totalPages}
-            </span>
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(currentPage + 1)}
-            >
-              Next
-            </Button>
-          </div>
+    <div className="flex items-center justify-between bg-white rounded-lg border p-4">
+      <div className="text-sm text-gray-700">
+        Showing {(currentPage - 1) * currentPerPage + 1} to {Math.min(currentPage * currentPerPage, totalUsers)} of {totalUsers} users
+      </div>
+      <div className="flex space-x-2">
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+        >
+          Previous
+        </Button>
+        
+        {/* FIXED: Better pagination controls with page numbers */}
+        <div className="flex space-x-1">
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            let pageNumber;
+            if (totalPages <= 5) {
+              pageNumber = i + 1;
+            } else if (currentPage <= 3) {
+              pageNumber = i + 1;
+            } else if (currentPage >= totalPages - 2) {
+              pageNumber = totalPages - 4 + i;
+            } else {
+              pageNumber = currentPage - 2 + i;
+            }
+
+            return (
+              <Button
+                key={pageNumber}
+                variant={currentPage === pageNumber ? "primary" : "secondary"}
+                size="sm"
+                onClick={() => setCurrentPage(pageNumber)}
+                className="min-w-[40px]"
+              >
+                {pageNumber}
+              </Button>
+            );
+          })}
         </div>
-      )}
+
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}
+        >
+          Next
+        </Button>
+      </div>
+    </div>
+  )}
 
       {/* User Details Modal with Tabs */}
       {showDetailsModal && selectedUser && (
@@ -912,6 +962,7 @@ export const UsersPage: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Card title="Basic Information">
                       <div className="space-y-4">
+                        <InfoRow label="ID" value={"#" + selectedUser.id}/>
                         <InfoRow label="Full Name" value={`${selectedUser.first_name} ${selectedUser.last_name}`} />
                         <InfoRow label="Email" value={selectedUser.email} verified={!!selectedUser.email_verified_at} />
                         <InfoRow label="Phone" value={selectedUser.phone_number} verified={!!selectedUser.phone_verified_at} />
@@ -977,85 +1028,86 @@ export const UsersPage: React.FC = () => {
 
                 {/* Properties Tab */}
                 {activeTab === 'properties' && (
-                  <Card title="User Properties">
-                    {userProperties && userProperties.length > 0 ? (
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
-                          <thead>
-                            <tr>
-                              <th className="text-left p-2">Title</th>
-                              <th className="text-left p-2">Type</th>
-                              <th className="text-left p-2">Price</th>
-                              <th className="text-left p-2">Status</th>
-                              <th className="text-left p-2">Created</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {userProperties.map((property: Property) => (
-                              <tr key={property.id} className="border-t">
-                                <td className="p-2">{property.title}</td>
-                                <td className="p-2">{property.type}</td>
-                                <td className="p-2">{formatCurrency(property.price)}</td>
-                                <td className="p-2">
-                                  <Badge variant={getStatusColor(property.status)}>
-                                    {property.status}
-                                  </Badge>
-                                </td>
-                                <td className="p-2">{formatDate(property.created_at)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <BuildingOfficeIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-gray-500">No properties found</p>
-                      </div>
-                    )}
-                  </Card>
-                )}
+  <Card title="User Properties">
+    {userProperties && userProperties.length > 0 ? (
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr>
+              <th className="text-left p-2">Title</th>
+              <th className="text-left p-2">Type</th>
+              <th className="text-left p-2">Price</th>
+              <th className="text-left p-2">Status</th>
+              <th className="text-left p-2">Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {userProperties.map((property: any) => (
+              <tr key={property.id} className="border-t">
+                <td className="p-2">{property.title}</td>
+                <td className="p-2">{property.type}</td>
+                <td className="p-2">{formatCurrency(property.price)}</td>
+                <td className="p-2">
+                  <Badge variant={getStatusColor(property.status)}>
+                    {property.status}
+                  </Badge>
+                </td>
+                <td className="p-2">{formatDate(property.created_at)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <div className="text-center py-8">
+        <BuildingOfficeIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+        <p className="text-gray-500">No properties found</p>
+      </div>
+    )}
+  </Card>
+)}
 
                 {/* Transactions Tab */}
-                {activeTab === 'transactions' && (
-                  <Card title="User Transactions">
-                    {userTransactions && userTransactions.length > 0 ? (
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
-                          <thead>
-                            <tr>
-                              <th className="text-left p-2">Type</th>
-                              <th className="text-left p-2">Amount</th>
-                              <th className="text-left p-2">Status</th>
-                              <th className="text-left p-2">Gateway</th>
-                              <th className="text-left p-2">Date</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {userTransactions.map((transaction: Transaction) => (
-                              <tr key={transaction.id} className="border-t">
-                                <td className="p-2">{transaction.type}</td>
-                                <td className="p-2">{formatCurrency(parseFloat(transaction.amount))}</td>
-                                <td className="p-2">
-                                  <Badge variant={getStatusColor(transaction.status)}>
-                                    {transaction.status}
-                                  </Badge>
-                                </td>
-                                <td className="p-2">{transaction.payment_gateway}</td>
-                                <td className="p-2">{formatDate(transaction.created_at)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <CreditCardIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-gray-500">No transactions found</p>
-                      </div>
-                    )}
-                  </Card>
-                )}
+                {/* Transactions Tab */}
+{activeTab === 'transactions' && (
+  <Card title="User Transactions">
+    {userTransactions && userTransactions.length > 0 ? (
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr>
+              <th className="text-left p-2">Type</th>
+              <th className="text-left p-2">Amount</th>
+              <th className="text-left p-2">Status</th>
+              <th className="text-left p-2">Gateway</th>
+              <th className="text-left p-2">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {userTransactions.map((transaction: any) => (
+              <tr key={transaction.id} className="border-t">
+                <td className="p-2">{transaction.type}</td>
+                <td className="p-2">{formatCurrency(parseFloat(transaction.amount))}</td>
+                <td className="p-2">
+                  <Badge variant={getStatusColor(transaction.status)}>
+                    {transaction.status}
+                  </Badge>
+                </td>
+                <td className="p-2">{transaction.payment_gateway}</td>
+                <td className="p-2">{formatDate(transaction.created_at)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <div className="text-center py-8">
+        <CreditCardIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+        <p className="text-gray-500">No transactions found</p>
+      </div>
+    )}
+  </Card>
+)}
 
                 {/* Image Tab */}
                 {activeTab === 'image' && (

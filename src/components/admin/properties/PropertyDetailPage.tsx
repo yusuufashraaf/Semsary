@@ -27,6 +27,7 @@ import {
   PencilIcon
 } from '@heroicons/react/24/outline';
 import { propertiesApi } from '@api/endpoints/properties';
+import { Carousel } from 'react-bootstrap';
 
 export const PropertyDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -222,32 +223,41 @@ export const PropertyDetailPage: React.FC = () => {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Property Image */}
       <div className="lg:col-span-2">
-        <Card className="p-0 overflow-hidden">
-          {property.images && property.images.length > 0 ? (
-            <div className="relative">
-              <img
-                src={property.images[0]?.url}
-                alt={property.title}
-                className="w-full h-96 object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/placeholder-property.jpg';
-                }}
-              />
-              {property.images.length > 1 && (
-                <div className="absolute top-4 right-4 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-sm">
-                  1 / {property.images.length}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="h-96 bg-gray-100 flex items-center justify-center">
-              <div className="text-center">
-                <PhotoIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No images available</p>
-              </div>
+<Card className="p-0 overflow-hidden">
+  {property.images && property.images.length > 0 ? (
+    <Carousel 
+      indicators={property.images.length > 1}
+      controls={property.images.length > 1}
+      interval={null} // Remove auto-sliding
+      className="property-carousel"
+    >
+      {property.images.map((image, index) => (
+        <Carousel.Item key={image.id || index}>
+          <img
+            src={image.url}
+            alt={`${property.title} - Image ${index + 1}`}
+            className="w-full h-96 object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = '/placeholder-property.jpg';
+            }}
+          />
+          {property.images.length > 1 && (
+            <div className="absolute top-4 right-4 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-sm">
+              {index + 1} / {property.images.length}
             </div>
           )}
-        </Card>
+        </Carousel.Item>
+      ))}
+    </Carousel>
+  ) : (
+    <div className="h-96 bg-gray-100 flex items-center justify-center">
+      <div className="text-center">
+        <PhotoIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+        <p className="text-gray-600">No images available</p>
+      </div>
+    </div>
+  )}
+</Card>
 
         {/* Property Description */}
         <Card className="mt-6">
@@ -451,7 +461,7 @@ export const PropertyDetailPage: React.FC = () => {
               </div>
             </div>
             
-            <div className="flex items-center space-x-3">
+            {/* <div className="flex items-center space-x-3">
               <Button variant="outline" className="flex items-center space-x-2">
                 <ShareIcon className="h-4 w-4" />
                 <span>Share</span>
@@ -464,7 +474,7 @@ export const PropertyDetailPage: React.FC = () => {
                 <PencilIcon className="h-4 w-4" />
                 <span>Edit</span>
               </Button>
-            </div>
+            </div> */}
           </div>
 
           {/* Action Bar */}
@@ -504,7 +514,7 @@ export const PropertyDetailPage: React.FC = () => {
           )}
 
           {/* Tabs */}
-          <div className="border-b border-gray-200">
+          {/* <div className="border-b border-gray-200">
             <nav className="flex space-x-8">
               {tabs.map((tab) => {
                 const IconComponent = tab.icon;
@@ -524,7 +534,7 @@ export const PropertyDetailPage: React.FC = () => {
                 );
               })}
             </nav>
-          </div>
+          </div> */}
         </div>
       </div>
 
