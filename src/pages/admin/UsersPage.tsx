@@ -197,20 +197,20 @@ export const UsersPage: React.FC = () => {
         let successMessage = '';
         let check = true;
         console.log(selectedUser);
-        switch (newActivationState) {
+        switch (res.data.user.status) {
           case "suspended":
             successMessage = 'User has been suspended successfully.';
             break;
           case "active":
-            if(selectedUser?.email_verified_at == null){
+            if(res.data.user.email_verified_at == null){
               check = false;
               successMessage = 'User Email is Not Verified, User status will be pending.';
             }
-            else if(selectedUser?.phone_verified_at == null){
+            else if(res.data.user.phone_verified_at == null){
               check = false;
               successMessage = 'User Phone is Not Verified, User status will be pending.';
             }
-            else if(selectedUser?.id_state != "valid"){
+            else if(res.data.user.id_state != "valid"){
               check = false;
               successMessage = 'User ID is Not Verified, User status will be pending.';
             }
@@ -220,7 +220,26 @@ export const UsersPage: React.FC = () => {
               
             break;
           case "pending":
-            successMessage = 'User state has been set to pending successfully.';
+            if(newActivationState == "active"){
+              if(res.data.user.email_verified_at == null){
+              check = false;
+              successMessage = 'User Email is Not Verified, User status will be pending.';
+            }
+            else if(res.data.user.phone_verified_at == null){
+              check = false;
+              successMessage = 'User Phone is Not Verified, User status will be pending.';
+            }
+            else if(res.data.user.id_state != "valid"){
+              check = false;
+              successMessage = 'User ID is Not Verified, User status will be pending.';
+            }
+            else{
+              successMessage = 'User state has been set to pending successfully.';
+            }
+            }
+            else{
+              successMessage = 'User state has been set to pending successfully.';
+            }
             break;
         }
         if(check){
