@@ -776,7 +776,7 @@ export const UsersPage: React.FC = () => {
                         </div>
                         <div>
                           <div className="font-medium text-gray-900">
-                            {user.first_name} {user.last_name}
+                            {user.first_name} {user.last_name} #{user.id}
                           </div>
                           <div className="text-sm text-gray-500">{user.email}</div>
                         </div>
@@ -833,19 +833,6 @@ export const UsersPage: React.FC = () => {
                       {formatDate(user.created_at)}
                     </td>
                     <td className="px-6 py-4 space-x-2" onClick={(e) => e.stopPropagation()}>
-                      {user.status === 'active' && (
-                        <Button 
-                          size="sm"
-                          variant="danger"
-                          onClick={() => handleUserActivationStates(user, "suspended")}
-                          loading={isButtonLoading === user.id}
-                          disabled={isButtonLoading !== null}
-                        >
-                          <ExclamationTriangleIcon className="h-4 w-4 mr-1" />
-                          Suspend
-                        </Button>
-                      )}
-
                       {(user.status === 'pending' || user.status === 'suspended') && (
                         <Button
                           size="sm"
@@ -856,6 +843,18 @@ export const UsersPage: React.FC = () => {
                         >
                           <CheckCircleIcon className="h-4 w-4 mr-1" />
                           {user.status === 'suspended' ? 'Reactivate' : 'Activate'}
+                        </Button>
+                      )}
+                      {(user.status === 'active' || user.status === 'pending') && (
+                        <Button 
+                          size="sm"
+                          variant="danger"
+                          onClick={() => handleUserActivationStates(user, "suspended")}
+                          loading={isButtonLoading === user.id}
+                          disabled={isButtonLoading !== null}
+                        >
+                          <ExclamationTriangleIcon className="h-4 w-4 mr-1" />
+                          Suspend
                         </Button>
                       )}
                     </td>

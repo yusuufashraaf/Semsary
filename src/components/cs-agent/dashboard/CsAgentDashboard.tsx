@@ -302,7 +302,7 @@ mutationFn: (vars: { id: number; status: VerificationStatus; feedback?: string }
                   </td>
                   <td>{p.status}</td>
                   <td>
-                    {p.status === "Pending" ? (
+                    {(p.status === "Pending" || p.owner?.status != "suspended")? (
                       <div className="d-flex gap-2 align-items-center">
                         <Form.Select
                           size="sm"
@@ -320,7 +320,7 @@ mutationFn: (vars: { id: number; status: VerificationStatus; feedback?: string }
                         <Button
                           size="sm"
                           variant="primary"
-                          disabled={updatingId === p.id && mutation.isPending}
+                          disabled={(updatingId === p.id && mutation.isPending)}
                           onClick={() => {
                             if (!current) {
                               setWarning((w) => ({
@@ -338,7 +338,7 @@ mutationFn: (vars: { id: number; status: VerificationStatus; feedback?: string }
                         </Button>
                       </div>
                     ) : (
-                      <span className="text-muted small">No actions (state: {p.status})</span>
+                      <span className="text-muted small">No actions (state: {p.status}) {p.owner?.status == "suspended"?"Owner is Suspended":""}</span>
                     )}
 
                     {warning[p.id] && (

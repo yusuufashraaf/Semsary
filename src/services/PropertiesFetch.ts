@@ -33,6 +33,7 @@ export interface Property {
     id: number;
     name: string;
     email: string;
+    status: string
   };
   documents?: string[];
   images?: {
