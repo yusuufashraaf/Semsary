@@ -22,6 +22,8 @@ import { toast } from "react-toastify";
 import { getUnavailableDates } from "@services/rentRequest";
 import { usePropertyPurchases } from "@hooks/usePropertyPurchases";
 import WalletCard from "@components/Wallet/wallet";
+import { useAppSelector } from "@store/hook";
+import ErrorMessage from "@components/common/ErrorMessage/ErrorMessage";
 
 // Guest dropdown options
 const guestOptions: GuestOption[] = [
@@ -318,6 +320,11 @@ function PropertyListing() {
   // Normal render
   return (
     <div className={styles.propertyContainer}>
+      {user?.status !== "active" && user && (
+        <>
+        <ErrorMessage message="Your account is not activated yet." link="/profile/home" linkMessage="Activate Now?"/>
+          </>
+      ) }
       <BreadCrumb propertyId={String(propertyId)} />
 
       {/* Pass wishlist state and toggle function */}
@@ -357,9 +364,14 @@ function PropertyListing() {
       />
     </div>
 
-    <div className={styles.cardWrapper}>
-      <WalletCard />
-    </div>
+              {
+                user && (
+                  <>    <div className={styles.cardWrapper}>
+  <WalletCard />
+                  </div>
+                  </>
+                )
+             }
   </div>
 </div>
 </div>
