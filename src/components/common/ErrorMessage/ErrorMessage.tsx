@@ -7,13 +7,14 @@ import { ErrorMessageProps } from "src/types";
  * - Only visible if `message` exists and `visible` is true
  * - Uses role="alert" for accessibility
  */
-function ErrorMessage({ message, visible = true }: ErrorMessageProps) {
+function ErrorMessage({ message, visible = true , link , linkMessage}: ErrorMessageProps) {
   if (!message || !visible) return null;
 
   return (
     <div className={styles.errorContainer}>
       <div className={styles.errorMessage} role="alert">
         {message}
+        <a href={link }>{linkMessage}</a>
       </div>
     </div>
   );

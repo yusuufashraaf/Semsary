@@ -4,6 +4,7 @@ import styles from "./BookingCard.module.css";
 import { formatCurrency } from "@utils/HelperFunctions";
 import { Property, GuestOption } from "src/types";
 import { useState } from "react";
+import { useAppSelector } from "@store/hook";
 
 interface BookingCardProps {
   property: Property;
@@ -50,18 +51,19 @@ function BookingCard({
   const isSell = property.price_type === "FullPay";
   const isRentFormValid =
     booking.checkIn && booking.checkOut && booking.guests && booking.nights > 0;
+  const { user } = useAppSelector(state => state.Authslice);
 
   // Check if we should show the buy button
 const shouldShowBuyButton = () => {
   if (!isSell) return false;
-  if (activePurchase && ['pending', 'paid'].includes(activePurchase.status)) return false;
-  return property.status === "Valid";
+  if (activePurchase && ['paid'].includes(activePurchase.status) || user?.id === property.host.id) return false;
+  if (user?.status !== "active") return false;
+  return property.status === "Valid" ||  ['pending'].includes(activePurchase.status);
 };
-
   // Check if we should show cancel button (pending or paid status)
   const shouldShowCancelButton = () => {
     if (!hasActivePurchase || !activePurchase) return false;
-    return [ 'paid' , "pending"].includes(activePurchase.status);
+    return [ 'paid'].includes(activePurchase.status);
   };
 
   // Check if we should show owner info (only for buy properties with pending/paid status)
@@ -75,7 +77,7 @@ const shouldShowBuyButton = () => {
     if (!hasActivePurchase || !activePurchase) return null;
     
     const statusMessages = {
-      'pending': 'Purchase Pending',
+      'paused': 'Purchase paused press buy now to continue',
       'paid': 'Purchase Paid',
       'confirmed': 'Purchase Confirmed',
       'completed': 'Purchase Completed',

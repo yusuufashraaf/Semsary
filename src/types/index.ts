@@ -29,6 +29,7 @@ export interface Coordinates {
  * Host or property owner information.
  */
 export interface Host {
+  id?:number
   name: string;
   avatar: string;
   joinDate: string;
@@ -429,6 +430,8 @@ export interface AddToWishlistProps {
 export interface ErrorMessageProps {
   message?: string;
   visible?: boolean;
+  link?: string
+  linkMessage?:string
 }
 
 // ---------------- Error screen ----------------
