@@ -81,7 +81,10 @@ function Filters({
     },
     [amenities, setAmenities]
   );
-
+// ✅ Filter statuses to only show 'valid' and 'invalid'
+const filteredStatuses = useMemo(() => {
+  return statuses.filter(status => ['valid', 'invalid'].includes(status.toLowerCase()));
+}, [statuses]);
   return (
     <div className={`${styles.filtersSidebar} ${styles.show}`}>
       {/* Header */}
@@ -207,7 +210,7 @@ function Filters({
             className={styles.customSelect}
           >
             <option value="">All Status</option>
-            {statuses.map((s) => (
+            {filteredStatuses.map((s) => (
               <option key={s} value={s}>
                 {s.charAt(0).toUpperCase() + s.slice(1)}
               </option>

@@ -91,7 +91,7 @@ const DashboardOverview: React.FC = () => {
         (p) => p.property_state === "Valid" && p.status === "rent"
       ),
       sold: propertiesWithCurrentState.filter((p) => p.property_state === "Sold"),
-      rented: propertiesWithCurrentState.filter((p) => p.property_state === "Rented"),
+      // rented: propertiesWithCurrentState.filter((p) => p.property_state === "Rented"),
     };
   };
 
@@ -388,9 +388,9 @@ const DashboardOverview: React.FC = () => {
           <Nav.Item>
             <Nav.Link eventKey="sold">Sold</Nav.Link>
           </Nav.Item>
-          <Nav.Item>
+          {/* <Nav.Item>
             <Nav.Link eventKey="rented">Rented</Nav.Link>
-          </Nav.Item>
+          </Nav.Item> */}
         </Nav>
 
         <Tab.Content>
@@ -406,9 +406,9 @@ const DashboardOverview: React.FC = () => {
           <Tab.Pane eventKey="sold">
             {renderPropertiesTable(filteredProperties.sold)}
           </Tab.Pane>
-          <Tab.Pane eventKey="rented">
+          {/* <Tab.Pane eventKey="rented">
             {renderPropertiesTable(filteredProperties.rented)}
-          </Tab.Pane>
+          </Tab.Pane> */}
         </Tab.Content>
       </Tab.Container>
       {/* Delete Confirmation Modal */}

@@ -152,12 +152,9 @@ export default function PropertyList() {
     
       if (!data?.data) throw new Error("Invalid response from backend");
       
-          const filteredListings = data.data.filter(
-         (property: Listing) => property.owner_id !== user?.id && property.status.toLowerCase() !== 'pending'
-          && property.status.toLowerCase() !== 'sold' && property.status.toLowerCase() !== 'rejected'
-      );
+      
 
-      setBackendListings(filteredListings);
+      setBackendListings(data.data);
       setTotalPages(data.last_page || 1);
       setTotalResults(data.total || 0);
     } catch (err: any) {

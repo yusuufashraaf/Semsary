@@ -37,7 +37,7 @@ export default function WalletCard() {
         </div>
         <div className={styles.breakdownRow}>
           <span>Escrow Refundable</span>
-          <span>{formatCurrency(wallet.data.refundable)}</span>
+          <span>{formatCurrency(wallet.data.claimable)}</span>
         </div>
       </div>
 
