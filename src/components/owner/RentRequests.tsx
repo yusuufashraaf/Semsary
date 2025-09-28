@@ -183,182 +183,201 @@ const OwnerRequests: React.FC<RequestsProps> = ({ userId }) => {
   }
 
   return (
-    <div className="requests-container">
-      {/* Owner Requests */}
-      {ownerRentRequests.length > 0 && (
-        <>
-          <div className="requests-header">
-            <h2 className="requests-title">Requests to Your Properties</h2>
-            <span className="requests-count">
-              {ownerRentRequests.length}{" "}
-              {ownerRentRequests.length === 1 ? "request" : "requests"}
-            </span>
-          </div>
+  <div className="requests-container">
+    {/* Owner Requests */}
+    {ownerRentRequests.length > 0 && (
+      <>
+        <div className="requests-header">
+          <h2 className="requests-title">Requests to Your Properties</h2>
+          <span className="requests-count">
+            {ownerRentRequests.length}{" "}
+            {ownerRentRequests.length === 1 ? "request" : "requests"}
+          </span>
+        </div>
 
-          <div className="requests-list">
-            {ownerRentRequests.map((req) => (
-              <div key={req.id} className="request-item">
-                <div className="request-content">
-                  <div className="request-info">
-                    <div className="request-header-info">
-                      <div className="request-id">
-                        <i className="fas fa-hashtag"></i> Request #{req.id}
-                      </div>
-                      {getStatusBadge(req.status)}
-                    </div>
+        <div className="requests-list">
+          {ownerRentRequests.map((req) => (
+            <div key={req.id} className="request-item">
+              <div className="request-header-info">
+                <div className="request-id">
+                  <i className="fas fa-hashtag"></i> Request #{req.id}
+                </div>
+                {getStatusBadge(req.status)}
+              </div>
 
-                    <h4 className="property-title"
-                    onClick={() => navigate(`/property/${req.property?.id}`)}
-                    >
-                      {req.property?.title || "Property Title"}
-                    </h4>
-                    <div className="location">
-                      <i className="fas fa-map-marker-alt"></i>{" "}
-                      {req.property?.location?.address || "Property Location"}
-                    </div>
+              <div className="request-content">
+                <div className="request-info">
+                  <h4 className="property-title"
+                      onClick={() => navigate(`/property/${req.property?.id}`)}
+                  >
+                    {req.property?.title || "Property Title"}
+                  </h4>
+                  
+                  <div className="location">
+                    <i className="fas fa-map-marker-alt"></i>{" "}
+                    {req.property?.location?.address || "Property Location"}
+                  </div>
+
+                  <div className="username">
+                    <i className="fas fa-user" style={{ fontSize: "14px" }}></i>
+                    Requested by: {req.user_info.first_name}{" "}
+                    {req.user_info.last_name}
+                    {req.status === "paid" && (
+                      <>
+                        {" - "}
+                        <i className="fas fa-phone"></i>{" "}
+                        {req.user_info.phone_number}
+                      </>
+                    )}
+                  </div>
+
+                  <div className="dates">
+                    <i className="fas fa-calendar-check"></i>{" "}
+                    Check-in: {new Date(req.check_in).toLocaleDateString()} | 
+                    <i className="fas fa-calendar-times"></i>{" "}
+                    Check-out: {new Date(req.check_out).toLocaleDateString()}
                   </div>
                 </div>
-
-                <div className="request-actions">
-                  {renderOwnerActions(req)}
-                </div>
-
-                <div className="username">
-                  <i className="fas fa-user" style={{ fontSize: "14px" }}></i>
-                  Requested by: {req.user_info.first_name}{" "}
-                  {req.user_info.last_name}
-                  {req.status === "paid" && (
-                    <>
-                      {" - "}
-                      <i className="fas fa-phone"></i>{" "}
-                      {req.user_info.phone_number}
-                    </>
-                  )}
-                </div>
               </div>
-            ))}
-          </div>
 
-          <div className="pagination">
-            <button
-              className="page-btn"
-              disabled={(ownerPagination?.current_page ?? 1) === 1}
-              onClick={() =>
-                fetchOwnerRentRequests({
-                  page: (ownerPagination?.current_page ?? 1) - 1,
-                })
-              }
-            >
-              <i className="fas fa-chevron-left"></i> Prev
-            </button>
+              <div className="request-actions">
+                {renderOwnerActions(req)}
+              </div>
+            </div>
+          ))}
+        </div>
 
-            <span className="page-info">
-              Page {ownerPagination?.current_page ?? 1} of{" "}
-              {ownerPagination?.last_page ?? 1}
-            </span>
+        <div className="pagination">
+          <button
+            className="page-btn"
+            disabled={(ownerPagination?.current_page ?? 1) === 1}
+            onClick={() =>
+              fetchOwnerRentRequests({
+                page: (ownerPagination?.current_page ?? 1) - 1,
+              })
+            }
+          >
+            <i className="fas fa-chevron-left"></i> Prev
+          </button>
 
-            <button
-              className="page-btn"
-              disabled={
-                (ownerPagination?.current_page ?? 1) ===
-                (ownerPagination?.last_page ?? 1)
-              }
-              onClick={() =>
-                fetchOwnerRentRequests({
-                  page: (ownerPagination?.current_page ?? 1) + 1,
-                })
-              }
-            >
-              Next <i className="fas fa-chevron-right"></i>
-            </button>
-          </div>
-        </>
-      )}
+          <span className="page-info">
+            Page {ownerPagination?.current_page ?? 1} of{" "}
+            {ownerPagination?.last_page ?? 1}
+          </span>
 
-      {/* User Requests */}
-      {userRentRequests.length > 0 && (
-        <>
-          <div className="requests-header">
-            <h2 className="requests-title">Your Rent Requests</h2>
-            <span className="requests-count">
-              {userRentRequests.length}{" "}
-              {userRentRequests.length === 1 ? "request" : "requests"}
-            </span>
-          </div>
+          <button
+            className="page-btn"
+            disabled={
+              (ownerPagination?.current_page ?? 1) ===
+              (ownerPagination?.last_page ?? 1)
+            }
+            onClick={() =>
+              fetchOwnerRentRequests({
+                page: (ownerPagination?.current_page ?? 1) + 1,
+              })
+            }
+          >
+            Next <i className="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </>
+    )}
 
-          <div className="requests-list">
-            {userRentRequests.map((req) => (
-              <div key={req.id} className="request-item">
-                <div className="request-content">
-                  <div className="request-info">
-                    <div className="request-header-info">
-                      <div className="request-id">
-                        <i className="fas fa-hashtag"></i> Request #{req.id}
-                      </div>
-                      {getStatusBadge(req.status)}
-                    </div>
+    {/* User Requests */}
+    {userRentRequests.length > 0 && (
+      <>
+        <div className="requests-header">
+          <h2 className="requests-title">Your Rent Requests</h2>
+          <span className="requests-count">
+            {userRentRequests.length}{" "}
+            {userRentRequests.length === 1 ? "request" : "requests"}
+          </span>
+        </div>
 
-                    <h4 className="property-title">
-                      {req.property?.title || "Property Title"}
-                    </h4>
+        <div className="requests-list">
+          {userRentRequests.map((req) => (
+            <div key={req.id} className="request-item">
+              <div className="request-header-info">
+                <div className="request-id">
+                  <i className="fas fa-hashtag"></i> Request #{req.id}
+                </div>
+                {getStatusBadge(req.status)}
+              </div>
 
-                    <div className="location">
-                      <i className="fas fa-map-marker-alt"></i>{" "}
-                      {req.property?.location?.address || "Property Location"}
-                    </div>
+              <div className="request-content">
+                <div className="request-info">
+                  <h4 className="property-title">
+                    {req.property?.title || "Property Title"}
+                  </h4>
+
+                  <div className="location">
+                    <i className="fas fa-map-marker-alt"></i>{" "}
+                    {req.property?.location?.address || "Property Location"}
+                  </div>
+
+                  <div className="dates">
+                    <i className="fas fa-calendar-check"></i>{" "}
+                    Check-in: {new Date(req.check_in).toLocaleDateString()} | 
+                    <i className="fas fa-calendar-times"></i>{" "}
+                    Check-out: {new Date(req.check_out).toLocaleDateString()}
                   </div>
                 </div>
-
-                <div className="request-actions">{renderUserActions(req)}</div>
               </div>
-            ))}
-          </div>
 
-          <div className="pagination">
-            <button
-              className="page-btn"
-              disabled={(userPagination?.current_page ?? 1) === 1}
-              onClick={() =>
-                fetchUserRentRequests({
-                  page: (userPagination?.current_page ?? 1) - 1,
-                })
-              }
-            >
-              <i className="fas fa-chevron-left"></i> Prev
-            </button>
+              <div className="request-actions">
+                {renderUserActions(req)}
+              </div>
+            </div>
+          ))}
+        </div>
 
-            <span className="page-info">
-              Page {userPagination?.current_page ?? 1} of{" "}
-              {userPagination?.last_page ?? 1}
-            </span>
+        <div className="pagination">
+          <button
+            className="page-btn"
+            disabled={(userPagination?.current_page ?? 1) === 1}
+            onClick={() =>
+              fetchUserRentRequests({
+                page: (userPagination?.current_page ?? 1) - 1,
+              })
+            }
+          >
+            <i className="fas fa-chevron-left"></i> Prev
+          </button>
 
-            <button
-              className="page-btn"
-              disabled={
-                (userPagination?.current_page ?? 1) ===
-                (userPagination?.last_page ?? 1)
-              }
-              onClick={() =>
-                fetchUserRentRequests({
-                  page: (userPagination?.current_page ?? 1) + 1,
-                })
-              }
-            >
-              Next <i className="fas fa-chevron-right"></i>
-            </button>
-          </div>
-        </>
-      )}
-      {userRentRequests.length === 0 && ownerRentRequests.length === 0 &&(
-        <div className="no-requests">
-          <div className="icon-wrapper">
-            <div className="no-requests-icon"></div>
-          </div>
-            <h2 className="no-requests-title">No rent requests found</h2>
-          </div>
-      )}
-    </div>
-  );
+          <span className="page-info">
+            Page {userPagination?.current_page ?? 1} of{" "}
+            {userPagination?.last_page ?? 1}
+          </span>
+
+          <button
+            className="page-btn"
+            disabled={
+              (userPagination?.current_page ?? 1) ===
+              (userPagination?.last_page ?? 1)
+            }
+            onClick={() =>
+              fetchUserRentRequests({
+                page: (userPagination?.current_page ?? 1) + 1,
+              })
+            }
+          >
+            Next <i className="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </>
+    )}
+    
+    {/* No Requests Found */}
+    {userRentRequests.length === 0 && ownerRentRequests.length === 0 && (
+      <div className="no-requests">
+        <div className="icon-wrapper">
+          <div className="no-requests-icon"></div>
+        </div>
+        <h2 className="no-requests-title">No rent requests found</h2>
+      </div>
+    )}
+  </div>
+);
 };
 
 export default OwnerRequests;
