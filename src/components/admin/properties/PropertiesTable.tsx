@@ -389,7 +389,7 @@ export const PropertiesTable: React.FC<PropertiesTableProps> = ({
                       )}
                       
                       {/* Assign Agent Button - Only show if no active assignment */}
-                      {!property.assignment?.is_assigned && (
+                      {/* {!property.assignment?.is_assigned && (
                         <Button
                           variant="outline"
                           size="sm"
@@ -399,7 +399,7 @@ export const PropertiesTable: React.FC<PropertiesTableProps> = ({
                         >
                           Assign Agent
                         </Button>
-                      )}
+                      )} */}
                     </div>
                   </td>
                 </tr>

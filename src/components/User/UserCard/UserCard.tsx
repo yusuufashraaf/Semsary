@@ -14,7 +14,7 @@ type TUserCardProps = {
   role: "user" | "agent" | "owner" | "admin";
   status: "pending" | "active" | "suspended";
   id_state: "valid" | "rejected" | "pending";
-  idUploaded: string | null; // 👀 double-check spelling
+  idUploaded: string | null; 
   userId: number;
 };
 
@@ -52,9 +52,7 @@ const UserCard = ({
    channel.listen(".user.updated", (event: Partial<TUserCardProps>) => {
     console.log("Realtime event received:", event);
     setUserState((prev) => {
-      if (event.id_state && event.id_state !== prev.id_state) {
-        toast.info(`Your ID status has been updated to "${event.id_state}"`);
-      }
+      toast.info(`Your ID status has been updated to "${event.id_state}"`);
       return { ...prev, ...event };
     });
   });
@@ -131,44 +129,21 @@ const UserCard = ({
           </ListGroupItem>
 
           {/* ID */}
-          <ListGroupItem className="d-flex justify-content-between align-items-center">
+            <ListGroupItem className="d-flex justify-content-between align-items-center">
             <strong>ID Document:</strong>
-            {userState.idUploaded ? (
+            {userState.id_state === "rejected" ? (
+              // Show upload button only if rejected
               <Badge
-                bg={
-                  userState.id_state === "valid"
-                    ? "success"
-                    : userState.id_state === "pending"
-                    ? "warning"
-                    : "danger"
-                }
-                className="d-flex align-items-center"
-              >
-                {userState.id_state === "valid" && (
-                  <>
-                    <CheckCircle size={14} className="me-1" /> Valid
-                  </>
-                )}
-                {userState.id_state === "pending" && "Pending Review"}
-                {userState.id_state === "rejected" && (
-                  <>
-                    <XCircle size={14} className="me-1" /> Rejected
-                  </>
-                )}
-              </Badge>
-            ) : userState.id_state === "rejected" ? (
-
-              <Badge
-                bg="secondary"
+                bg="danger"
                 className="d-flex align-items-center"
                 style={{ cursor: "pointer" }}
                 onClick={() => onVerifyClick("id")}
                 title="Click to upload"
               >
-                Upload Now
+                <XCircle size={14} className="me-1" /> Upload Now
               </Badge>
-
-            ) : (
+            ) : userState.idUploaded ? (
+              // If uploaded and not rejected, show status
               <Badge
                 bg={
                   userState.id_state === "valid"
@@ -185,9 +160,18 @@ const UserCard = ({
                   </>
                 )}
                 {userState.id_state === "pending" && "Pending Review"}
-                {!userState.id_state && "Not Uploaded"}
               </Badge>
-
+            ) : (
+              // Not uploaded at all
+              <Badge
+                bg="secondary"
+                className="d-flex align-items-center"
+                style={{ cursor: "pointer" }}
+                onClick={() => onVerifyClick("id")}
+                title="Click to upload"
+              >
+                Upload Now
+              </Badge>
             )}
           </ListGroupItem>
                   {/* Role */}
@@ -213,7 +197,3 @@ const UserCard = ({
 
 
 export default UserCard;
-
-  
-
-

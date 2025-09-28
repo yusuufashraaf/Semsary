@@ -8,6 +8,8 @@ import { AppDispatch } from "../../store";
 import { getDashboardData, getProperties } from "../../store/Owner/ownerDashboardSlice";
 import { useAppSelector } from "@store/hook";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { getEcho } from "@services/echoManager";
 const OwnerDashboard: React.FC = () => {
    const dispatch = useDispatch<AppDispatch>();
    const navigate = useNavigate();
@@ -28,7 +30,28 @@ const OwnerDashboard: React.FC = () => {
       navigate('/');
     }
   },[])
+  useEffect(() => {
+    if (!user) return;
 
+    const echo = getEcho();
+    if (!echo) return;
+
+    const channel = echo.private(`user.${user.id}`);
+
+    const propertyListener = (event: any) => {
+      console.log("Property update event:", event);
+      if (event.title) {
+        toast.info(`Your property "${event.title}" has been updated`);
+      }
+    };
+
+    channel.listen(".property.updated", propertyListener);
+
+    return () => {
+      channel.stopListening(".property.updated", propertyListener);
+      echo.leave(`user.${user.id}`);
+    };
+  }, [user]);
 
   const renderTabContent = () => {
     switch (activeTab) {

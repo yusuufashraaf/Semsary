@@ -42,9 +42,10 @@ const BasicInfo = () => {
         isPhoneVerified: !!user?.phone_verified_at,
         role: user?.role,
         status: user?.status,
-        idUpladed: user?.id_image_url ?? null,
+        idUploaded: user?.id_image_url ?? null,
         userId:user?.id ||0,
-        id_state:user.id_state
+        id_state:user.id_state,
+        
     };
 
     return (

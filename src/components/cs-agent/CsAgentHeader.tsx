@@ -37,7 +37,7 @@ export const CsAgentHeader: React.FC = () => {
     if (path === "/cs-agent/properties") return "Property Task Queue";
     if (path.startsWith("/cs-agent/properties/"))
       return "Property Verification";
-    if (path === "/cs-agent/verifications") return "Verification History";
+    // if (path === "/cs-agent/verifications") return "Verification History";
     if (path === "/cs-agent/performance") return "Performance Analytics";
     if (path === "/cs-agent/profile") return "Profile Settings";
     return "CS Agent Portal";
