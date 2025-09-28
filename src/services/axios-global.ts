@@ -59,7 +59,7 @@ const responseInterceptor = async (error: AxiosError) => {
 
       store.dispatch({
         type: "AuthSlice/setAccessToken",
-        payload: newAccessToken,
+        payload: { access_token: newAccessToken },
       });
 
       if (originalRequest.headers) {
@@ -68,7 +68,7 @@ const responseInterceptor = async (error: AxiosError) => {
 
       return api(originalRequest);
     } catch {
-      store.dispatch({ type: "AuthSlice/logOut" });
+      store.dispatch({ type: "AuthSlice/Logout" });
       return Promise.reject(error);
     }
   }

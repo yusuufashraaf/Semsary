@@ -318,7 +318,7 @@ function AppRouter() {
   }, [dispatch]);
 
 
-  if (!isInitialized || !user) {
+  if (!isInitialized) {
     return <LoadingScreen />;
   }
 

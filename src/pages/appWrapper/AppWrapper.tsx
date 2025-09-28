@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { TFullUser } from "@app-types/users/users.types";
 interface IAppWrapper {
     children:React.ReactNode;
-    currentUser:TFullUser
+    currentUser:TFullUser | null
 }
 
 function AppWrapper({ children, currentUser }:IAppWrapper) {
