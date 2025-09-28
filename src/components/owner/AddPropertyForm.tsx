@@ -25,7 +25,7 @@
       price: "",
       priceType: "FullPay",
       size: "",
-      status: "sale",
+      // status: "sale",
       query: "",
       selectedLocation: null as any,
       selectedFeatures: [] as number[],
@@ -324,12 +324,19 @@ const handleRemoveDocument = (index: number) => {
 
       try {
         const data = new FormData();
+        let status = "sale";
+        if(formData.priceType == "FullPay"){
+          status = "sale";
+        }
+        if(formData.priceType == "Daily"){
+          status = "rent";
+        }
         data.append("title", formData.title.trim());
         data.append("description", formData.description.trim());
         data.append("bedrooms", formData.bedrooms.toString());
         data.append("bathrooms", formData.bathrooms.toString());
         data.append("type", formData.type);
-        data.append("status", formData.status);
+        data.append("status",status);
         data.append("price", formData.price);
         data.append("price_type", formData.priceType);
         data.append("size", formData.size);
@@ -364,7 +371,7 @@ const handleRemoveDocument = (index: number) => {
           price: "",
           priceType: "FullPay",
           size: "",
-          status: "sale",
+          //status: "sale",
           query: "",
           selectedLocation: null as any,
           selectedFeatures: [],
@@ -543,7 +550,7 @@ const handleRemoveDocument = (index: number) => {
           </Row>
 
           <Row>
-            <Col md={4}>
+            <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Type <span className="text-danger">*</span></Form.Label>
                 <Form.Select
@@ -562,7 +569,7 @@ const handleRemoveDocument = (index: number) => {
               </Form.Group>
             </Col>
 
-            <Col md={4}>
+            <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Size (sq ft) <span className="text-danger">*</span></Form.Label>
                 <Form.Control
@@ -581,7 +588,7 @@ const handleRemoveDocument = (index: number) => {
                 )}
               </Form.Group>
             </Col>
-            <Col md={4}>
+            {/* <Col md={4}>
                 <Form.Group>
                   <Form.Label>Status</Form.Label>
                   <Form.Control
@@ -601,7 +608,7 @@ const handleRemoveDocument = (index: number) => {
                   </div>
                 )}
                 </Form.Group>
-            </Col>
+            </Col> */}
           </Row>
 
           <Row>
@@ -635,7 +642,7 @@ const handleRemoveDocument = (index: number) => {
                   disabled={isSubmitting}
                 >
                   <option value="FullPay">Full Payment</option>
-                  <option value="Monthly">Monthly Rent</option>
+                  {/* <option value="Monthly">Monthly Rent</option> */}
                   <option value="Daily">Daily Rent</option>
                 </Form.Select>
                 {errors?.price_type && (

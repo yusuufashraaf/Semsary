@@ -40,6 +40,12 @@ const PhoneVerification = ({
 
   const otpValue = watch("phoneOTP");
 
+  // Send OTP immediately on mount
+  useEffect(() => {
+    handleSendAgain();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // countdown
   useEffect(() => {
     let interval: number;

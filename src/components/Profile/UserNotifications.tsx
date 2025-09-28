@@ -6,6 +6,9 @@ import { useNotifications } from "@hooks/useNotifications";
 import { TFullUser } from "src/types/users/users.types";
 import { actFetchNotifications } from "@store/Noifications/Act/actFetchNotifications";
 import "./UserNotifications.css";
+import { useAppSelector } from "@store/hook";
+import { getEcho } from "@services/echoManager";
+import { toast } from "react-toastify";
 
 
 type NotificationType = "all" | "unread";
@@ -19,12 +22,39 @@ const UserNotifications = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState<NotificationType>("all");
+  const {user:currentUser} = useAppSelector(state=>state.Authslice)
 
   const { items: notifications, loading, error } = useSelector(
     (state: RootState) => state.notifications
   );
 
-  useNotifications(user?.id ?? null);
+  // useNotifications(user?.id ?? null);
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const echo = getEcho();
+    if (!echo) return;
+
+    const channel = echo.private(`user.${currentUser.id}`);
+
+    const propertyListener = (event: any) => {
+      console.log("Property update event:", event);
+      if (event.title) {
+        toast.info(`Your property "${event.title}" has been updated`);
+      }
+    };
+
+    channel.listen(".property.updated", propertyListener);
+
+    return () => {
+      channel.stopListening(".property.updated", propertyListener);
+      echo.leave(`user.${currentUser.id}`);
+    };
+  }, [currentUser]);
+
+
+
 
   useEffect(() => {
     if (user?.id) {
