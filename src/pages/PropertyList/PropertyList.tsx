@@ -146,8 +146,8 @@ export default function PropertyList() {
         page: currentPage,
         per_page: itemsPerPage,
         sortBy: filters.sortBy,
-       sortOrder: filters.sortOrder,
-
+        sortOrder: filters.sortOrder,
+         user_id: user?.id, 
       });
     
       if (!data?.data) throw new Error("Invalid response from backend");
