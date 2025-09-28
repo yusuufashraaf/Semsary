@@ -105,10 +105,10 @@
     }
       //contract validation
        if (formData.previewUrlsdocs.length === 0) {
-    errors.documents = "Property documents are required"; 
-  } else if (formData.previewUrlsdocs.length > 5) {
-    errors.documents = "Maximum 5 documents allowed"; 
-  }
+      errors.documents = "Property documents are required"; 
+    } else if (formData.previewUrlsdocs.length > 5) {
+      errors.documents = "Maximum 5 documents allowed"; 
+    }
 
       setValidationErrors(errors);
       return Object.keys(errors).length === 0;
@@ -229,6 +229,7 @@ const handleDocumentsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       }
     }
   }
+  e.target.value = "";
 };
 
 
@@ -567,7 +568,6 @@ const handleRemoveDocument = (index: number) => {
                 <Form.Control
                   type="number"
                   min={1}
-                  max={50000}
                   value={formData.size}
                   className={`custom-input ${errors?.size || validationErrors.size ? "is-invalid" : ""}`}
                   onChange={(e) => handleChange("size", e.target.value)}
@@ -611,7 +611,6 @@ const handleRemoveDocument = (index: number) => {
                 <Form.Control
                   type="number"
                   min={1}
-                  max={100000000}
                   value={formData.price}
                   className={`custom-input ${errors?.price || validationErrors.price ? "is-invalid" : ""}`}
                   onChange={(e) => handleChange("price", e.target.value)}
