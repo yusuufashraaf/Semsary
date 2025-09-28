@@ -242,7 +242,7 @@ const router = createBrowserRouter([
       },
       {
         path: "assignments",
-        element: <AssignmentsPage />,
+        element: <AgentAssignmentModal />,
       },
     ],
   },
