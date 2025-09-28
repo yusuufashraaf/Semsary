@@ -14,7 +14,7 @@ type TUserCardProps = {
   role: "user" | "agent" | "owner" | "admin";
   status: "pending" | "active" | "suspended";
   id_state: "valid" | "rejected" | "pending";
-  idUploaded: string | null; // 👀 double-check spelling
+  idUploaded: string | null; 
   userId: number;
 };
 
@@ -52,9 +52,6 @@ const UserCard = ({
    channel.listen(".user.updated", (event: Partial<TUserCardProps>) => {
     console.log("Realtime event received:", event);
     setUserState((prev) => {
-      if (event.id_state && event.id_state !== prev.id_state) {
-        toast.info(`Your ID status has been updated to "${event.id_state}"`);
-      }
       return { ...prev, ...event };
     });
   });
