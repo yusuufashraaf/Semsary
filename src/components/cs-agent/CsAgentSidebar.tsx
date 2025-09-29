@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { href, NavLink, useLocation } from "react-router-dom";
 import { useCsAgentUIStore } from "@store/cs-agent/csAgentStore";
 import { cn } from "@utils/classNames";
 import {
@@ -19,6 +19,7 @@ const navigation = [
   // { name: "Verifications", href: "/cs-agent/verifications", icon: DocumentCheckIcon },
   // { name: "Performance", href: "/cs-agent/performance", icon: ChartBarIcon },
   { name: "Profile", href: "/cs-agent/profile", icon: UserCircleIcon },
+  {name:"Checkout" , href:"/cs-agent/decision" , icon:DocumentCheckIcon}
 ];
 
 export const CsAgentSidebar: React.FC = () => {

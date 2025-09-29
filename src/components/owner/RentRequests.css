@@ -494,3 +494,427 @@
     padding: 0.4rem 0.6rem;
   }
 }
+/* ================================
+   Input Modal Styles - Compact & Warm
+   ================================ */
+
+/* ================================
+   Input Modal Overlay
+   ================================ */
+.input-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: var(--spacing-lg);
+  animation: fadeIn 0.3s ease;
+}
+
+/* ================================
+   Input Modal Container - COMPACT SIZE
+   ================================ */
+.input-modal-content {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 
+    0 15px 35px rgba(140, 92, 92, 0.12),
+    0 5px 15px rgba(140, 92, 92, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid var(--primary-border);
+}
+
+/* ================================
+   Input Modal Header - WARMER & COMPACT
+   ================================ */
+.input-modal-header {
+  padding: 24px 32px 20px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, color-mix(in srgb, var(--primary-color), var(--accent-color) 15%) 100%);
+  color: var(--white);
+  position: relative;
+  text-align: center;
+}
+
+.input-modal-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.input-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: var(--white);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.input-modal-close:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.input-modal-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ================================
+   Input Modal Body - COMPACT & WARM
+   ================================ */
+.input-modal-body {
+  padding: 32px 32px 24px;
+  color: var(--hover-color);
+  text-align: left;
+  background: var(--white);
+}
+
+.input-modal-body .input-modal-icon {
+  font-size: 2.8rem;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  opacity: 0.9;
+  text-align: center;
+}
+
+.input-modal-body p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+  color: var(--hover-color);
+  opacity: 0.8;
+}
+
+/* ================================
+   Input Modal Inputs - COMPACT
+   ================================ */
+.input-modal-input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--primary-border);
+  background: var(--white);
+  color: var(--hover-color);
+  font-size: 0.95rem;
+  margin-top: 0;
+  transition: all 0.3s ease;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+/* For textarea specifically */
+textarea.input-modal-input {
+  min-height: 80px;
+  max-height: 120px;
+}
+
+/* For regular input */
+input.input-modal-input {
+  height: 44px;
+}
+
+.input-modal-input::placeholder {
+  color: rgba(71, 36, 38, 0.5);
+  font-size: 0.9rem;
+}
+
+.input-modal-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(140, 92, 92, 0.12);
+  outline: none;
+  background: color-mix(in srgb, var(--white), var(--secondary-color) 3%);
+}
+
+.input-modal-input:disabled {
+  background: var(--background-dark);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ================================
+   Input Modal Footer - COMPACT & WARM
+   ================================ */
+.input-modal-footer {
+  padding: 24px 32px 32px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  background: color-mix(in srgb, var(--white), var(--secondary-color) 2%);
+  border-top: 1px solid var(--primary-border);
+}
+
+/* ================================
+   Input Modal Buttons - COMPACT & WARM
+   ================================ */
+.input-modal-btn {
+  padding: 12px 28px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-width: 100px;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.input-modal-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Primary Button - WARMER */
+.input-modal-btn-primary {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  color: var(--white);
+  box-shadow: 0 3px 10px rgba(140, 92, 92, 0.2);
+}
+
+.input-modal-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(140, 92, 92, 0.25);
+  filter: brightness(1.05);
+}
+
+.input-modal-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Secondary Button - WARMER */
+.input-modal-btn-secondary {
+  background: var(--white);
+  color: var(--hover-color);
+  border: 1px solid var(--primary-border);
+  box-shadow: 0 2px 6px rgba(140, 92, 92, 0.08);
+}
+
+.input-modal-btn-secondary:hover:not(:disabled) {
+  background: var(--secondary-color);
+  border-color: var(--hover-bg);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(140, 92, 92, 0.12);
+}
+
+/* ================================
+   Simple Animations
+   ================================ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { 
+    transform: scale(0.92); 
+    opacity: 0; 
+  }
+  to { 
+    transform: scale(1); 
+    opacity: 1; 
+  }
+}
+
+/* ================================
+   Responsive Design - MAINTAIN COMPACT
+   ================================ */
+@media (max-width: 768px) {
+  .input-modal-content {
+    max-width: 380px;
+  }
+  
+  .input-modal-header {
+    padding: 22px 28px 18px;
+  }
+  
+  .input-modal-body {
+    padding: 28px 28px 20px;
+  }
+  
+  .input-modal-footer {
+    padding: 20px 28px 28px;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 576px) {
+  .input-modal-overlay {
+    padding: var(--spacing-md);
+  }
+  
+  .input-modal-content {
+    max-width: none;
+    width: calc(100% - 32px);
+  }
+  
+  .input-modal-header {
+    padding: 20px 24px 16px;
+  }
+  
+  .input-modal-title {
+    font-size: 1rem;
+  }
+  
+  .input-modal-close {
+    top: 16px;
+    right: 20px;
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
+  
+  .input-modal-body {
+    padding: 24px 24px 18px;
+  }
+  
+  .input-modal-input {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+  
+  textarea.input-modal-input {
+    min-height: 70px;
+    max-height: 100px;
+  }
+  
+  input.input-modal-input {
+    height: 40px;
+  }
+  
+  .input-modal-footer {
+    flex-direction: column-reverse;
+    padding: 18px 24px 24px;
+    gap: 12px;
+  }
+  
+  .input-modal-btn {
+    width: 100%;
+    padding: 12px 20px;
+  }
+}
+
+/* ================================
+   Focus Accessibility
+   ================================ */
+.input-modal-btn:focus-visible,
+.input-modal-close:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.input-modal-input:focus-visible {
+  outline: none;
+}
+/* ----------------------------- */
+/* Checkout section (themed)     */
+/* ----------------------------- */
+
+.checkout-actions {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: var(--secondary-color);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--primary-color);
+}
+
+.checkout-status {
+  margin-bottom: 0.5rem;
+}
+
+.checkout-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Checkout status colors */
+.checkout-pending {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: var(--pending-color);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.checkout-confirmed,
+.checkout-auto_confirmed {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: var(--available-color);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.checkout-rejected {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: var(--danger-color);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.checkout-message {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--invalid-color);
+  font-size: 0.85rem;
+}
+
+.checkout-buttons {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.checkout-info {
+  margin-bottom: 1rem;
+}
+
+/* Checkout action button */
+.action-btn.checkout-btn {
+  background: rgba(220, 53, 69, 0.1);
+  color: var(--danger-color);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.action-btn.checkout-btn:hover {
+  background: var(--danger-color);
+  color: var(--white);
+  border-color: var(--danger-color);
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .checkout-buttons {
+    flex-direction: column;
+  }
+  
+  .checkout-buttons .action-btn {
+    width: 100%;
+  }
+}

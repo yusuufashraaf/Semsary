@@ -16,7 +16,7 @@ export interface Chat {
   property?: { id: number; title: string; price: number };
   owner?: ChatUser;
   renter?: ChatUser;
-  assignedAgent?: ChatUser;
+  assignedAgent?: ChatUser | null;
 }
 
 export interface ChatResponse {

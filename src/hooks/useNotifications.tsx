@@ -33,7 +33,7 @@ export function useNotifications(userId: number | null) {
       console.log("Received notification:", notification);
       const data: RentNotification = notification.data ?? notification;
       const formatted = {
-        id: data.id,
+        id: String(data.id),
         user_id: userId!,
         title: "New Notification", 
         message: data.message,
@@ -43,10 +43,6 @@ export function useNotifications(userId: number | null) {
         property_id: data.property_id,
       };
       dispatch(addNotification(formatted));
-      toast.info(data.message, {
-        position: "top-right",
-        autoClose: 3000,
-        });
     });
 
     return () => {

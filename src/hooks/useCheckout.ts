@@ -13,10 +13,11 @@ import {
   getCheckoutStatus,
   getCheckoutDetails,
   getUserCheckouts,
-  getAdminCheckouts,
+  checkouts,
   getCheckoutStats,
   getTransactions,
   autoConfirmExpiredCheckouts,
+  handleAgentDecision,
 } from "@services/checkoutService";
 import { useAppSelector } from "@store/hook";
 
@@ -136,7 +137,7 @@ export const useCheckouts = (userId: number | null): UseCheckoutsReturn => {
           action: 'agent_decision',
           ...decision,
         };
-        const response = await processCheckout(rentRequestId, action, jwt!);
+const response = await handleAgentDecision(rentRequestId, decision, jwt!);
         
         if (response.data?.checkout) {
           setCurrentCheckout(response.data.checkout);
@@ -378,7 +379,7 @@ export const useCheckouts = (userId: number | null): UseCheckoutsReturn => {
       setError(null);
 
       try {
-        const response = await getAdminCheckouts(jwt!, query);
+        const response = await checkouts(jwt!, query);
         setAdminCheckouts(response.data);
         setAdminPagination(response);
       } catch (err: any) {
