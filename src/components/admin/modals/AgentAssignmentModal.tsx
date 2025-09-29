@@ -115,7 +115,7 @@ export const AgentAssignmentModal: React.FC = () => {
   }
   className="border rounded px-2 py-1"
 >
-  <option value="">Select agent</option>
+  <option value={chat.owner_id}>Not Assigned</option>
   {agents.map((agent) => (
     <option key={agent.id} value={agent.id}>
       {agent.first_name} {agent.last_name}
