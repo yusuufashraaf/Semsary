@@ -305,12 +305,12 @@ const shouldShowBuyButton = () => {
 
             <div className={styles.breakdownRow}>
               <span>Security deposit</span>
-              <span>{formatCurrency(booking.subtotal)}</span>
+              <span>{formatCurrency(property.price)}</span>
             </div>
 
             <div className={styles.breakdownRow}>
               <strong>Total</strong>
-              <strong>{formatCurrency(booking.total * 2)}</strong>
+              <strong>{formatCurrency(booking.total + property.price)}</strong>
             </div>
           </div>
         )}

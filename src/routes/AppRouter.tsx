@@ -18,6 +18,7 @@ import { ResetPassword, ForgotPassword, OAuthCallback, Login, Register, VerifyEm
 import Logout from "@pages/Logout/Logout";
 import Chatbot from "@components/Chatbot/Chatbot";
 import ProtectedRoute from "@components/common/ProtectedRoute/ProtectedRoute";
+import CsAgentRentDecision from "@pages/cs-agent/CsAgentRentDecision"
 // import CheckoutWrapper from "@components/Checkout/CheckoutWrapper";
 
 // ADD ADMIN IMPORTS
@@ -275,6 +276,10 @@ const router = createBrowserRouter([
       {
         path: "properties/:id/verify",
         element: <PropertyVerificationPage />,
+      },
+      {
+        path: "decision",
+        element:<CsAgentRentDecision />
       },
       {
         path: "verifications",
