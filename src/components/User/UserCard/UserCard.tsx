@@ -132,6 +132,41 @@ const UserCard = ({
             <ListGroupItem className="d-flex justify-content-between align-items-center">
             <strong>ID Document:</strong>
             {userState.id_state === "rejected" ? (
+  <Badge
+    bg="danger"
+    className="d-flex align-items-center"
+    style={{ cursor: "pointer" }}
+    onClick={() => onVerifyClick("id")}
+    title="Click to upload"
+  >
+    <XCircle size={14} className="me-1" /> Upload Now
+  </Badge>
+) : userState.id_state === "valid" ? (
+  <Badge
+    bg="success"
+    className="d-flex align-items-center"
+  >
+    <CheckCircle size={14} className="me-1" /> Valid
+  </Badge>
+) : userState.id_state === "pending" ? (
+  <Badge
+    bg="warning"
+    className="d-flex align-items-center"
+  >
+    Pending Review
+  </Badge>
+) : (
+  <Badge
+    bg="secondary"
+    className="d-flex align-items-center"
+    style={{ cursor: "pointer" }}
+    onClick={() => onVerifyClick("id")}
+    title="Click to upload"
+  >
+    Upload Now
+  </Badge>
+)}
+            {/* {userState.id_state === "rejected" ? (
               // Show upload button only if rejected
               <Badge
                 bg="danger"
@@ -172,7 +207,7 @@ const UserCard = ({
               >
                 Upload Now
               </Badge>
-            )}
+            )} */}
           </ListGroupItem>
                   {/* Role */}
           <ListGroupItem>
