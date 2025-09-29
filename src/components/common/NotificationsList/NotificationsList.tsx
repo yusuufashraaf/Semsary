@@ -12,7 +12,7 @@ const NotificationList = ({ userId }: { userId: number | null }) => {
   // Subscribe to notifications via Echo
   useNotifications(userId);
 
-  // Show toast for new notifications only
+  // 🎯 Show toast for new notifications only
   useEffect(() => {
     notifications.forEach((notification) => {
       if (!toastedIds.current.has(Number(notification.id))) {

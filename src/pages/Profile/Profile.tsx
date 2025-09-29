@@ -12,7 +12,6 @@ import ChangePassword from '@components/User/ChangePassword/ChangePassword';
 import OwnerDashboard from '@components/owner/OwnerDashboard';
 import RentRequests from '@components/owner/RentRequests';
 import { useAppSelector, useAppDispatch } from '@store/hook';
-import UserMessages from '@components/Profile/UserMessages';
 import UserMessagesOrigin from '@components/Profile/UserMessagesOrigin';
 import UserTest from '@components/Profile/UserTest';
 

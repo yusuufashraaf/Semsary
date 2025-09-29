@@ -149,22 +149,22 @@ export const AgentAssignmentModal: React.FC = () => {
               <td className="px-4 py-2">#{chat.property_id} {chat.property?.title || "N/A"}</td>
               <td className="px-4 py-2">
                 <select
-                  value={selectedAgents[chat.id] ?? chat.assignedAgent?.id ?? ""}
-                  onChange={(e) =>
-                    setSelectedAgents((prev) => ({
-                      ...prev,
-                      [chat.id]: Number(e.target.value),
-                    }))
-                  }
-                  className="border rounded px-2 py-1"
-                >
-                  <option value="">Select agent</option>
-                  {agents.map((agent) => (
-                    <option key={agent.id} value={agent.id}>
-                      {agent.first_name} {agent.last_name}
-                    </option>
-                  ))}
-                </select>
+  value={selectedAgents[chat.id] ?? chat.renter_id ?? ""}
+  onChange={(e) =>
+    setSelectedAgents((prev) => ({
+      ...prev,
+      [chat.id]: Number(e.target.value),
+    }))
+  }
+  className="border rounded px-2 py-1"
+>
+  <option value={chat.owner_id}>Not Assigned</option>
+  {agents.map((agent) => (
+    <option key={agent.id} value={agent.id}>
+      {agent.first_name} {agent.last_name}
+    </option>
+  ))}
+</select>
               </td>
               <td className="px-4 py-2 space-x-2">
                 <Button

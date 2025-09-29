@@ -139,22 +139,22 @@ export const messageService = {
   },
   
 
-  startChat: async (
-    propertyId: number,
-    ownerId: number,
-    renterId: number
-  ): Promise<{ chat: Chat }> => {
-    const response = await api.post("user/chats/start", {
-      property_id: propertyId,
-      owner_id: ownerId,
-      renter_id: renterId,
-    });
-    return response.data;
-  },
+  // startChat: async (
+  //   propertyId: number,
+  //   ownerId: number,
+  //   renterId: number
+  // ): Promise<{ chat: Chat }> => {
+  //   const response = await api.post("user/chats/start", {
+  //     property_id: propertyId,
+  //     owner_id: ownerId,
+  //     renter_id: renterId,
+  //   });
+  //   return response.data;
+  // },
 
-  markAsRead: async (chatId: number): Promise<void> => {
-    await api.post(`user/chats/${chatId}/read`);
-  },
+  // markAsRead: async (chatId: number): Promise<void> => {
+  //   await api.post(`user/chats/${chatId}/read`);
+  // },
 };
 
 export const reviewService = {
