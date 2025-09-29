@@ -19,7 +19,6 @@ import { getProperties } from "@services/PropertyListServices";
 import ErrorMessage from "@components/common/ErrorMessage/ErrorMessage";
 import Loader from "@components/common/Loader/Loader";
 import { useAppSelector } from "@store/hook";
-import { property } from "zod";
 
 export default function PropertyList() {
   // ---------------------- State ----------------------
@@ -29,9 +28,11 @@ export default function PropertyList() {
   const [error, setError] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
   const { user } = useAppSelector(state => state.Authslice);
+  
   // URL Sync
   const [searchParams, setSearchParams] = useSearchParams();
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isUrlUpdating, setIsUrlUpdating] = useState(false);
 
   // Helper function to get URL param safely
   const getUrlParam = (key: string, defaultValue: string = ""): string => {
@@ -43,39 +44,58 @@ export default function PropertyList() {
     return value ? Number(value) : defaultValue;
   };
 
-  // Main State - Initialize from URL params
-  const [searchTerm, setSearchTerm] = useState(() => getUrlParam("q"));
-  const [debouncedSearch, setDebouncedSearch] = useState(() =>
-    getUrlParam("q")
-  );
+  // Initialize state from URL params only once
+  const initializeFromUrl = useCallback(() => {
+    if (isInitialized) return;
+    
+    const urlFilters = {
+      location: getUrlParam("location"),
+      propertyType: getUrlParam("type"),
+      bedrooms: getUrlParam("beds"),
+      status: getUrlParam("status"),
+      priceMin: getUrlNumParam("priceMin", 0),
+      priceMax: getUrlNumParam("priceMax", 0),
+      priceType: getUrlParam("price_type"),
+      amenities: getUrlParam("amenities")
+        ? getUrlParam("amenities").split(",")
+        : [],
+      itemsPerPage: getUrlNumParam("itemsPerPage", 12),
+      sortBy: getUrlParam("sortBy", "created_at"),
+      sortOrder: getUrlParam("sortOrder", "desc"),
+    };
+
+    setFilters(urlFilters);
+    setTempFilters(urlFilters);
+    setSearchTerm(getUrlParam("q"));
+    setDebouncedSearch(getUrlParam("q"));
+    setCurrentPage(getUrlNumParam("page", 1));
+    setItemsPerPage(getUrlNumParam("itemsPerPage", 12));
+    setIsInitialized(true);
+  }, [searchParams, isInitialized]);
+
+  // Main State - Initialize empty, will be populated from URL
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [savedProperties, setSavedProperties] = useState<number[]>([]);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-
-  const [itemsPerPage, setItemsPerPage] = useState(() =>
-    getUrlNumParam("itemsPerPage", 12)
-  );
-  const [currentPage, setCurrentPage] = useState(() =>
-    getUrlNumParam("page", 1)
-  );
+  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // ---------------------- Filters ----------------------
-  const [filters, setFilters] = useState(() => ({
-    location: getUrlParam("location"),
-    propertyType: getUrlParam("type"),
-    bedrooms: getUrlParam("beds"),
-    status: getUrlParam("status"),
-    priceMin: getUrlNumParam("priceMin", 0),
-    priceMax: getUrlNumParam("priceMax", 0),
-    priceType: getUrlParam("price_type"),
-    amenities: getUrlParam("amenities")
-      ? getUrlParam("amenities").split(",")
-      : [],
-    itemsPerPage: getUrlNumParam("itemsPerPage", 12),
-      sortBy: getUrlParam("sortBy", "created_at"),
-  sortOrder: getUrlParam("sortOrder", "desc"),
-
-  }));
+  const [filters, setFilters] = useState({
+    location: "",
+    propertyType: "",
+    bedrooms: "",
+    status: "",
+    priceMin: 0,
+    priceMax: 0,
+    priceType: "",
+    amenities: [] as string[],
+    itemsPerPage: 12,
+    sortBy: "created_at",
+    sortOrder: "desc",
+  });
 
   const [tempFilters, setTempFilters] = useState({ ...filters });
 
@@ -95,17 +115,23 @@ export default function PropertyList() {
     maxPrice: 700000,
   };
 
-  // Initialize filter price range from backend data once
+  // Initialize from URL and filter data
   useEffect(() => {
     if (filterData && !isInitialized) {
+      initializeFromUrl();
+    }
+  }, [filterData, initializeFromUrl, isInitialized]);
+
+  // Update price range from backend data once
+  useEffect(() => {
+    if (filterData && isInitialized && filters.priceMax === 0) {
       setFilters((prev) => ({
         ...prev,
         priceMin: prev.priceMin || filterData.minPrice,
         priceMax: prev.priceMax || filterData.maxPrice,
       }));
-      setIsInitialized(true);
     }
-  }, [filterData, isInitialized]);
+  }, [filterData, isInitialized, filters.priceMax]);
 
   // Debounced Search
   const debouncedUpdate = useMemo(
@@ -130,6 +156,8 @@ export default function PropertyList() {
 
   // ---------------------- Fetch Backend ----------------------
   const fetchProperties = useCallback(async () => {
+    if (!isInitialized) return;
+    
     setIsLoading(true);
     setError(null);
     try {
@@ -147,12 +175,10 @@ export default function PropertyList() {
         per_page: itemsPerPage,
         sortBy: filters.sortBy,
         sortOrder: filters.sortOrder,
-         user_id: user?.id, 
+        user_id: user?.id,
       });
-    
+
       if (!data?.data) throw new Error("Invalid response from backend");
-      
-      
 
       setBackendListings(data.data);
       setTotalPages(data.last_page || 1);
@@ -167,7 +193,7 @@ export default function PropertyList() {
     } finally {
       setIsLoading(false);
     }
-  }, [debouncedSearch, filters, currentPage, itemsPerPage]);
+  }, [debouncedSearch, filters, currentPage, itemsPerPage, isInitialized, user?.id]);
 
   useEffect(() => {
     fetchProperties();
@@ -175,8 +201,10 @@ export default function PropertyList() {
 
   // ---------------------- Reset page when filters change ----------------------
   useEffect(() => {
-    setCurrentPage(1);
-  }, [filters, debouncedSearch]); // Add debouncedSearch here
+    if (isInitialized && !isUrlUpdating) {
+      setCurrentPage(1);
+    }
+  }, [filters, debouncedSearch, isInitialized, isUrlUpdating]);
 
   // ---------------------- Helpers ----------------------
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
@@ -212,13 +240,14 @@ export default function PropertyList() {
       priceType: "",
       amenities: [],
       itemsPerPage: 12,
-  sortBy: "created_at",  
-  sortOrder: "desc",    
+      sortBy: "created_at",
+      sortOrder: "desc",
     };
     setFilters(clearedFilters);
     setItemsPerPage(12);
-    setSearchTerm(""); // Clear search term
-    setDebouncedSearch(""); // Clear debounced search
+    setSearchTerm("");
+    setDebouncedSearch("");
+    setCurrentPage(1);
   };
 
   const clearTempFilters = () => setTempFilters({ ...filters });
@@ -234,70 +263,70 @@ export default function PropertyList() {
     [filters]
   );
 
-  // Improved URL synchronization
+  // Improved URL synchronization with debounce and flag
   const updateUrlParams = useCallback(() => {
-    const params = new URLSearchParams();
+    if (!isInitialized || isUrlUpdating) return;
+    
+    setIsUrlUpdating(true);
+    
+    // Use setTimeout to avoid blocking the UI
+    setTimeout(() => {
+      const params = new URLSearchParams();
 
-    // Add search term
-    if (debouncedSearch.trim()) {
-      params.set("q", debouncedSearch.trim());
-    }
+      // Add search term
+      if (debouncedSearch.trim()) {
+        params.set("q", debouncedSearch.trim());
+      }
 
-    // Add filters
-    if (filters.location) {
-      params.set("location", filters.location);
-    }
+      // Add filters
+      Object.entries({
+        location: filters.location,
+        type: filters.propertyType,
+        beds: filters.bedrooms,
+        status: filters.status,
+        price_type: filters.priceType,
+      }).forEach(([key, value]) => {
+        if (value) params.set(key, value);
+      });
 
-    if (filters.propertyType) {
-      params.set("type", filters.propertyType);
-    }
+      if (filters.priceMin > 0) {
+        params.set("priceMin", filters.priceMin.toString());
+      }
 
-    if (filters.bedrooms) {
-      params.set("beds", filters.bedrooms);
-    }
+      if (filters.priceMax > 0 && filters.priceMax < filterOptions.maxPrice) {
+        params.set("priceMax", filters.priceMax.toString());
+      }
 
-    if (filters.status) {
-      params.set("status", filters.status);
-    }
+      if (filters.amenities.length > 0) {
+        params.set("amenities", filters.amenities.join(","));
+      }
 
-    if (filters.priceType) {
-      params.set("price_type", filters.priceType);
-    }
+      if (itemsPerPage !== 12) {
+        params.set("itemsPerPage", itemsPerPage.toString());
+      }
 
-    if (filters.priceMin > 0) {
-      params.set("priceMin", filters.priceMin.toString());
-    }
+      if (currentPage !== 1) {
+        params.set("page", currentPage.toString());
+      }
 
-    if (filters.priceMax > 0 && filters.priceMax < filterOptions.maxPrice) {
-      params.set("priceMax", filters.priceMax.toString());
-    }
+      if (filters.sortBy && filters.sortBy !== "created_at") {
+        params.set("sortBy", filters.sortBy);
+      }
 
-    if (filters.amenities.length > 0) {
-      params.set("amenities", filters.amenities.join(","));
-    }
+      if (filters.sortOrder && filters.sortOrder !== "desc") {
+        params.set("sortOrder", filters.sortOrder);
+      }
 
-    if (itemsPerPage !== 12) {
-      params.set("itemsPerPage", itemsPerPage.toString());
-    }
+      // Only update URL if params have actually changed
+      const newParamsString = params.toString();
+      const currentParamsString = searchParams.toString();
 
-    if (currentPage !== 1) {
-      params.set("page", currentPage.toString());
-    }
-    if (filters.sortBy) {
-  params.set("sortBy", filters.sortBy);
-}
-if (filters.sortOrder) {
-  params.set("sortOrder", filters.sortOrder);
-}
-
-
-    // Only update URL if params have actually changed
-    const newParamsString = params.toString();
-    const currentParamsString = searchParams.toString();
-
-    if (newParamsString !== currentParamsString) {
-      setSearchParams(params, { replace: true });
-    }
+      if (newParamsString !== currentParamsString) {
+        setSearchParams(params, { replace: true });
+      }
+      
+      setIsUrlUpdating(false);
+    }, 100);
   }, [
     debouncedSearch,
     filters,
@@ -306,22 +335,26 @@ if (filters.sortOrder) {
     searchParams,
     setSearchParams,
     filterOptions.maxPrice,
+    isInitialized,
+    isUrlUpdating,
   ]);
+
+  // Debounce URL updates to prevent rapid changes
+  const debouncedUrlUpdate = useMemo(
+    () => debounce(updateUrlParams, 500),
+    [updateUrlParams]
+  );
 
   // Sync state to URL whenever relevant state changes
   useEffect(() => {
-    if (!isInitialized || !filterData) return;
-
-    updateUrlParams();
-  }, [
-    debouncedSearch, // This is the key addition
-    filters,
-    currentPage,
-    itemsPerPage,
-    updateUrlParams,
-    isInitialized,
-    filterData,
-  ]);
+    if (isInitialized && !isUrlUpdating) {
+      debouncedUrlUpdate();
+    }
+    
+    return () => {
+      debouncedUrlUpdate.cancel();
+    };
+  }, [debouncedSearch, filters, currentPage, itemsPerPage, debouncedUrlUpdate, isInitialized, isUrlUpdating]);
 
   // ---------------------- Render ----------------------
   return (
@@ -368,15 +401,14 @@ if (filters.sortOrder) {
                 setAmenities={(val) =>
                   setFilters((prev) => ({ ...prev, amenities: val }))
                 }
-                      sortBy={filters.sortBy}
-  setSortBy={(val) =>
-    setFilters((prev) => ({ ...prev, sortBy: val }))
-  }
-  sortOrder={filters.sortOrder}
-  setSortOrder={(val) =>
-    setFilters((prev) => ({ ...prev, sortOrder: val }))
-  }
-
+                sortBy={filters.sortBy}
+                setSortBy={(val) =>
+                  setFilters((prev) => ({ ...prev, sortBy: val }))
+                }
+                sortOrder={filters.sortOrder}
+                setSortOrder={(val) =>
+                  setFilters((prev) => ({ ...prev, sortOrder: val }))
+                }
                 clearAllFilters={clearFilters}
                 itemsPerPage={itemsPerPage}
                 setItemsPerPage={setItemsPerPage}
@@ -392,9 +424,9 @@ if (filters.sortOrder) {
           </div>
         </div>
 
-        {/*  Main Content */}
+        {/* Main Content */}
         <div className="col-xxl-9 col-xl-9 col-lg-8 col-12">
-          {/*  Mobile Filter Button */}
+          {/* Mobile Filter Button */}
           <div className="d-lg-none mb-3 text-center">
             <button
               className={styles.filterButton}
@@ -418,11 +450,8 @@ if (filters.sortOrder) {
             filterOptions={filterOptions}
             itemsPerPage={itemsPerPage}
             setItemsPerPage={setItemsPerPage}
-  sortOrder={filters.sortOrder}
-                        sortBy={filters.sortBy}
-
-
-            
+            sortOrder={filters.sortOrder}
+            sortBy={filters.sortBy}
           />
 
           <div className={styles.propertyListContainer}>
