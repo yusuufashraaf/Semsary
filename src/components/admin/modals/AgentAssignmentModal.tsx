@@ -5,9 +5,10 @@ import { Chat, ChatUser } from "src/types/chats";
 import { Button } from "@components/ui/Button";
 import { LoadingSpinner } from "@components/ui/LoadingSpinner";
 import Swal from "sweetalert2";
+import { getEcho } from "@services/echoManager";
 
 export const AgentAssignmentModal: React.FC = () => {
-  const { jwt } = useAppSelector((state) => state.Authslice);
+  const { jwt, user } = useAppSelector((state) => state.Authslice);
   const [chats, setChats] = useState<Chat[]>([]);
   const [agents, setAgents] = useState<ChatUser[]>([]);
   const [loading, setLoading] = useState(false);
@@ -34,6 +35,48 @@ export const AgentAssignmentModal: React.FC = () => {
 
     fetchData();
   }, [jwt]);
+
+  // Real-time chat assignment updates
+  useEffect(() => {
+    if (!jwt || !user?.id) return;
+
+    const echo = getEcho();
+    if (!echo) return;
+
+    const adminChannel = echo.private(`admin.chats.${user.id}`);
+    
+    adminChannel.listen('ChatAssigned', (event: any) => {
+      setChats(prev => 
+        prev.map(chat => 
+          chat.id === event.chat_id 
+            ? { ...chat, assignedAgent: event.agent }
+            : chat
+        )
+      );
+      setSelectedAgents(prev => ({
+        ...prev,
+        [event.chat_id]: event.agent.id
+      }));
+    });
+
+    adminChannel.listen('ChatUnassigned', (event: any) => {
+      setChats(prev => 
+        prev.map(chat => 
+          chat.id === event.chat_id 
+            ? { ...chat, assignedAgent: null } as Chat
+            : chat
+        )
+      );
+      setSelectedAgents(prev => ({
+        ...prev,
+        [event.chat_id]: null
+      }));
+    });
+
+    return () => {
+      echo.leave(`admin.chats.${user.id}`);
+    };
+  }, [jwt, user?.id]);
 
   // Assign agent
   const handleAssign = async (chatId: number) => {

@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { Building, Calendar, DollarSign, Home, Eye } from "lucide-react";
 import Loader from "@components/common/Loader/Loader";
 import { getEcho } from "@services/echoManager";
+import { formatCurrency } from "@utils/HelperFunctions";
 
 const DashboardOverview: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -327,7 +328,7 @@ const DashboardOverview: React.FC = () => {
                 <div>
                   <div className="stat-label">Rent Income</div>
                   <div className="stat-value">
-                    ${overview?.rent_income || 0}
+                    {formatCurrency(overview?.rent_income || 0)}
                   </div>
                 </div>
               </div>
@@ -344,7 +345,7 @@ const DashboardOverview: React.FC = () => {
                 <div>
                   <div className="stat-label">Sales Income</div>
                   <div className="stat-value">
-                    ${overview?.sales_income || 0}
+                    {formatCurrency(overview?.sales_income || 0)}
                   </div>
                 </div>
               </div>
@@ -361,7 +362,7 @@ const DashboardOverview: React.FC = () => {
                 <div>
                   <div className="stat-label">Total Income</div>
                   <div className="stat-value">
-                    ${overview?.total_income || 0}
+                    {formatCurrency(overview?.total_income || 0)}
                   </div>
                 </div>
               </div>
