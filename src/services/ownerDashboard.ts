@@ -8,9 +8,10 @@ export const fetchOwnerDashboard = async () => {
 };
 
 // Get all properties (owner only)
-export const fetchOwnerProperties = async () => {
-  const response = await api.get("properties");
-  return response.data.data;
+export const fetchOwnerProperties = async (url?: string) => {
+  const endpoint = url || "properties";
+  const response = await api.get(endpoint);
+  return response.data;
 };
 
 // Get Property by ID

@@ -14,7 +14,7 @@ import { getEcho } from "@services/echoManager";
 const DashboardOverview: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { overview, loading, properties } = useSelector(
+  const { overview, loading, properties, pagination } = useSelector(
     (state: RootState) => state.ownerDashboard
   );
   const { user } = useAppSelector((state) => state.Authslice);
@@ -290,6 +290,24 @@ const DashboardOverview: React.FC = () => {
                 })}
               </tbody>
             </table>
+            <div className="d-flex justify-content-between mt-3">
+              <Button
+                variant="secondary"
+                disabled={!pagination.prev_page_url}
+                onClick={() => dispatch(getProperties(pagination.prev_page_url))}
+              >
+                Previous
+              </Button>
+
+              <Button
+                variant="secondary"
+                disabled={!pagination.next_page_url}
+                onClick={() => dispatch(getProperties(pagination.next_page_url))}
+              >
+                Next
+              </Button>
+            </div>
+
           </div>
         </Card.Body>
       </Card>

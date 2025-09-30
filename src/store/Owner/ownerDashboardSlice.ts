@@ -32,6 +32,10 @@ interface DashboardState {
     rented_properties: RentedProperty[];
   };
   properties: any[];
+  pagination: {
+    next_page_url?: string;
+    prev_page_url?: string;
+  };
   selectedProperty:any|null,
 }
 
@@ -50,6 +54,10 @@ const initialState: DashboardState = {
     average_rating: 0,
   },
   properties: [],
+  pagination: {
+    next_page_url: undefined,
+    prev_page_url: undefined,
+  },
   selectedProperty: null,
 };
 
@@ -64,8 +72,8 @@ export const getDashboardData = createAsyncThunk(
 
 export const getProperties = createAsyncThunk(
   "ownerDashboard/fetchProperties",
-  async () => {
-    return await fetchOwnerProperties();
+  async (url?: string) => {
+    return await fetchOwnerProperties(url);
   }
 );
 
@@ -172,7 +180,12 @@ const ownerDashboardSlice = createSlice({
       })
       // Properties
       .addCase(getProperties.fulfilled, (state, action) => {
-        state.properties = action.payload;
+        state.properties = action.payload.data.data;
+        state.pagination = {
+          next_page_url: action.payload.data.next_page_url,
+          prev_page_url: action.payload.data.prev_page_url,
+        };
+        state.loading = false;
       })
       .addCase(createProperty.fulfilled, (state, action) => {
         state.properties.push(action.payload);
