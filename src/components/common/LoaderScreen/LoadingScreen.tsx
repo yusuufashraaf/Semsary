@@ -13,7 +13,7 @@ function LoadingScreen({
   return (
     <div className={styles.loadingContainer}>
       <div className={styles.loadingContent}>
-        <img src="src/assets/loadingHouse.png" alt="" />
+        <img src="src/assets/logoo.png" alt="" style={{height:"30rem"}}/>
         <Loader message="" />
         <h3>{message}</h3>
       </div>
