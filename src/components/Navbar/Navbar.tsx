@@ -5,7 +5,7 @@ import { faBars, faHeart, faBell } from "@fortawesome/free-solid-svg-icons";
 import AvatarDropdown from "./AvatarDropDownMenu/AvatarDropDownMenu";
 import { useAppSelector } from "@store/hook";
 import { useNavigate, useLocation } from "react-router-dom";
-
+import logo from "../../assets/logo.png"
 export default function Navbar() {
   const user = useAppSelector((state) => state.Authslice.user);
   const navigate = useNavigate();
@@ -53,14 +53,18 @@ export default function Navbar() {
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark border-bottom">
-      <div className="container-fluid px-3">
+      <div className="container-fluid px-4">
         {/* Brand */}
         <span
           onClick={() => handleNavClick("/")}
           className={`${styles.navbarBrand} d-flex align-items-center`}
           style={{ cursor: "pointer" }}
         >
-          Semsary
+          <img 
+            src={logo} 
+            alt="Semsary Logo" 
+            style={{ height: "4rem", width: "auto", objectFit: "contain"}} 
+          />
         </span>
 
         {/* Mobile controls */}
