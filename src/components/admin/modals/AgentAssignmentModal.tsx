@@ -9,7 +9,8 @@ import { getEcho } from "@services/echoManager";
 
 export const AgentAssignmentModal: React.FC = () => {
   const { jwt, user } = useAppSelector((state) => state.Authslice);
-  const [chats, setChats] = useState<Chat[]>([]);
+  //const [chats, setChats] = useState<Chat[]>([]);
+  const [chats, setChats] = useState<any[]>([]);
   const [agents, setAgents] = useState<ChatUser[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedAgents, setSelectedAgents] = useState<Record<number, number | null>>({});
@@ -144,8 +145,8 @@ export const AgentAssignmentModal: React.FC = () => {
           {chats.map((chat) => (
             <tr key={chat.id}>
               <td className="px-4 py-2">{chat.id}</td>
-              <td className="px-4 py-2">#{chat.owner_id}</td>
-              <td className="px-4 py-2">#{chat.renter_id}</td>
+              <td className="px-4 py-2">#{chat.owner_id} {chat.owner.email}</td>
+              <td className="px-4 py-2">#{chat.property.owner.id} {chat.property.owner.email}</td>
               <td className="px-4 py-2">#{chat.property_id} {chat.property?.title || "N/A"}</td>
               <td className="px-4 py-2">
                 <select

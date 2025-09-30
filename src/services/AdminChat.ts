@@ -17,13 +17,28 @@ const handleError = (error: any): never => {
 // ---------------- API Calls ----------------
 
 // Get all chats (paginated)
+// export const getChats = async (
+//   jwt: string,
+//   page = 1,
+//   signal?: AbortSignal
+// ): Promise<ChatsResponse> => {
+//   try {
+//     const response = await API.get<ChatsResponse>(`/admin/chats?page=${page}`, {
+//       headers: { Authorization: `Bearer ${jwt}` },
+//       signal,
+//     });
+//     return response.data;
+//   } catch (error) {
+//     return handleError(error);
+//   }
+// };
 export const getChats = async (
   jwt: string,
   page = 1,
   signal?: AbortSignal
-): Promise<ChatsResponse> => {
+): Promise<any> => {
   try {
-    const response = await API.get<ChatsResponse>(`/admin/chats?page=${page}`, {
+    const response = await API.get<any>(`/admin/chats?page=${page}`, {
       headers: { Authorization: `Bearer ${jwt}` },
       signal,
     });

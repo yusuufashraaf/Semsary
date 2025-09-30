@@ -273,7 +273,7 @@ const DashboardOverview: React.FC = () => {
                           <Eye size={12} className="me-1" />
                           View
                         </Button>
-                        {property.property_state !== "Rented" && (
+                        {/* {property.property_state !== "Rented" && (
                           <Button 
                               size="sm" 
                               variant="outline-danger"
@@ -282,7 +282,7 @@ const DashboardOverview: React.FC = () => {
                             >
                               <i className="fas fa-trash">Delete</i>
                             </Button>
-                        )}
+                        )} */}
                         </div>
                         
                       </td>

@@ -238,6 +238,7 @@ const UserMessagesOrigin = () => {
                     
                     {/* Three Buttons */}
                     <div className="chat-buttons">
+                      {user?.role == "agent"?
                       <button 
                         className="btn btn-sm btn-outline"
                         onClick={(e) => {
@@ -247,6 +248,10 @@ const UserMessagesOrigin = () => {
                       >
                         Owner
                       </button>
+                      :
+                      ""
+                      }
+                      {user?.role == "agent"?
                       <button 
                         className="btn btn-sm btn-outline"
                         onClick={(e) => {
@@ -256,6 +261,7 @@ const UserMessagesOrigin = () => {
                       >
                         Renter
                       </button>
+                      :""}
                       <button 
                         className="btn btn-sm btn-outline"
                         onClick={(e) => {
