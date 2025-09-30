@@ -57,23 +57,66 @@ nav {
 }
 
 /* Utility buttons */
-.signInBtn,
+/* .signInBtn,
 .wishlistBtn,
 .notificationBtn {
-  background: var(--accent-color, var(--primary-color));
+  background-color: var(--accent-color);
   color: var(--white);
   border: none;
   border-radius: 100%;
   padding: var(--spacing-sm) var(--spacing-md);
   transition: background-color 0.3s, color 0.3s;
   white-space: nowrap;
+} */
+ .signInBtn,
+ .wishlistBtn,
+.notificationBtn {
+  background: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(140, 92, 92, 0.2);
+}
+
+.wishlistBtn::before,
+.notificationBtn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease;
 }
 
 .signInBtn:hover,
 .wishlistBtn:hover,
 .notificationBtn:hover {
-  color: var(--hover-color);
-  background-color: var(--hover-bg);
+  background-color: var(--accent-color);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(196, 64, 64, 0.3);
+}
+.wishlistBtn:active,
+.notificationBtn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.wishlistBtn svg,
+.notificationBtn svg {
+  font-size: 1.1rem;
+  position: relative;
+  z-index: 1;
 }
 
 /* Avatar */
