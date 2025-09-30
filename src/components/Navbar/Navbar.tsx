@@ -5,7 +5,7 @@ import { faBars, faHeart, faBell } from "@fortawesome/free-solid-svg-icons";
 import AvatarDropdown from "./AvatarDropDownMenu/AvatarDropDownMenu";
 import { useAppSelector } from "@store/hook";
 import { useNavigate, useLocation } from "react-router-dom";
-import logo from "../../assets/logo.png"
+import logoo from "../../assets/logoo.png"
 export default function Navbar() {
   const user = useAppSelector((state) => state.Authslice.user);
   const navigate = useNavigate();
@@ -61,7 +61,7 @@ export default function Navbar() {
           style={{ cursor: "pointer" }}
         >
           <img 
-            src={logo} 
+            src={logoo} 
             alt="Semsary Logo" 
             style={{ height: "4rem", width: "auto", objectFit: "contain"}} 
           />
