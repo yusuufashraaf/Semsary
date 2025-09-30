@@ -14,12 +14,12 @@ import {
 import { useAppSelector } from "@store/hook";
 
 const navigation = [
-  { name: "Dashboard", href: "/cs-agent/dashboard", icon: HomeIcon },
+  { name: "Property Validation", href: "/cs-agent/dashboard", icon: HomeIcon },
   // { name: "Properties", href: "/cs-agent/properties", icon: ClipboardDocumentListIcon },
   // { name: "Verifications", href: "/cs-agent/verifications", icon: DocumentCheckIcon },
   // { name: "Performance", href: "/cs-agent/performance", icon: ChartBarIcon },
-  { name: "Profile", href: "/cs-agent/profile", icon: UserCircleIcon },
-  {name:"Checkout" , href:"/cs-agent/decision" , icon:DocumentCheckIcon}
+  { name: "Rent Chats", href: "/cs-agent/profile", icon: UserCircleIcon },
+  {name:"Rent Checkout" , href:"/cs-agent/decision" , icon:DocumentCheckIcon}
 ];
 
 export const CsAgentSidebar: React.FC = () => {

@@ -178,7 +178,7 @@ const UserPurchases = ()=> {
           <h2 className="heading-secondary">Past purchases</h2>
           <div className="list">
             {purchases.length > 0 ? (
-              purchases.map(purchase => (
+              purchases.filter(purchase => purchase.status !== "pending").map(purchase => (
                 <div 
                   key={purchase.id} 
                   className="card card-hover"

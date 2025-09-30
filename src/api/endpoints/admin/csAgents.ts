@@ -6,6 +6,7 @@ import type {
   ApiResponse,
   PaginatedResponse 
 } from '@app-types/cs-agent/cs-agent';
+import { TFullUser } from "@app-types/users/users.types";
 
 // Laravel-style API response structure
 interface LaravelPaginatedResponse<T> {
@@ -42,9 +43,9 @@ export const adminCsAgentApi = {
   // ==================== CS Agent Management ====================
   
   // Get all CS agents with pagination support
-  getAllAgents: async (page = 1, per_page = 15, filters = {}): Promise<PaginatedResponse<CsAgent>> => {
+  getAllAgents: async (page = 1, per_page = 15, filters = {}): Promise<PaginatedResponse<TFullUser>> => {
     const params = createSearchParams({ page, per_page, ...filters });
-    const response = await api.get<LaravelPaginatedResponse<CsAgent>>(`/admin/cs-agents?${params}`);
+    const response = await api.get<LaravelPaginatedResponse<TFullUser>>(`/admin/cs-agents?${params}`);
     
     // Transform Laravel response to our expected format
     return {
@@ -62,7 +63,7 @@ export const adminCsAgentApi = {
   },
   
   // Alias for backward compatibility
-  getCsAgents: async (page = 1, per_page = 15, filters = {}): Promise<PaginatedResponse<CsAgent>> => {
+  getCsAgents: async (page = 1, per_page = 15, filters = {}): Promise<PaginatedResponse<TFullUser>> => {
     return adminCsAgentApi.getAllAgents(page, per_page, filters);
   },
 

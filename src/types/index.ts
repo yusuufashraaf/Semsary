@@ -582,6 +582,7 @@ export interface Chat {
     price: string;
     price_type: string;
     location: any;
+    owner:any;
   };
   owner: any;
   renter: any;

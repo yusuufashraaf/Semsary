@@ -163,8 +163,8 @@ const UserMessagesOrigin = () => {
   };
 
   const handleButtonClick = (type: 'owner' | 'renter' | 'property', chat: Chat) => {
-    const data = type === 'owner' ? chat.owner : 
-                 type === 'renter' ? chat.renter : 
+    const data = type === 'owner' ?  chat.property.owner: 
+                 type === 'renter' ? chat.owner : 
                  chat.property;
     
     if (activeCard && activeCard.type === type && activeCard.data?.id === data?.id) {
@@ -332,7 +332,7 @@ const UserMessagesOrigin = () => {
                       <p><strong>Bedrooms:</strong> {activeCard.data.bedrooms}</p>
                       <p><strong>Bathrooms:</strong> {activeCard.data.bathrooms}</p>
                       <p><strong>Size:</strong> {activeCard.data.size} sq ft</p>
-                      <p><strong>Status:</strong> {activeCard.data.status}</p>
+                      <p><strong>Status:</strong> {activeCard.data.property_state}</p>
                     </div>
                   )}
                 </div>
