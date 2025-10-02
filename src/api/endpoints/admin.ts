@@ -3,7 +3,6 @@
 import api from "@services/axios-global";
 import {
   DashboardStats,
-  User,
   Property,
   Transaction,
   ApiResponse,
@@ -12,11 +11,13 @@ import {
   PropertyFilters,
   TransactionFilters,
 } from "@app-types/admin/admin";
+import { TFullUser } from "@app-types/users/users.types";
 
 // Backend response structure (what the API actually returns)
 interface BackendPaginatedResponse<T> {
   status: string;
   message: string;
+  allusers:T[]
   data: T[];
   pagination: {
     current_page: number;
@@ -175,26 +176,26 @@ export const usersApi = {
     page: number = 1,
     limit: number = 10,
     filters?: UserFilters
-  ): Promise<PaginatedResponse<User>> => {
+  ): Promise<PaginatedResponse<TFullUser>> => {
     const params = createUserFilterParams(page, limit, filters);
 
-    const response = await api.get<BackendPaginatedResponse<User>>(
+    const response = await api.get<BackendPaginatedResponse<TFullUser>>(
       `/admin/users?${params}`
     );
-    
+    console.log(response);
     // Transform the backend response to match frontend expectations
     return transformPaginatedResponse(response.data);
   },
 
   // Get single user details
-  getUser: async (id: number): Promise<User> => {
-    const response = await api.get<ApiResponse<User>>(`/admin/users/${id}`);
+  getUser: async (id: number): Promise<TFullUser> => {
+    const response = await api.get<ApiResponse<TFullUser>>(`/admin/users/${id}`);
     return response.data.data;
   },
 
   // Update user
-  updateUser: async (id: number, data: Partial<User>): Promise<User> => {
-    const response = await api.put<ApiResponse<User>>(
+  updateUser: async (id: number, data: Partial<TFullUser>): Promise<TFullUser> => {
+    const response = await api.put<ApiResponse<TFullUser>>(
       `/admin/users/${id}`,
       data
     );
@@ -202,28 +203,41 @@ export const usersApi = {
   },
 
   // Activate user
-  activateUser: async (id: number): Promise<User> => {
-    const response = await api.patch<ApiResponse<User>>(
-      `/admin/users/${id}/activate`
-    );
-    return response.data.data;
-  },
 
-  // Deactivate user
-  deactivateUser: async (id: number): Promise<User> => {
-    const response = await api.patch<ApiResponse<User>>(
-      `/admin/users/${id}/deactivate`
+  UserStateUpdate: async (id: number,newstate: string): Promise<TFullUser> => {
+    const response = await api.patch<ApiResponse<TFullUser>>(
+      `/admin/users/${id}/state/${newstate}`
     );
+    console.log("activated");
+    console.log(response);
     return response.data.data;
   },
+  // activateUser: async (id: number): Promise<TFullUser> => {
+  //   const response = await api.patch<ApiResponse<TFullUser>>(
+  //     `/admin/users/${id}/actisvate`
+  //   );
+  //   console.log("activated");
+  //   console.log(response);
+  //   return response.data.data;
+  // },
 
-  // Suspend user
-  suspendUser: async (id: number): Promise<User> => {
-    const response = await api.patch<ApiResponse<User>>(
-      `/admin/users/${id}/suspend`
-    );
-    return response.data.data;
-  },
+  // // Deactivate user
+  // deactivateUser: async (id: number): Promise<TFullUser> => {
+  //   const response = await api.patch<ApiResponse<TFullUser>>(
+  //     `/admin/users/${id}/deactivate`
+  //   );
+  //   console.log("deactivated");
+  //   console.log(response);
+  //   return response.data.data;
+  // },
+
+  // // Suspend user
+  // suspendUser: async (id: number): Promise<TFullUser> => {
+  //   const response = await api.patch<ApiResponse<TFullUser>>(
+  //     `/admin/users/${id}/suspend`
+  //   );
+  //   return response.data.data;
+  // },
 
   // Get user transactions
   getUserTransactions: async (id: number): Promise<Transaction[]> => {
@@ -232,7 +246,7 @@ export const usersApi = {
     );
     return response.data.data;
   },
-  async changeRole(userId: number, payload: { role: string; reason?: string }): Promise<User> {
+  async changeRole(userId: number, payload: { role: string; reason?: string }): Promise<TFullUser> {
     const res = await api.post(`/admin/users/${userId}/change-role`, payload);
     return res.data.data; // ✅ return updated user
   },
@@ -260,9 +274,9 @@ export const usersApi = {
   },
 
   // Search users
-  searchUsers: async (query: string, filters?: UserFilters): Promise<User[]> => {
+  searchUsers: async (query: string, filters?: UserFilters): Promise<TFullUser[]> => {
     const params = createSearchParams({ search: query, ...filters });
-    const response = await api.get<ApiResponse<User[]>>(`/admin/users/search?${params}`);
+    const response = await api.get<ApiResponse<TFullUser[]>>(`/admin/users/search?${params}`);
     return response.data.data;
   },
 
@@ -273,9 +287,9 @@ export const usersApi = {
   },
 
   // Get users requiring attention
-  getUsersRequiringAttention: async (type?: string, limit = 20): Promise<User[]> => {
+  getUsersRequiringAttention: async (type?: string, limit = 20): Promise<TFullUser[]> => {
     const params = createSearchParams({ type, limit });
-    const response = await api.get<ApiResponse<User[]>>(`/admin/users/requires-attention?${params}`);
+    const response = await api.get<ApiResponse<TFullUser[]>>(`/admin/users/requires-attention?${params}`);
     return response.data.data;
   },
 
@@ -286,14 +300,14 @@ export const usersApi = {
   },
 
   // Block user
-  blockUser: async (id: number): Promise<User> => {
-    const response = await api.post<ApiResponse<User>>(`/admin/users/${id}/block`);
+  blockUser: async (id: number): Promise<TFullUser> => {
+    const response = await api.post<ApiResponse<TFullUser>>(`/admin/users/${id}/block`);
     return response.data.data;
   },
 
   // Unblock user
-  unblockUser: async (id: number): Promise<User> => {
-    const response = await api.post<ApiResponse<User>>(`/admin/users/${id}/unblock`);
+  unblockUser: async (id: number): Promise<TFullUser> => {
+    const response = await api.post<ApiResponse<TFullUser>>(`/admin/users/${id}/unblock`);
     return response.data.data;
   },
 };
@@ -369,8 +383,8 @@ export const propertiesApi = {
   },
 
   // Get CS agents for assignment
-  getCSAgents: async (): Promise<User[]> => {
-    const response = await api.get<ApiResponse<User[]>>("/admin/cs-agents");
+  getCSAgents: async (): Promise<TFullUser[]> => {
+    const response = await api.get<ApiResponse<TFullUser[]>>("/admin/cs-agents");
     return response.data.data;
   },
 
@@ -504,14 +518,14 @@ export const transactionsApi = {
 // General admin endpoints
 export const adminApi = {
   // Get admin profile
-  getProfile: async (): Promise<User> => {
-    const response = await api.get<ApiResponse<User>>("/admin/profile");
+  getProfile: async (): Promise<TFullUser> => {
+    const response = await api.get<ApiResponse<TFullUser>>("/admin/profile");
     return response.data.data;
   },
 
   // Update admin profile
-  updateProfile: async (data: Partial<User>): Promise<User> => {
-    const response = await api.put<ApiResponse<User>>("/admin/profile", data);
+  updateProfile: async (data: Partial<TFullUser>): Promise<TFullUser> => {
+    const response = await api.put<ApiResponse<TFullUser>>("/admin/profile", data);
     return response.data.data;
   },
 

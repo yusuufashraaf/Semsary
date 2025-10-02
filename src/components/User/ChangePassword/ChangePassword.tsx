@@ -5,6 +5,7 @@ import Input from '@components/forms/input/Input';
 import { useAppDispatch, useAppSelector } from '@store/hook';
 import ActChangePassword from '@store/Auth/Act/ActChangePassword';
 import { ChangePasswordFormValues } from 'src/types/users/users.types';
+import { Link } from 'react-router-dom';
 
 
 const ChangePassword = () => {
@@ -59,6 +60,17 @@ const ChangePassword = () => {
             placeholder="Current Password"
             disabled={loading === "pending"}
           />
+          <div 
+  style={{ color: 'var(--primary-color)' }} 
+  className="d-flex justify-content-between mt-2"
+>
+  <Link to="/forgot-password" className="text-decoration-none">
+    Forgot Password?
+  </Link>
+  {/* <Link to="/register" className="text-decoration-none">
+    Register Here
+  </Link> */}
+</div>
           <Input
             label="New Password"
             name="new_password"

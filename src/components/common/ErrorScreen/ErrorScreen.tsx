@@ -24,7 +24,7 @@ function ErrorScreen({
   return (
     <div className={styles.errorContainer}>
       <div className={styles.errorContent}>
-        <img src="src/assets/errorHouse.png" alt="" />
+        <img src="src/assets/errorLogo.png" alt="" style={{height:"30rem"}}/>
         <h2>{title}</h2>
         <p>{message}</p>
         <button className={styles.btnReturn} onClick={handleClick}>

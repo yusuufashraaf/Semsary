@@ -3,14 +3,15 @@ import { ReviewAnalysisResponse } from "../types/ReviewAnalysis";
 
 // Get Dashboard data
 export const fetchOwnerDashboard = async () => {
-  const response = await api.get("/owner/dashboard");
+  const response = await api.get("/user/dashboard-stats");
   return response.data.data;
 };
 
 // Get all properties (owner only)
-export const fetchOwnerProperties = async () => {
-  const response = await api.get("properties");
-  return response.data.data;
+export const fetchOwnerProperties = async (url?: string) => {
+  const endpoint = url || "properties";
+  const response = await api.get(endpoint);
+  return response.data;
 };
 
 // Get Property by ID
@@ -28,6 +29,11 @@ export const addProperty = async (formData: FormData) => {
 //Edit Property
 export const updateProperty = async (propertyId: string, formData: FormData) => {
   const response = await api.post(`/properties/${propertyId}?_method=PUT`, formData);
+  return response.data;
+};
+//Update Property State (Valid, Invalid, Pending, Sold, Rented)
+export const updatePropertyState = async (propertyId: string, state: string) => {
+  const response = await api.put(`/properties/${propertyId}/change-status`, { property_state: state });
   return response.data;
 };
 // Delete Property

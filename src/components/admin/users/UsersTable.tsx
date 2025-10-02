@@ -14,15 +14,16 @@ import {
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import type { User } from "@app-types/admin/admin";
+//import type { User } from "@app-types/admin/admin";
 import { RoleDropdown } from "../RoleDropdown";
+import { TFullUser } from "@app-types/users/users.types";
 
 const MySwal = withReactContent(Swal);
 
 interface UsersTableProps {
-  data: User[];
+  data: TFullUser[];
   loading?: boolean;
-  onUserView?: (user: User) => void;
+  onUserView?: (user: TFullUser) => void;
   onUserActivate?: (userId: number, reason?: string) => void;
   onUserSuspend?: (userId: number, reason: string) => void;
   onUserChangeRole?: (userId: number, role: string, reason?: string) => void;
@@ -32,7 +33,6 @@ interface UsersTableProps {
 const roles = [
   { value: "admin", label: "Admin", color: "bg-red-100 text-red-700 border-red-200" },
   { value: "agent", label: "Agent", color: "bg-blue-100 text-blue-700 border-blue-200" },
-  { value: "owner", label: "Owner", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
   { value: "user", label: "User", color: "bg-gray-100 text-gray-700 border-gray-200" },
 ];
 
@@ -73,7 +73,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
     }
   };
 
-  const handleActivateUser = async (user: User, event: React.MouseEvent) => {
+  const handleActivateUser = async (user: TFullUser, event: React.MouseEvent) => {
     event.stopPropagation();
 
     const reason =
@@ -105,7 +105,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
     }
   };
 
-  const handleSuspendUser = async (user: User, event: React.MouseEvent) => {
+  const handleSuspendUser = async (user: TFullUser, event: React.MouseEvent) => {
     event.stopPropagation();
 
     const { value: reason } = await MySwal.fire({
@@ -144,7 +144,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
     }
   };
 
-  const handleChangeRole = async (user: User, role: string) => {
+  const handleChangeRole = async (user: TFullUser, role: string) => {
     if (user.role === role) return;
 
     const { value: reason } = await MySwal.fire({
@@ -189,7 +189,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
     {
       key: "user",
       label: "User",
-      render: (_: any, user: User) => (
+      render: (_: any, user: TFullUser) => (
         <div className="flex items-center space-x-3">
           <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
             <UserIcon className="h-5 w-5 text-gray-500" />
@@ -221,7 +221,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
 {
   key: "role",
   label: "Role",
-  render: (_: string, user: User) => (
+  render: (_: string, user: TFullUser) => (
     <div onClick={(e) => e.stopPropagation()}>   {/* ⬅️ wrap dropdown */}
       <RoleDropdown
         user={user}
@@ -236,10 +236,28 @@ export const UsersTable: React.FC<UsersTableProps> = ({
   align: "center" as const,
   width: "170px",
 },
+{
+  key: "idstate",
+  label: "ID State",
+  render: (_: string, user: TFullUser) => (
+    <div onClick={(e) => e.stopPropagation()}>   {/* ⬅️ wrap dropdown */}
+      <RoleDropdown
+        user={user}
+        disabled={loading}
+        onRoleChanged={(updated) => {
+          console.log("Id Status Changed:", updated);
+          onUserChangeRole?.(updated.id, updated.role);
+        }}
+      />
+    </div>
+  ),
+  align: "center" as const,
+  width: "170px",
+},
     {
       key: "phone_number",
       label: "Phone",
-      render: (phone: string, user: User) => (
+      render: (phone: string, user: TFullUser) => (
         <div className="text-sm text-gray-900 font-medium">
           {phone}
           {user.phone_verified_at && (
@@ -277,7 +295,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
     {
       key: "actions",
       label: "Actions",
-      render: (_: any, user: User) => (
+      render: (_: any, user: TFullUser) => (
         <div className="flex items-center space-x-2">
           {(user.status === "pending" || user.status === "suspended") && (
             <Button

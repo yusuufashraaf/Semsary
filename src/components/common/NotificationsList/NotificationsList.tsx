@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import {  useSelector } from "react-redux";
 import { RootState } from "@store/index";
-import { toast } from "react-toastify";
 import { useNotifications } from "@hooks/useNotifications";
+import { toast } from "react-toastify";
 
 const NotificationList = ({ userId }: { userId: number | null }) => {
   const notifications = useSelector(
@@ -16,9 +16,9 @@ const NotificationList = ({ userId }: { userId: number | null }) => {
   // 🎯 Show toast for new notifications only
   useEffect(() => {
     notifications.forEach((notification) => {
-      if (!toastedIds.current.has(notification.id)) {
-        toast.success(notification.message);
-        toastedIds.current.add(notification.id);
+      if (!toastedIds.current.has(Number(notification.id))) {
+        toast.success(notification.message)
+        toastedIds.current.add(Number(notification.id));
       }
     });
   }, [notifications]);

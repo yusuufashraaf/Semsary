@@ -13,7 +13,7 @@ const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-// Utility function to handle errors globally
+// Global error handler
 const handleError = (error: any): never => {
   if (axios.isAxiosError(error)) {
     console.error("Axios Error:", error.response?.data || error.message);
@@ -22,6 +22,8 @@ const handleError = (error: any): never => {
   }
   throw error;
 };
+
+// ----------------- CHECKOUTS -----------------
 
 // Process checkout action
 export const processCheckout = async (
@@ -35,9 +37,7 @@ export const processCheckout = async (
       `/checkout/${rentRequestId}`,
       action,
       {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
+        headers: { Authorization: `Bearer ${jwt}` },
         signal,
       }
     );
@@ -55,11 +55,9 @@ export const getCheckoutStatus = async (
 ): Promise<CheckoutResponse> => {
   try {
     const response = await API.get<CheckoutResponse>(
-      `/checkout/${rentRequestId}/status`,
+      `/checkout/${rentRequestId}`,
       {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
+        headers: { Authorization: `Bearer ${jwt}` },
         signal,
       }
     );
@@ -77,11 +75,9 @@ export const getCheckoutDetails = async (
 ): Promise<CheckoutResponse> => {
   try {
     const response = await API.get<CheckoutResponse>(
-      `/checkout/details/${checkoutId}`,
+      `/checkouts/${checkoutId}`,
       {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
+        headers: { Authorization: `Bearer ${jwt}` },
         signal,
       }
     );
@@ -91,6 +87,78 @@ export const getCheckoutDetails = async (
   }
 };
 
+// ----------------- DECISION ACTIONS -----------------
+
+// Agent decision (approve/reject)
+export const handleAgentDecision = async (
+    checkoutId: number,
+  decision: {
+    deposit_return_percent?: number;
+    rent_returned?: boolean;
+    notes?: string;
+  },
+  jwt: string,
+  signal?: AbortSignal
+): Promise<CheckoutResponse> => {
+  try {
+    const response = await API.post<CheckoutResponse>(
+      `/checkout/${checkoutId}/agent-decision`,
+      decision,
+      {
+        headers: { Authorization: `Bearer ${jwt}` },
+        signal,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Owner confirm
+export const handleOwnerConfirm = async (
+  checkoutId: number,
+  jwt: string,
+  signal?: AbortSignal
+): Promise<CheckoutResponse> => {
+  try {
+    const response = await API.post<CheckoutResponse>(
+      `/checkout/${checkoutId}/owner/confirm`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${jwt}` },
+        signal,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Owner reject
+export const handleOwnerReject = async (
+  checkoutId: number,
+  jwt: string,
+  signal?: AbortSignal
+): Promise<CheckoutResponse> => {
+  try {
+    const response = await API.post<CheckoutResponse>(
+      `/checkout/${checkoutId}/owner/reject`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${jwt}` },
+        signal,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// ----------------- LISTS -----------------
+
 // List user's checkouts (paginated)
 export const getUserCheckouts = async (
   jwt: string,
@@ -99,12 +167,10 @@ export const getUserCheckouts = async (
 ): Promise<LaravelPaginatedResponse<Checkout>> => {
   try {
     const response = await API.get<LaravelPaginatedResponse<Checkout>>(
-      "/checkout/user",
+      "/checkouts/user",
       {
         params: query,
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
+        headers: { Authorization: `Bearer ${jwt}` },
         signal,
       }
     );
@@ -115,19 +181,17 @@ export const getUserCheckouts = async (
 };
 
 // List all checkouts for admin view
-export const getAdminCheckouts = async (
+export const checkouts = async (
   jwt: string,
   query: CheckoutQuery = {},
   signal?: AbortSignal
 ): Promise<LaravelPaginatedResponse<Checkout>> => {
   try {
     const response = await API.get<LaravelPaginatedResponse<Checkout>>(
-      "/checkout/admin",
+      "/checkouts/all",
       {
         params: query,
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
+        headers: { Authorization: `Bearer ${jwt}` },
         signal,
       }
     );
@@ -137,6 +201,8 @@ export const getAdminCheckouts = async (
   }
 };
 
+// ----------------- DASHBOARD -----------------
+
 // Get checkout statistics for dashboard
 export const getCheckoutStats = async (
   jwt: string,
@@ -144,11 +210,9 @@ export const getCheckoutStats = async (
 ): Promise<CheckoutStats> => {
   try {
     const response = await API.get<CheckoutStats>(
-      "/checkout/stats",
+      "/checkouts/stats",
       {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
+        headers: { Authorization: `Bearer ${jwt}` },
         signal,
       }
     );
@@ -157,6 +221,8 @@ export const getCheckoutStats = async (
     return handleError(error);
   }
 };
+
+// ----------------- TRANSACTIONS -----------------
 
 // List all transactions
 export const getTransactions = async (
@@ -167,11 +233,9 @@ export const getTransactions = async (
   try {
     const response = await API.get<
       LaravelPaginatedResponse<Transaction> & { wallet_balance: string }
-    >("/checkout/transactions", {
+    >("/checkouts/transactions", {
       params: query,
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
+      headers: { Authorization: `Bearer ${jwt}` },
       signal,
     });
     return response.data;
@@ -179,6 +243,8 @@ export const getTransactions = async (
     return handleError(error);
   }
 };
+
+// ----------------- ADMIN ACTIONS -----------------
 
 // Auto-confirm expired checkouts (admin only)
 export const autoConfirmExpiredCheckouts = async (
@@ -190,12 +256,10 @@ export const autoConfirmExpiredCheckouts = async (
       success: boolean;
       data: { total_expired: number; confirmed: number };
     }>(
-      "/checkout/auto-confirm",
+      "/system/auto-confirm-checkouts",
       {},
       {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
+        headers: { Authorization: `Bearer ${jwt}` },
         signal,
       }
     );

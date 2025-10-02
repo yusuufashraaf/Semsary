@@ -13,7 +13,6 @@ interface RoleDropdownProps {
 const roles = [
   { value: "admin", label: "Admin", color: "text-red-600" },
   { value: "agent", label: "Agent", color: "text-blue-600" },
-  { value: "owner", label: "Owner", color: "text-yellow-600" },
   { value: "user", label: "User", color: "text-gray-600" },
 ];
 

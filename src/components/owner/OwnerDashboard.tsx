@@ -1,24 +1,62 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Nav } from "react-bootstrap";
 import "./OwnerDashboard.css";
 import Overview from "./DashboardOverview";
-import ManageProperties from "./ManageProperties";
 import AddProperty from "./AddPropertyForm";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../store";
+import { getDashboardData, getProperties } from "../../store/Owner/ownerDashboardSlice";
+import { useAppSelector } from "@store/hook";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { getEcho } from "@services/echoManager";
 const OwnerDashboard: React.FC = () => {
+   const dispatch = useDispatch<AppDispatch>();
+   const navigate = useNavigate();
+   const {user} = useAppSelector(state => state.Authslice)
   const [activeTab, setActiveTab] = useState("overview");
+
+  useEffect(() => {
+    dispatch(getDashboardData());
+    dispatch(getProperties());
+  }, [dispatch]);
 
   const handleTabChange = (tabKey: string) => {
     setActiveTab(tabKey);
   };
 
+  useEffect(()=>{
+    if(user?.status !== "active"){
+      navigate('/');
+    }
+  },[])
+  useEffect(() => {
+    if (!user) return;
+
+    const echo = getEcho();
+    if (!echo) return;
+
+    const channel = echo.private(`user.${user.id}`);
+
+    const propertyListener = (event: any) => {
+      console.log("Property update event:", event);
+      if (event.title) {
+        toast.info(`Your property "${event.title}" has been updated`);
+      }
+    };
+
+    channel.listen(".property.updated", propertyListener);
+
+    return () => {
+      channel.stopListening(".property.updated", propertyListener);
+      echo.leave(`user.${user.id}`);
+    };
+  }, [user]);
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "overview":
         return <Overview />;
-        
-      case "manage-properties":
-        return <ManageProperties />;
-        
       case "add-property":
         return <AddProperty />;
         
@@ -42,18 +80,6 @@ const OwnerDashboard: React.FC = () => {
             Overview
           </Nav.Link>
         </Nav.Item>
-        
-        <Nav.Item>
-          <Nav.Link
-            active={activeTab === "manage-properties"}
-            onClick={() => handleTabChange("manage-properties")}
-            className={`custom-tab ${activeTab === "manage-properties" ? "active" : ""}`}
-          >
-            <i className="fas fa-building me-2"></i>
-            Manage Properties
-          </Nav.Link>
-        </Nav.Item>
-        
         <Nav.Item>
           <Nav.Link
             active={activeTab === "add-property"}

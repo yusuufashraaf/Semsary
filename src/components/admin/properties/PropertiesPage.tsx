@@ -57,7 +57,7 @@ interface ExtendedPropertyFilters {
 export const PropertiesPage: React.FC = () => {
   // State management
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(15);
+  const [pageSize, setPageSize] = useState(30);
   const [filters, setFilters] = useState<ExtendedPropertyFilters>({
     sort_by: 'created_at',
     sort_order: 'desc'

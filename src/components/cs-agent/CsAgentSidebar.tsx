@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { href, NavLink, useLocation } from "react-router-dom";
 import { useCsAgentUIStore } from "@store/cs-agent/csAgentStore";
 import { cn } from "@utils/classNames";
 import {
@@ -11,17 +11,20 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
+import { useAppSelector } from "@store/hook";
 
 const navigation = [
-  { name: "Dashboard", href: "/cs-agent/dashboard", icon: HomeIcon },
-  { name: "Properties", href: "/cs-agent/properties", icon: ClipboardDocumentListIcon },
-  { name: "Verifications", href: "/cs-agent/verifications", icon: DocumentCheckIcon },
-  { name: "Performance", href: "/cs-agent/performance", icon: ChartBarIcon },
-  { name: "Profile", href: "/cs-agent/profile", icon: UserCircleIcon },
+  { name: "Property Validation", href: "/cs-agent/dashboard", icon: HomeIcon },
+  // { name: "Properties", href: "/cs-agent/properties", icon: ClipboardDocumentListIcon },
+  // { name: "Verifications", href: "/cs-agent/verifications", icon: DocumentCheckIcon },
+  // { name: "Performance", href: "/cs-agent/performance", icon: ChartBarIcon },
+  { name: "Rent Chats", href: "/cs-agent/profile", icon: UserCircleIcon },
+  {name:"Rent Checkout" , href:"/cs-agent/decision" , icon:DocumentCheckIcon}
 ];
 
 export const CsAgentSidebar: React.FC = () => {
   const { sidebarCollapsed, setSidebarCollapsed, setActivePage } = useCsAgentUIStore();
+  const {user}= useAppSelector(state=>state.Authslice);
   const location = useLocation();
 
   const toggleSidebar = () => {
@@ -101,7 +104,7 @@ export const CsAgentSidebar: React.FC = () => {
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                John Doe
+               {user ? `${user.first_name || ''} ${user.last_name || ''}` : ''}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 CS Agent

@@ -1,9 +1,8 @@
-// hooks/useNotifications.ts
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getEcho } from "../services/echoManager";
 import { addNotification } from "../store/Noifications/notificationsSlice";
-
+import { toast } from "react-toastify"; 
 type RentNotification = {
   id: number;
   message: string;
@@ -31,8 +30,19 @@ export function useNotifications(userId: number | null) {
     const channel = echo.private(channelName);
 
     channel.notification((notification: NotificationPayload | any) => {
+      console.log("Received notification:", notification);
       const data: RentNotification = notification.data ?? notification;
-      dispatch(addNotification(data));
+      const formatted = {
+        id: String(data.id),
+        user_id: userId!,
+        title: "New Notification", 
+        message: data.message,
+        is_read: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        property_id: data.property_id,
+      };
+      dispatch(addNotification(formatted));
     });
 
     return () => {

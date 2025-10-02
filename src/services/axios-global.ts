@@ -59,7 +59,7 @@ const responseInterceptor = async (error: AxiosError) => {
 
       store.dispatch({
         type: "AuthSlice/setAccessToken",
-        payload: newAccessToken,
+        payload: { access_token: newAccessToken },
       });
 
       if (originalRequest.headers) {
@@ -68,7 +68,7 @@ const responseInterceptor = async (error: AxiosError) => {
 
       return api(originalRequest);
     } catch {
-      store.dispatch({ type: "AuthSlice/logOut" });
+      store.dispatch({ type: "AuthSlice/Logout" });
       return Promise.reject(error);
     }
   }
@@ -83,14 +83,14 @@ export const fetchUserReviews = async (userId: number) => {
   return response.data;
 };
 
-export const fetchUserProperties = async (userId: number) => {
+export const fetchUserProperties = async (userId: number|null) => {
   const response = await api.get(`/user/${userId}/properties`);
+  console.log(response.data);
   return response.data;
 };
 
 export const fetchUserNotifications = async (userId: number) => {
   const response = await api.get(`/user/${userId}/notifications`);
-  console.log("API response for notifications:", response);
   return response.data;
 };
 
@@ -111,9 +111,9 @@ export const fetchUserWishlists = async (userId: number) => {
 
 export const markNotificationAsRead = async (
   userId: number,
-  notificationId: number
+  notificationId: string
 ) => {
-  const response = await api.get(`/user/${userId}/notificationread/${notificationId}`);
+  const response = await api.patch(`/user/${userId}/notifications/${notificationId}/read`);
   return response;
 };
 
@@ -139,22 +139,22 @@ export const messageService = {
   },
   
 
-  startChat: async (
-    propertyId: number,
-    ownerId: number,
-    renterId: number
-  ): Promise<{ chat: Chat }> => {
-    const response = await api.post("user/chats/start", {
-      property_id: propertyId,
-      owner_id: ownerId,
-      renter_id: renterId,
-    });
-    return response.data;
-  },
+  // startChat: async (
+  //   propertyId: number,
+  //   ownerId: number,
+  //   renterId: number
+  // ): Promise<{ chat: Chat }> => {
+  //   const response = await api.post("user/chats/start", {
+  //     property_id: propertyId,
+  //     owner_id: ownerId,
+  //     renter_id: renterId,
+  //   });
+  //   return response.data;
+  // },
 
-  markAsRead: async (chatId: number): Promise<void> => {
-    await api.post(`user/chats/${chatId}/read`);
-  },
+  // markAsRead: async (chatId: number): Promise<void> => {
+  //   await api.post(`user/chats/${chatId}/read`);
+  // },
 };
 
 export const reviewService = {
@@ -197,6 +197,56 @@ export const reviewService = {
     return response.data;
   },
 };
+
+export const adminService = {
+  updateUserStatus: async (
+    userId: number,
+    status: "active" | "suspended" | "pending"
+  ): Promise<any> => {
+    const result = await api.put(`/admin/users/${userId}/status/${status}`);
+    console.log("admin service response____");
+    console.log(result.data.data);
+    //console.log(result);
+    return result.data;
+  },
+  updateUserIDStatus: async (
+    userId: number,
+    status: "valid" | "rejected" | "pending"
+  ): Promise<any> => {
+    const result = await api.put(`/admin/users/${userId}/id_state/${status}`);
+    console.log("admin service response____");
+    console.log(result);
+    return result.data;
+  },
+  updateUserRole: async (
+    userId: number,
+    status: "admin" | "user" | "agent"
+  ): Promise<any> => {
+    const result = await api.put(`/admin/users/${userId}/role/${status}`);
+    console.log("admin service response____");
+    console.log(result);
+    return result.data;
+  },
+  deleteUser: async (
+    userId: number,
+  ): Promise<any> => {
+    const result = await api.put(`/admin/users/${userId}/delete`);
+    console.log("admin service response____");
+    console.log(result);
+    return result.data;
+  },
+  notifyUser: async (
+  userId: number,
+  message: string
+): Promise<any> => {
+  const result = await api.post(`/admin/users/${userId}/notify`, {
+    message: message
+  });
+  console.log("admin service response____");
+  console.log(result);
+  return result.data;
+},
+}
 
 // Attach interceptors
 api.interceptors.request.use(requestInterceptor);

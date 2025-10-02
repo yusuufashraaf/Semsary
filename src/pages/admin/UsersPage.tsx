@@ -1,222 +1,1240 @@
-// src/pages/admin/UsersPage.tsx - Fixed pagination functionality
+// src/pages/admin/UsersPage.tsx - Fixed Pagination
 import React, { useState, useEffect } from 'react';
 import { Button } from '@components/ui/Button';
-import { Pagination } from '@components/ui/Pagination';
-import { EmptyState } from '@components/ui/EmptyState';
-import { UserFilter } from '@components/admin/users/UserFilter';
-import { UsersTable } from '@components/admin/users/UsersTable';
-import { UserDetailsModal } from '@components/admin/users/UserDetailsModal';
-import { useUsers } from '@hooks/useAdminQueries';
-import {
-  useActivateUser,
-  useSuspendUser,
-} from '@hooks/useUserMutations';
-import { useFilterStore } from '@store/admin/adminStore';
-import {
-  UsersIcon,
-  PlusIcon,
+import { Badge } from '@components/ui/Badge';
+import { LoadingSpinner } from '@components/ui/LoadingSpinner';
+import { Input } from '@components/ui/Input';
+import { Select } from '@components/ui/Select';
+import { Card } from '@components/ui/Card';
+import { useUsers, useUserProperties, useUserTransactions } from '@hooks/useAdminQueries';
+import { formatCurrency, formatDate } from '@utils/formatters';
+import Swal from 'sweetalert2';
+import { 
+  UserIcon, 
+  MagnifyingGlassIcon, 
+  FunnelIcon, 
+  XMarkIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  IdentificationIcon,
+  BuildingOfficeIcon,
+  CreditCardIcon,
+  PhotoIcon
 } from '@heroicons/react/24/outline';
-import type { User, UserFilters } from '@app-types/admin/admin';
+import { Property } from '@app-types/index';
+import { TFullUser } from '@app-types/users/users.types';
+import { adminService } from '@services/axios-global';
 
-const USERS_PER_PAGE = 15; // Matching backend default
+const USERS_PER_PAGE = 15;
+
+interface Transaction {
+  id: number;
+  type: string;
+  amount: string;
+  status: string;
+  payment_gateway: string;
+  created_at: string;
+}
+
+interface UserFilters {
+  search?: string;
+  role?: string;
+  status?: string;
+  sort_by?: string;
+  sort_order?: string;
+  date_from?: string;
+  date_to?: string;
+  per_page?: number;
+}
 
 export const UsersPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState<UserFilters>({
+    sort_by: 'created_at',
+    sort_order: 'desc',
+    per_page: USERS_PER_PAGE
+  });
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-  const [showUserModal, setShowUserModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<'info' | 'properties' | 'transactions' | 'image'>('info');
+  const [showFilters, setShowFilters] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [isButtonLoading, setIsButtonLoading] = useState<number | null>(null);
 
-  // Store hooks
-  const { userFilters, setUserFilters, clearUserFilters } = useFilterStore();
-
-  // Create a stable query key that includes all dependencies
-  const queryFilters = {
-    ...userFilters,
-    sort_by: userFilters.sort_by || 'created_at',
-    sort_order: userFilters.sort_order || 'desc',
-  };
-
-  // Query hooks - Updated to match backend pagination
-  const {
-    data: usersData,
-    isLoading,
-    error,
-    refetch,
-  } = useUsers(currentPage, USERS_PER_PAGE, queryFilters);
-
-  // Mutation hooks - Updated to match backend API
-  const activateUserMutation = useActivateUser();
-  const suspendUserMutation = useSuspendUser();
-
+  // FIXED: Use filters.per_page instead of constant
+  const currentPerPage = filters.per_page || USERS_PER_PAGE;
+  
+  const { data: usersData, isLoading, error, refetch } = useUsers(
+    currentPage, 
+    currentPerPage, 
+    filters
+  );
+  
+  const { data: userProperties, isLoading: propertiesLoading } = useUserProperties(selectedUserId!, !!selectedUserId);
+  const { data: userTransactions, isLoading: transactionsLoading } = useUserTransactions(selectedUserId!, !!selectedUserId);
+  
   const users = usersData?.data || [];
   const totalUsers = usersData?.total || 0;
-  const totalPages = Math.ceil(totalUsers / USERS_PER_PAGE);
+  
+  // FIXED: Calculate total pages based on current per_page value
+  const totalPages = Math.ceil(totalUsers / currentPerPage);
+  const selectedUser = users.find(u => u.id === selectedUserId);
 
-  // Debug logging to see if pagination data is updating
-  useEffect(() => {
-    console.log('Pagination Debug:', {
-      currentPage,
-      totalPages,
-      totalUsers,
-      usersCount: users.length,
-    });
-  }, [currentPage, totalPages, totalUsers, users.length]);
+  // Status/Role color mapping
+  const getStatusColor = (status: string) => {
+    const colors: { [key: string]: string } = {
+      active: 'success',
+      pending: 'warning',
+      suspended: 'danger',
+      valid: 'success',
+      rejected: 'danger'
+    };
+    return colors[status] || 'secondary';
+  };
 
-  // Handlers
-  const handleFilterChange = (filters: UserFilters) => {
-    setUserFilters(filters);
+  const getRoleColor = (role: string) => {
+    const colors: { [key: string]: string } = {
+      admin: 'danger',
+      agent: 'primary',
+      user: 'secondary'
+    };
+    return colors[role] || 'secondary';
+  };
+
+  // Update filters
+  const updateFilter = (key: keyof UserFilters, value: any) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value || undefined
+    }));
     setCurrentPage(1); // Reset to first page when filters change
   };
 
-  const handleClearFilters = () => {
-    clearUserFilters();
+  // Clear all filters
+  const clearFilters = () => {
+    setFilters({
+      sort_by: 'created_at',
+      sort_order: 'desc',
+      per_page: USERS_PER_PAGE
+    });
     setCurrentPage(1);
   };
 
-  const handlePageChange = (page: number) => {
-    console.log('Page change requested:', page);
-    setCurrentPage(page);
-    // Force refetch to ensure data updates
-    setTimeout(() => {
-      refetch();
-    }, 100);
-  };
-
-  const handleUserView = (user: User) => {
-    setSelectedUserId(user.id);
-    setShowUserModal(true);
-  };
-
-  const handleUserActivate = async (userId: number, reason?: string) => {
-    try {
-      await activateUserMutation.mutateAsync({ userId, reason });
-    } catch (error) {
-      console.error('User activation failed:', error);
-    }
-  };
-
-  const handleUserSuspend = async (userId: number, reason: string) => {
-    try {
-      await suspendUserMutation.mutateAsync({ userId, reason });
-    } catch (error) {
-      console.error('User suspension failed:', error);
-    }
-  };
-
-  // Check if we have active filters
-  const hasActiveFilters = Object.values(userFilters).some(value => 
-    value !== undefined && value !== null && value !== ''
+  const hasActiveFilters = Object.values(filters).some(value => 
+    value !== undefined && value !== null && value !== '' && 
+    !['sort_by', 'sort_order', 'per_page'].includes(value as string)
   );
+
+  const handleUserActivationStates = async (user: TFullUser, newActivationState: string) => {
+    // Prevent multiple clicks on the same user
+    if (isButtonLoading === user.id) return;
+    
+    setIsButtonLoading(user.id);
+    
+    try {
+      if (user.status === newActivationState) {
+        Swal.fire('No Change Needed', 'User status is already ' + newActivationState, 'info');
+        setIsButtonLoading(null);
+        return;
+      }
+
+      let confirmationConfig;
+      
+      switch (newActivationState) {
+        case "suspended":
+          confirmationConfig = {
+            title: 'Suspend User',
+            text: `Are you sure you want to suspend ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#b94010ff',
+            confirmButtonText: 'Yes, Suspend',
+          };
+          break;
+        case "active":
+          confirmationConfig = {
+            title: 'Activate User',
+            text: `Are you sure you want to activate ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#10b981',
+            confirmButtonText: 'Yes, Activate',
+          };
+          break;
+        case "pending":
+          confirmationConfig = {
+            title: 'Pending User State',
+            text: `Are you sure you want to switch user ${user.first_name} ${user.last_name} state to pending for revision?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#eeea04ff',
+            confirmButtonText: 'Yes, Switch to Pending State',
+          };
+          break;
+        default:
+          setIsButtonLoading(null);
+          return;
+      }
+
+      const result = await Swal.fire({
+        ...confirmationConfig,
+        showCancelButton: true,
+        cancelButtonColor: '#6b7280',
+        cancelButtonText: 'Cancel',
+      });
+
+      if (result.isConfirmed) {
+        const res = await adminService.updateUserStatus(user.id, newActivationState);
+        console.log("before refetch");
+        console.log(res.data.user.id);
+        setSelectedUserId(res.data.user.id);
+        console.log(selectedUser);
+        console.log(selectedUserId);
+        // CRITICAL FIX: Refetch the data to update the UI
+        await refetch();
+        console.log("after refetch");
+        setSelectedUserId(res.data.user.id);
+        console.log(selectedUser);
+        
+        
+        let successMessage = '';
+        let check = true;
+        console.log(selectedUser);
+        switch (res.data.user.status) {
+          case "suspended":
+            successMessage = 'User has been suspended successfully.';
+            break;
+          case "active":
+            if(res.data.user.email_verified_at == null){
+              check = false;
+              successMessage = 'User Email is Not Verified, User status will be pending.';
+            }
+            else if(res.data.user.phone_verified_at == null){
+              check = false;
+              successMessage = 'User Phone is Not Verified, User status will be pending.';
+            }
+            else if(res.data.user.id_state != "valid"){
+              check = false;
+              successMessage = 'User ID is Not Verified, User status will be pending.';
+            }
+            else{
+              successMessage = 'User has been activated successfully.';
+            }
+              
+            break;
+          case "pending":
+            if(newActivationState == "active"){
+              if(res.data.user.email_verified_at == null){
+              check = false;
+              successMessage = 'User Email is Not Verified, User status will be pending.';
+            }
+            else if(res.data.user.phone_verified_at == null){
+              check = false;
+              successMessage = 'User Phone is Not Verified, User status will be pending.';
+            }
+            else if(res.data.user.id_state != "valid"){
+              check = false;
+              successMessage = 'User ID is Not Verified, User status will be pending.';
+            }
+            else{
+              successMessage = 'User state has been set to pending successfully.';
+            }
+            }
+            else{
+              successMessage = 'User state has been set to pending successfully.';
+            }
+            break;
+        }
+        if(check){
+          Swal.fire('Success!', successMessage,'success');
+        }
+        else{
+          Swal.fire("Can't Validate User", successMessage,'error');
+        }
+        console.log(selectedUser);
+        // if(selectedUser)
+        // handleUserNotify(selectedUser,"You are now an Active User");
+        console.log("after motification sent");
+        //Swal.fire('Error!', 'Failed to update user status.', 'error');
+        
+        // Close details modal if open for the same user
+        if (showDetailsModal && selectedUserId === user.id) {
+          setShowDetailsModal(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating user status:', error);
+      Swal.fire('Error!', 'Failed to update user status.', 'error');
+    } finally {
+      setIsButtonLoading(null);
+    }
+  };
+
+  const handleUserDelete = async (user: TFullUser) => {
+    // Prevent multiple clicks on the same user
+    if (isButtonLoading === user.id) return;
+    
+    setIsButtonLoading(user.id);
+    
+    try {
+      if (!user) {
+        Swal.fire('No Change Needed', 'User not found to be deleted ', 'info');
+        setIsButtonLoading(null);
+        return;
+      }
+
+      let confirmationConfig;
+      
+      confirmationConfig = {
+            title: 'Delete User',
+            text: `Are you sure you want to delete ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#b94010ff',
+            confirmButtonText: 'Yes, Delete',
+          };
+
+      const result = await Swal.fire({
+        ...confirmationConfig,
+        showCancelButton: true,
+        cancelButtonColor: '#6b7280',
+        cancelButtonText: 'Cancel',
+      });
+
+      if (result.isConfirmed) {
+        const res = await adminService.deleteUser(user.id);
+        console.log(res);
+        
+        // CRITICAL FIX: Refetch the data to update the UI
+        await refetch();
+
+        Swal.fire("User Deleted Successfully", res.data.message,'info');
+        //Swal.fire('Error!', 'Failed to update user status.', 'error');
+        
+        // Close details modal if open for the same user
+        if (showDetailsModal && selectedUserId === user.id) {
+          setShowDetailsModal(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating user status:', error);
+      Swal.fire('Error!', 'Failed to update user status.', 'error');
+    } finally {
+      setIsButtonLoading(null);
+    }
+  };
+
+  const handleUserNotify = async (user: TFullUser,message:string) => {
+    // Prevent multiple clicks on the same user
+    if (isButtonLoading === user.id) return;
+    
+    setIsButtonLoading(user.id);
+    
+    try {
+      if (!user) {
+        Swal.fire('No Change Needed', 'User not found to be deleted ', 'info');
+        setIsButtonLoading(null);
+        return;
+      }
+
+      let confirmationConfig;
+      
+      confirmationConfig = {
+            title: 'Send Notification',
+            text: `Are you sure you want to Notify ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#ffee00ff',
+            confirmButtonText: 'Yes, Notify',
+          };
+
+      const result = await Swal.fire({
+        ...confirmationConfig,
+        showCancelButton: true,
+        cancelButtonColor: '#6b7280',
+        cancelButtonText: 'Cancel',
+      });
+
+      if (result.isConfirmed) {
+        const res = await adminService.notifyUser(user.id,message);
+        console.log(res);
+        
+        // CRITICAL FIX: Refetch the data to update the UI
+        await refetch();
+
+        Swal.fire("User Notified Successfully", res.data.message,'info');
+        //Swal.fire('Error!', 'Failed to update user status.', 'error');
+        
+        // Close details modal if open for the same user
+        if (showDetailsModal && selectedUserId === user.id) {
+          setShowDetailsModal(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error notifing user:', error);
+      Swal.fire('Error!', 'Failed to notify.', 'error');
+    } finally {
+      setIsButtonLoading(null);
+    }
+  };
+
+  const handleRoleChange = async (user: TFullUser, newRole: string) => {
+    // Prevent multiple clicks on the same user
+    if (isButtonLoading === user.id) return;
+    
+    setIsButtonLoading(user.id);
+    
+    try {
+      if (user.role === newRole) {
+        Swal.fire('No Change Needed', 'User role is already ' + newRole, 'info');
+        setIsButtonLoading(null);
+        return;
+      }
+
+      let confirmationConfig;
+      
+      switch (newRole) {
+        case "admin":
+          confirmationConfig = {
+            title: 'Assign Admin Role',
+            text: `Are you sure you want to assign admin role to ${user.first_name} ${user.last_name}? This will give them full system access.`,
+            icon: 'warning' as const,
+            confirmButtonColor: '#dc2626',
+            confirmButtonText: 'Yes, Make Admin',
+          };
+          break;
+        case "agent":
+          confirmationConfig = {
+            title: 'Assign Agent Role',
+            text: `Are you sure you want to assign agent role to ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#3b82f6',
+            confirmButtonText: 'Yes, Make Agent',
+          };
+          break;
+        case "user":
+          confirmationConfig = {
+            title: 'Assign User Role',
+            text: `Are you sure you want to assign user role to ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, Make User',
+          };
+          break;
+        default:
+          setIsButtonLoading(null);
+          return;
+      }
+
+      const result = await Swal.fire({
+        ...confirmationConfig,
+        showCancelButton: true,
+        cancelButtonColor: '#6b7280',
+        cancelButtonText: 'Cancel',
+      });
+
+      if (result.isConfirmed) {
+        await adminService.updateUserRole(user.id, newRole);
+        
+        // CRITICAL FIX: Refetch the data to update the UI
+        await refetch();
+        
+        let successMessage = '';
+        switch (newRole) {
+          case "admin":
+            successMessage = 'User has been assigned admin role successfully.';
+            break;
+          case "agent":
+            successMessage = 'User has been assigned agent role successfully.';
+            break;
+          case "user":
+            successMessage = 'User has been assigned user role successfully.';
+            break;
+        }
+        
+        Swal.fire('Success!', successMessage, 'success');
+        
+        // Close details modal if open for the same user
+        if (showDetailsModal && selectedUserId === user.id) {
+          setShowDetailsModal(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating user role:', error);
+      Swal.fire('Error!', 'Failed to update user role.', 'error');
+    } finally {
+      setIsButtonLoading(null);
+    }
+  };
+
+  const handleIdStatusChange = async (user: TFullUser, newStatus: string) => {
+    // Prevent multiple clicks on the same user
+    if (isButtonLoading === user.id) return;
+    
+    setIsButtonLoading(user.id);
+    
+    try {
+      if (user.id_state === newStatus) {
+        Swal.fire('No Change Needed', 'User ID status is already ' + newStatus, 'info');
+        setIsButtonLoading(null);
+        return;
+      }
+
+      let confirmationConfig;
+      
+      switch (newStatus) {
+        case "valid":
+          confirmationConfig = {
+            title: 'Validate ID Document',
+            text: `Are you sure you want to validate the ID document for ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#10b981',
+            confirmButtonText: 'Yes, Validate ID',
+          };
+          break;
+        case "rejected":
+          confirmationConfig = {
+            title: 'Reject ID Document',
+            text: `Are you sure you want to reject the ID document for ${user.first_name} ${user.last_name}?`,
+            icon: 'warning' as const,
+            confirmButtonColor: '#dc2626',
+            confirmButtonText: 'Yes, Reject ID',
+          };
+          break;
+        case "pending":
+          confirmationConfig = {
+            title: 'Set ID to Pending',
+            text: `Are you sure you want to set ID status to pending for ${user.first_name} ${user.last_name}?`,
+            icon: 'question' as const,
+            confirmButtonColor: '#eeea04ff',
+            confirmButtonText: 'Yes, Set to Pending',
+          };
+          break;
+        default:
+          setIsButtonLoading(null);
+          return;
+      }
+
+      const result = await Swal.fire({
+        ...confirmationConfig,
+        showCancelButton: true,
+        cancelButtonColor: '#6b7280',
+        cancelButtonText: 'Cancel',
+      });
+
+      if (result.isConfirmed) {
+        await adminService.updateUserIDStatus(user.id, newStatus);
+        
+        // CRITICAL FIX: Refetch the data to update the UI
+        await refetch();
+        
+        let successMessage = '';
+        switch (newStatus) {
+          case "valid":
+            successMessage = 'ID document has been validated successfully.';
+            break;
+          case "rejected":
+            successMessage = 'ID document has been rejected successfully.';
+            break;
+          case "pending":
+            successMessage = 'ID status has been set to pending successfully.';
+            break;
+        }
+        
+        Swal.fire('Success!', successMessage, 'success');
+        
+        // Close details modal if open for the same user
+        if (showDetailsModal && selectedUserId === user.id) {
+          setShowDetailsModal(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating ID status:', error);
+      Swal.fire('Error!', 'Failed to update ID status.', 'error');
+    } finally {
+      setIsButtonLoading(null);
+    }
+  };
+
+  const handleRowClick = (user: TFullUser) => {
+    setSelectedUserId(user.id);
+    setShowDetailsModal(true);
+    setActiveTab('info');
+  };
+
+  // Tab navigation
+  const tabs = [
+    { id: 'info', label: 'User Info', icon: UserIcon },
+    { id: 'properties', label: 'Properties', icon: BuildingOfficeIcon, count: userProperties?.length },
+    { id: 'transactions', label: 'Transactions', icon: CreditCardIcon, count: userTransactions?.length },
+    { id: 'image', label: 'ID Image', icon: PhotoIcon },
+  ];
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <p className="text-red-600">Error loading users: {error.message}</p>
-          <Button 
-            variant="primary" 
-            onClick={() => window.location.reload()} 
-            className="mt-4"
-          >
-            Retry
-          </Button>
-        </div>
+      <div className="p-6 text-center">
+        <p className="text-red-600">Error loading users: {error.message}</p>
+        <Button onClick={() => refetch()} className="mt-4">
+          Retry
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="min-w-fit space-y-6 mx-auto px-4 py-8">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-            <UsersIcon className="h-8 w-8 mr-3 text-primary-600" />
-            Users Management
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Manage all users on the platform ({totalUsers} total)
-          </p>
-        </div>
-
-        <div className="flex items-center space-x-3">
-          <Button variant="primary">
-            <PlusIcon className="h-4 w-4 mr-2" />
-            Add User
-          </Button>
-        </div>
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+        <p className="text-gray-600">Manage system users and their permissions</p>
       </div>
 
-      {/* Filters */}
-      <UserFilter
-        filters={userFilters}
-        onFiltersChange={handleFilterChange}
-        onClearFilters={handleClearFilters}
-        loading={isLoading}
-      />
+      {/* Enhanced Search and Filters */}
+      <div className="bg-white rounded-lg border p-4 space-y-4">
+        <div className="relative">
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+          <Input
+            type="text"
+            placeholder="Search users by name, email, or phone..."
+            value={filters.search || ''}
+            onChange={(e) => updateFilter('search', e.target.value)}
+            className="pl-10"
+          />
+        </div>
 
-      {/* Users Table - Full Width */}
-      {isLoading ? (
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-          <div className="animate-pulse">
-            <div className="h-16 bg-gray-100 rounded-t-lg"></div>
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-20 bg-gray-50 border-t border-gray-200"></div>
-            ))}
+        <div className="flex items-center justify-between">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <FunnelIcon className="h-4 w-4 mr-2" />
+            Advanced Filters
+            {hasActiveFilters && (
+              <span className="ml-2 h-2 w-2 rounded-full bg-blue-600" />
+            )}
+          </Button>
+
+          {hasActiveFilters && (
+            <Button variant="ghost" size="sm" onClick={clearFilters}>
+              <XMarkIcon className="h-4 w-4 mr-1" />
+              Clear All
+            </Button>
+          )}
+        </div>
+
+        {showFilters && (
+          <div className="border-t pt-4 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Role</label>
+                <Select
+                  value={filters.role || ''}
+                  onChange={(e) => updateFilter('role', e.target.value)}
+                  options={[
+                    { value: '', label: 'All Roles' },
+                    { value: 'user', label: 'User' },
+                    { value: 'agent', label: 'Agent' },
+                    { value: 'admin', label: 'Admin' }
+                  ]}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Status</label>
+                <Select
+                  value={filters.status || ''}
+                  onChange={(e) => updateFilter('status', e.target.value)}
+                  options={[
+                    { value: '', label: 'All Statuses' },
+                    { value: 'active', label: 'Active' },
+                    { value: 'pending', label: 'Pending' },
+                    { value: 'suspended', label: 'Suspended' }
+                  ]}
+                />
+              </div>
+
+              {/* <div>
+                <label className="block text-sm font-medium mb-2">Results Per Page</label>
+                <Select
+                  value={filters.per_page?.toString() || USERS_PER_PAGE.toString()}
+                  onChange={(e) => updateFilter('per_page', parseInt(e.target.value))}
+                  options={[
+                    { value: '10', label: '10 per page' },
+                    { value: '15', label: '15 per page' },
+                    { value: '25', label: '25 per page' },
+                    { value: '50', label: '50 per page' },
+                  ]}
+                />
+              </div> */}
+              <div className="flex items-center space-x-4">
+  <span className="text-sm text-gray-700">Show:</span>
+  <Select
+    value={currentPerPage.toString()}
+    onChange={(e) => updateFilter('per_page', parseInt(e.target.value))}
+    options={[
+      { value: '10', label: '10' },
+      { value: '15', label: '15' },
+      { value: '25', label: '25' },
+      { value: '50', label: '50' },
+    ]}
+    className="w-20"
+  />
+</div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Registered From</label>
+                <Input
+                  type="date"
+                  value={filters.date_from || ''}
+                  onChange={(e) => updateFilter('date_from', e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Registered To</label>
+                <Input
+                  type="date"
+                  value={filters.date_to || ''}
+                  onChange={(e) => updateFilter('date_to', e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Active Filters Summary */}
+            {hasActiveFilters && (
+              <div className="pt-4 border-t">
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-sm text-gray-500">Active filters:</span>
+                  
+                  {filters.role && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      Role: {filters.role}
+                    </span>
+                  )}
+
+                  {filters.status && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Status: {filters.status}
+                    </span>
+                  )}
+
+                  {filters.search && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                      Search: "{filters.search}"
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
+        )}
+      </div>
+
+      {/* Users Table */}
+      {isLoading ? (
+        <div className="flex justify-center py-12">
+          <LoadingSpinner size="lg" />
         </div>
       ) : users.length > 0 ? (
-        <UsersTable
-          data={users}
-          loading={isLoading}
-          onUserView={handleUserView}
-          onUserActivate={handleUserActivate}
-          onUserSuspend={handleUserSuspend}
-        />
+        <div className="bg-white rounded-lg border overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Registered</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {users.map((user) => (
+                  <tr 
+                    key={user.id} 
+                    className="hover:bg-gray-50 cursor-pointer"
+                    onClick={() => handleRowClick(user)}
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                          {user.id_image_url ? (
+                            <img 
+                              src={user.id_image_url} 
+                              alt="User" 
+                              className="h-10 w-10 rounded-full object-cover cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedUserId(user.id);
+                                setShowImageModal(true);
+                              }}
+                            />
+                          ) : (
+                            <UserIcon className="h-5 w-5 text-gray-500" />
+                          )}
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">
+                            {user.first_name} {user.last_name} #{user.id}
+                          </div>
+                          <div className="text-sm text-gray-500">{user.email}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Badge variant={getStatusColor(user.status)}>
+                        {user.status}
+                      </Badge>
+                    </td>
+                    <td className="px-6 py-4">
+                      <select
+                        value={user.role}
+                        onChange={(e) => handleRoleChange(user, e.target.value)}
+                        className={`px-2 py-1 rounded border text-sm font-medium ${
+                          getRoleColor(user.role) === 'danger' ? 'text-red-700 border-red-200' :
+                          getRoleColor(user.role) === 'primary' ? 'text-blue-700 border-blue-200' :
+                          'text-gray-700 border-gray-200'
+                        }`}
+                        onClick={(e) => e.stopPropagation()}
+                        disabled={isButtonLoading !== null}
+                      >
+                        <option value="user">User</option>
+                        <option value="agent">Agent</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </td>
+                    <td className="px-6 py-4">
+                      <select
+                        value={user.id_state || "pending"}
+                        onChange={(e) => handleIdStatusChange(user, e.target.value)}
+                        className="px-2 py-1 rounded border text-sm font-medium text-gray-700 border-gray-200"
+                        onClick={(e) => e.stopPropagation()}
+                        disabled={isButtonLoading !== null}
+                      >
+                        <option value="valid">Valid</option>
+                        <option value="pending">Pending</option>
+                        <option value="rejected">Rejected</option>
+                      </select>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {user.phone_number}
+                      {user.phone_verified_at && (
+                        <CheckCircleIcon className="h-4 w-4 text-green-500 inline ml-1" />
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {user.email}
+                      {user.email_verified_at && (
+                        <CheckCircleIcon className="h-4 w-4 text-green-500 inline ml-1" />
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {formatDate(user.created_at)}
+                    </td>
+                    <td className="px-6 py-4 space-x-2" onClick={(e) => e.stopPropagation()}>
+                      {(user.status === 'pending' || user.status === 'suspended') && (
+                        <Button
+                          size="sm"
+                          variant="success"
+                          onClick={() => handleUserActivationStates(user, "active")}
+                          loading={isButtonLoading === user.id}
+                          disabled={isButtonLoading !== null}
+                        >
+                          <CheckCircleIcon className="h-4 w-4 mr-1" />
+                          {user.status === 'suspended' ? 'Reactivate' : 'Activate'}
+                        </Button>
+                      )}
+                      {(user.status === 'active' || user.status === 'pending') && (
+                        <Button 
+                          size="sm"
+                          variant="danger"
+                          onClick={() => handleUserActivationStates(user, "suspended")}
+                          loading={isButtonLoading === user.id}
+                          disabled={isButtonLoading !== null}
+                        >
+                          <ExclamationTriangleIcon className="h-4 w-4 mr-1" />
+                          Suspend
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       ) : (
-        <EmptyState
-          icon={<UsersIcon className="h-8 w-8 text-primary-600" />}
-          title="No users found"
-          description={
-            hasActiveFilters
-              ? "No users match your current filters. Try adjusting your search criteria."
+        <div className="text-center py-12 bg-white rounded-lg border">
+          <UserIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900">No users found</h3>
+          <p className="text-gray-500">
+            {hasActiveFilters 
+              ? "No users match your current filters. Try adjusting your search criteria." 
               : "No users have been registered yet."
-          }
-          action={
-            hasActiveFilters ? (
-              <Button variant="secondary" onClick={handleClearFilters}>
-                Clear Filters
-              </Button>
-            ) : (
-              <Button variant="primary">
-                <PlusIcon className="h-4 w-4 mr-2" />
-                Add First User
-              </Button>
-            )
-          }
-        />
+            }
+          </p>
+          {hasActiveFilters && (
+            <Button onClick={clearFilters} className="mt-4">
+              Clear Filters
+            </Button>
+          )}
+        </div>
       )}
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          showInfo={true}
-          totalItems={totalUsers}
-          itemsPerPage={USERS_PER_PAGE}
-        />
-      )}
+    <div className="flex items-center justify-between bg-white rounded-lg border p-4">
+      <div className="text-sm text-gray-700">
+        Showing {(currentPage - 1) * currentPerPage + 1} to {Math.min(currentPage * currentPerPage, totalUsers)} of {totalUsers} users
+      </div>
+      <div className="flex space-x-2">
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+        >
+          Previous
+        </Button>
+        
+        {/* FIXED: Better pagination controls with page numbers */}
+        <div className="flex space-x-1">
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            let pageNumber;
+            if (totalPages <= 5) {
+              pageNumber = i + 1;
+            } else if (currentPage <= 3) {
+              pageNumber = i + 1;
+            } else if (currentPage >= totalPages - 2) {
+              pageNumber = totalPages - 4 + i;
+            } else {
+              pageNumber = currentPage - 2 + i;
+            }
 
-      {/* User Details Modal */}
-      <UserDetailsModal
-        userId={selectedUserId}
-        isOpen={showUserModal}
-        onClose={() => {
-          setShowUserModal(false);
-          setSelectedUserId(null);
-        }}
-      />
+            return (
+              <Button
+                key={pageNumber}
+                variant={currentPage === pageNumber ? "primary" : "secondary"}
+                size="sm"
+                onClick={() => setCurrentPage(pageNumber)}
+                className="min-w-[40px]"
+              >
+                {pageNumber}
+              </Button>
+            );
+          })}
+        </div>
+
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}
+        >
+          Next
+        </Button>
+      </div>
+    </div>
+  )}
+
+      {/* User Details Modal with Tabs */}
+      {showDetailsModal && selectedUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-bold">User Details - {selectedUser.first_name} {selectedUser.last_name}</h3>
+                <Button variant="ghost" onClick={() => setShowDetailsModal(false)}>×</Button>
+              </div>
+              
+              {/* Tabs Navigation */}
+              <div className="border-b mb-6">
+                <nav className="flex space-x-8">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id as any)}
+                      className={`flex items-center py-2 px-1 border-b-2 font-medium text-sm ${
+                        activeTab === tab.id 
+                          ? 'border-blue-500 text-blue-600' 
+                          : 'border-transparent text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      <tab.icon className="h-4 w-4 mr-2" />
+                      {tab.label}
+                      {tab.count !== undefined && (
+                        <span className="ml-2 py-0.5 px-2 rounded-full text-xs bg-gray-100">
+                          {tab.count}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </nav>
+              </div>
+
+              {/* Tab Content */}
+              <div className="min-h-[300px]">
+                {/* Info Tab */}
+                {activeTab === 'info' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card title="Basic Information">
+                      <div className="space-y-4">
+                        <InfoRow label="ID" value={"#" + selectedUser.id}/>
+                        <InfoRow label="Full Name" value={`${selectedUser.first_name} ${selectedUser.last_name}`} />
+                        <InfoRow label="Email" value={selectedUser.email} verified={!!selectedUser.email_verified_at} />
+                        <InfoRow label="Phone" value={selectedUser.phone_number} verified={!!selectedUser.phone_verified_at} />
+                        <InfoRow label="Registered" value={formatDate(selectedUser.created_at)} />
+                        <Button
+                          size="sm"
+                          variant="danger"
+                          onClick={() => handleUserDelete(selectedUser)}
+                          loading={isButtonLoading === selectedUser.id}
+                          disabled={isButtonLoading !== null}
+                        >
+                          <ExclamationTriangleIcon className="h-4 w-4 mr-1" />
+                          
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleUserNotify(selectedUser,"Notification Test")}
+                          loading={isButtonLoading === selectedUser.id}
+                          disabled={isButtonLoading !== null}
+                        >
+                          <ExclamationTriangleIcon className="h-4 w-4 mr-1" />
+                          
+                        </Button>
+                      </div>
+                    </Card>
+
+                    <Card title="Account Status">
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Status</label>
+                          <div className="mt-1">
+                            <Badge variant={getStatusColor(selectedUser.status)} size="lg">
+                              {selectedUser.status}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">Role</label>
+                          <div className="mt-1">
+                            <Badge variant={getRoleColor(selectedUser.role)} size="lg">
+                              {selectedUser.role}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500">ID Status</label>
+                          <div className="mt-1">
+                            <Badge variant={getStatusColor(selectedUser.id_state || 'pending')} size="lg">
+                              {selectedUser.id_state || 'pending'}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <StatBox label="Properties" value={selectedUser.properties_count || 0} />
+                          <StatBox label="Transactions" value={selectedUser.transactions_count || 0} />
+                        </div>
+                      </div>
+                      
+                    </Card>
+                  </div>
+                )}
+
+                {/* Properties Tab */}
+                {activeTab === 'properties' && (
+  <Card title="User Properties">
+    {userProperties && userProperties.length > 0 ? (
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr>
+              <th className="text-left p-2">Title</th>
+              <th className="text-left p-2">Type</th>
+              <th className="text-left p-2">Price</th>
+              <th className="text-left p-2">Status</th>
+              <th className="text-left p-2">Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {userProperties.map((property: any) => (
+              <tr key={property.id} className="border-t">
+                <td className="p-2">{property.title}</td>
+                <td className="p-2">{property.type}</td>
+                <td className="p-2">{formatCurrency(property.price)}</td>
+                <td className="p-2">
+                  <Badge variant={getStatusColor(property.status)}>
+                    {property.status}
+                  </Badge>
+                </td>
+                <td className="p-2">{formatDate(property.created_at)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <div className="text-center py-8">
+        <BuildingOfficeIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+        <p className="text-gray-500">No properties found</p>
+      </div>
+    )}
+  </Card>
+)}
+
+                {/* Transactions Tab */}
+                {/* Transactions Tab */}
+{activeTab === 'transactions' && (
+  <Card title="User Transactions">
+    {userTransactions && userTransactions.length > 0 ? (
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr>
+              <th className="text-left p-2">Type</th>
+              <th className="text-left p-2">Amount</th>
+              <th className="text-left p-2">Status</th>
+              <th className="text-left p-2">Gateway</th>
+              <th className="text-left p-2">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {userTransactions.map((transaction: any) => (
+              <tr key={transaction.id} className="border-t">
+                <td className="p-2">{transaction.type}</td>
+                <td className="p-2">{formatCurrency(parseFloat(transaction.amount))}</td>
+                <td className="p-2">
+                  <Badge variant={getStatusColor(transaction.status)}>
+                    {transaction.status}
+                  </Badge>
+                </td>
+                <td className="p-2">{transaction.payment_gateway}</td>
+                <td className="p-2">{formatDate(transaction.created_at)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <div className="text-center py-8">
+        <CreditCardIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+        <p className="text-gray-500">No transactions found</p>
+      </div>
+    )}
+  </Card>
+)}
+
+                {/* Image Tab */}
+                {activeTab === 'image' && (
+                  <Card title="ID Document">
+                    {selectedUser.id_image_url ? (
+                      <div className="flex justify-center">
+                        <img
+                          src={selectedUser.id_image_url}
+                          alt="ID Document"
+                          className="max-h-96 rounded border cursor-pointer"
+                          onClick={() => {
+                            setShowDetailsModal(false);
+                            setShowImageModal(true);
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <PhotoIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-500">No ID document uploaded</p>
+                      </div>
+                    )}
+                  </Card>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-3 pt-6 border-t mt-6">
+                {selectedUser.status === 'active' && (
+                  <Button
+                    variant="danger"
+                    onClick={() => {
+                      setShowDetailsModal(false);
+                      handleUserActivationStates(selectedUser, "suspended");
+                    }}
+                    loading={isButtonLoading === selectedUser.id}
+                    disabled={isButtonLoading !== null}
+                  >
+                    Suspend User
+                  </Button>
+                )}
+                
+                {(selectedUser.status === 'pending' || selectedUser.status === 'suspended') && (
+                  <Button
+                    variant="success"
+                    onClick={() => {
+                      setShowDetailsModal(false);
+                      handleUserActivationStates(selectedUser, "active");
+                    }}
+                    loading={isButtonLoading === selectedUser.id}
+                    disabled={isButtonLoading !== null}
+                  >
+                    {selectedUser.status === 'suspended' ? 'Reactivate' : 'Activate'}
+                  </Button>
+                )}
+                
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowDetailsModal(false)}
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Image Modal */}
+      {showImageModal && selectedUser && selectedUser.id_image_url && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowImageModal(false)}
+        >
+          <div className="relative">
+            <Button 
+              variant="ghost" 
+              className="absolute -top-12 right-0 text-white"
+              onClick={() => setShowImageModal(false)}
+            >
+              × Close
+            </Button>
+            <img 
+              src={selectedUser.id_image_url}
+              alt="ID Document" 
+              className="max-w-[90vw] max-h-[90vh] object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+const InfoRow = ({ label, value, verified }: { label: string; value: string; verified?: boolean }) => (
+  <div>
+    <p className="text-sm font-medium text-gray-900">{value}</p>
+    <p className="text-sm text-gray-500">
+      {label} 
+      {verified == true && <Badge variant="success" className="ml-1">Verified</Badge>}
+      {verified == false && <Badge variant="destructive" className="ml-1">Unverified</Badge>}
+    </p>
+  </div>
+);
+
+const StatBox = ({ label, value }: { label: string; value: number }) => (
+  <div>
+    <p className="text-sm font-medium text-gray-500">{label}</p>
+    <p className="text-2xl font-bold text-blue-600">{value}</p>
+  </div>
+);

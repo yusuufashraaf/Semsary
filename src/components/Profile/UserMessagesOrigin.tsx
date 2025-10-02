@@ -10,9 +10,9 @@ const UserMessagesOrigin = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentchatid, setCurrentchatId] = useState<number | null>(0);
   const [allchats, setAllchats] = useState<Chat[]>([]);
-  const [availablechats, setavailablechats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeCard, setActiveCard] = useState<{type: string, data: any} | null>(null);
   const {jwt, user} = useAppSelector(state => state.Authslice);
 
   // Ref for the messages container only
@@ -138,29 +138,6 @@ const UserMessagesOrigin = () => {
     }
   };
 
-  const fetchAvailableChats = async (userId: number) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await messageService.getAvailableNewChats(userId);
-      if (!response) throw new Error('Failed to fetch chats');
-      console.log(response);
-      // const data = await response.json();
-      // const chatsData = data.chats || [];
-      // setAllchats(chatsData);
-      setavailablechats(response.rentrequests);
-      console.log(response.rentrequests)
-      // console.log('Fetched all chats:', chatsData);
-    } catch (error) {
-      console.error('Failed to fetch chats:', error);
-      setError('Failed to load chats');
-      setAllchats([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-
   useEffect(() => {
     if (user?.id) {
       fetchAllChats(user.id);
@@ -173,12 +150,6 @@ const UserMessagesOrigin = () => {
     }
   }, [currentchatid]);
 
-  useEffect(() => {
-    if (user?.id) {
-      fetchAvailableChats(user.id);
-    }
-  }, [user?.id]);
-
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       sendMessage();
@@ -187,7 +158,20 @@ const UserMessagesOrigin = () => {
 
   const handleChatSelect = (chatId: number) => {
     setCurrentchatId(chatId);
-    setMessages([]);
+    //setMessages([]);
+    setActiveCard(null); // Close any open cards when switching chats
+  };
+
+  const handleButtonClick = (type: 'owner' | 'renter' | 'property', chat: Chat) => {
+    const data = type === 'owner' ?  chat.property.owner: 
+                 type === 'renter' ? chat.owner : 
+                 chat.property;
+    
+    if (activeCard && activeCard.type === type && activeCard.data?.id === data?.id) {
+      setActiveCard(null); // Close if same card is clicked again
+    } else {
+      setActiveCard({ type, data });
+    }
   };
 
   const formatTime = (timestamp?: string) => {
@@ -251,6 +235,44 @@ const UserMessagesOrigin = () => {
                     <p className="chat-last-message">
                       {chat.latest_message?.content || 'No messages yet'}
                     </p>
+                    
+                    {/* Three Buttons */}
+                    <div className="chat-buttons">
+                      {user?.role == "agent"?
+                      <button 
+                        className="btn btn-sm btn-outline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleButtonClick('owner', chat);
+                        }}
+                      >
+                        Owner
+                      </button>
+                      :
+                      ""
+                      }
+                      {user?.role == "agent"?
+                      <button 
+                        className="btn btn-sm btn-outline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleButtonClick('renter', chat);
+                        }}
+                      >
+                        Renter
+                      </button>
+                      :""}
+                      <button 
+                        className="btn btn-sm btn-outline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleButtonClick('property', chat);
+                        }}
+                      >
+                        Property
+                      </button>
+                    </div>
+
                     {chat.unread_count > 0 && (
                       <span className="unread-badge">{chat.unread_count}</span>
                     )}
@@ -261,71 +283,203 @@ const UserMessagesOrigin = () => {
           </div>
         </div>
 
-        {/* Chat Messages Area */}
-        <div className="chat-main">
-          {currentchatid ? (
-            <>
-              <div 
-                ref={messagesContainerRef}
-                className="messages-container"
-              >
-                {messages?.length === 0 ? (
-                  <div className="empty-state">
-                    <i className="fas fa-comment" style={{ fontSize: '3rem', marginBottom: 'var(--spacing-md)', opacity: 0.5 }}></i>
-                    <h3>No Messages</h3>
-                    <p>Start a conversation by sending a message.</p>
-                  </div>
-                ) : (
-                  messages?.map((msg, index) => (
-                    <div 
-                      key={index} 
-                      className={`message-bubble ${msg.sender_id === user?.id ? 'sent' : 'received'}`}
-                    >
-                      <div className="message-content">
-                        <span>{msg.content}</span>
-                        <span className="message-time">
-                          {formatTime(msg.created_at)}
-                        </span>
-                      </div>
+        {/* Main Area - Messages and Info Cards */}
+        <div className="chat-main-area">
+          {/* Info Cards Section */}
+          {activeCard && (
+            <div className="info-cards-section">
+              <div className="info-card">
+                <div className="info-card-header">
+                  <h3 className="heading-tertiary">
+                    {activeCard.type === 'owner' && 'Owner Information'}
+                    {activeCard.type === 'renter' && 'Renter Information'}
+                    {activeCard.type === 'property' && 'Property Information'}
+                  </h3>
+                  <button 
+                    className="btn btn-sm btn-close"
+                    onClick={() => setActiveCard(null)}
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                <div className="info-card-content">
+                  {activeCard.type === 'owner' && activeCard.data && (
+                    <div className="user-info">
+                      <p><strong>Name:</strong> {activeCard.data.first_name} {activeCard.data.last_name}</p>
+                      <p><strong>Email:</strong> {activeCard.data.email}</p>
+                      <p><strong>Phone:</strong> {activeCard.data.phone_number}</p>
+                      <p><strong>Role:</strong> {activeCard.data.role}</p>
+                      <p><strong>Status:</strong> {activeCard.data.status}</p>
                     </div>
-                  ))
-                )}
+                  )}
+                  
+                  {activeCard.type === 'renter' && activeCard.data && (
+                    <div className="user-info">
+                      <p><strong>Name:</strong> {activeCard.data.first_name} {activeCard.data.last_name}</p>
+                      <p><strong>Email:</strong> {activeCard.data.email}</p>
+                      <p><strong>Phone:</strong> {activeCard.data.phone_number}</p>
+                      <p><strong>Role:</strong> {activeCard.data.role}</p>
+                      <p><strong>Status:</strong> {activeCard.data.status}</p>
+                    </div>
+                  )}
+                  
+                  {activeCard.type === 'property' && activeCard.data && (
+                    <div className="property-info">
+                      <p><strong>Title:</strong> {activeCard.data.title}</p>
+                      <p><strong>Type:</strong> {activeCard.data.type}</p>
+                      <p><strong>Price:</strong> ${activeCard.data.price} ({activeCard.data.price_type})</p>
+                      <p><strong>Bedrooms:</strong> {activeCard.data.bedrooms}</p>
+                      <p><strong>Bathrooms:</strong> {activeCard.data.bathrooms}</p>
+                      <p><strong>Size:</strong> {activeCard.data.size} sq ft</p>
+                      <p><strong>Status:</strong> {activeCard.data.property_state}</p>
+                    </div>
+                  )}
+                </div>
               </div>
-              
-              <div className="message-input-container">
-                <input 
-                  value={message} 
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Type your message..."
-                  className="message-input"
-                  disabled={loading}
-                />
-                <button 
-                  onClick={sendMessage} 
-                  disabled={!message.trim() || loading}
-                  className="btn btn-primary"
-                >
-                  {loading ? 'Sending...' : 'Send'}
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="empty-state">
-              <i className="fas fa-comment-dots" style={{ fontSize: '3rem', marginBottom: 'var(--spacing-md)', opacity: 0.5 }}></i>
-              <h3>Select a Conversation</h3>
-              <p>Choose a chat from the sidebar to start messaging.</p>
             </div>
           )}
+
+          {/* Chat Messages Area */}
+          <div className="chat-main">
+            {currentchatid ? (
+              <>
+                <div 
+                  ref={messagesContainerRef}
+                  className="messages-container"
+                >
+                  {messages?.length === 0 ? (
+                    <div className="empty-state">
+                      <i className="fas fa-comment" style={{ fontSize: '3rem', marginBottom: 'var(--spacing-md)', opacity: 0.5 }}></i>
+                      <h3>No Messages</h3>
+                      <p>Start a conversation by sending a message.</p>
+                    </div>
+                  ) : (
+                    messages?.map((msg, index) => (
+                      <div 
+                        key={index} 
+                        className={`message-bubble ${msg.sender_id === user?.id ? 'sent' : 'received'}`}
+                      >
+                        <div className="message-content">
+                          <span>{msg.content}</span>
+                          <span className="message-time">
+                            {formatTime(msg.created_at)}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+                {currentchatid != 0 ? (
+                  <div className="message-input-container">
+                    <input 
+                      value={message} 
+                      onChange={(e) => setMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Type your message..."
+                      className="message-input"
+                      disabled={loading}
+                    />
+                    <button 
+                      onClick={sendMessage} 
+                      disabled={!message.trim() || loading}
+                      className="btn btn-primary"
+                    >
+                      {loading ? 'Sending...' : 'Send'}
+                    </button>
+                  </div>
+                ) : null}
+              </>
+            ) : (
+              <div className="empty-state">
+                <i className="fas fa-comment-dots" style={{ fontSize: '3rem', marginBottom: 'var(--spacing-md)', opacity: 0.5 }}></i>
+                <h3>Select a Conversation</h3>
+                <p>Choose a chat from the sidebar to start messaging.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .chat-layout {
           display: grid;
           grid-template-columns: 300px 1fr;
           gap: var(--spacing-lg);
           height: 600px;
+        }
+
+        .chat-main-area {
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-md);
+        }
+
+        .info-cards-section {
+          flex-shrink: 0;
+        }
+
+        .info-card {
+          background: var(--primary-bg);
+          border-radius: var(--radius-md);
+          border: 1px solid var(--primary-border);
+          padding: var(--spacing-lg);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: var(--spacing-md);
+          padding-bottom: var(--spacing-sm);
+          border-bottom: 1px solid var(--primary-border);
+        }
+
+        .info-card-content {
+          line-height: 1.6;
+        }
+
+        .user-info p,
+        .property-info p {
+          margin-bottom: var(--spacing-sm);
+          color: var(--primary-color);
+        }
+
+        .chat-buttons {
+          display: flex;
+          gap: var(--spacing-sm);
+          margin-top: var(--spacing-md);
+          flex-wrap: wrap;
+        }
+
+        .btn-sm {
+          padding: var(--spacing-sm) var(--spacing-md);
+          font-size: 0.8rem;
+        }
+
+        .btn-outline {
+          background: transparent;
+          border: 1px solid var(--primary-border);
+          color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+          background: var(--secondary-color);
+          border-color: var(--primary-color);
+        }
+
+        .btn-close {
+          background: none;
+          border: none;
+          font-size: 1.2rem;
+          cursor: pointer;
+          color: var(--primary-color);
+          opacity: 0.7;
+        }
+
+        .btn-close:hover {
+          opacity: 1;
         }
 
         .chat-sidebar {
@@ -337,6 +491,7 @@ const UserMessagesOrigin = () => {
         }
 
         .chat-main {
+          flex: 1;
           display: flex;
           flex-direction: column;
           background: var(--primary-bg);
@@ -414,7 +569,7 @@ const UserMessagesOrigin = () => {
           display: flex;
           flex-direction: column;
           gap: var(--spacing-md);
-          scroll-behavior: smooth; /* Enable smooth scrolling */
+          scroll-behavior: smooth;
         }
 
         .message-bubble {
@@ -479,6 +634,10 @@ const UserMessagesOrigin = () => {
           
           .chat-sidebar {
             max-height: 300px;
+          }
+
+          .chat-buttons {
+            flex-direction: column;
           }
         }
       `}</style>

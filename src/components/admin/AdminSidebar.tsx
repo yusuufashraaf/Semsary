@@ -23,9 +23,9 @@ const navigation = [
   { name: "Properties", href: "/admin/properties", icon: BuildingOfficeIcon },
   { name: "CS Agents", href: "/admin/cs-agents", icon: UserGroupIcon },
   { name: "Assignments", href: "/admin/assignments", icon: ClipboardDocumentListIcon },
-  { name: "Transactions", href: "/admin/transactions", icon: CreditCardIcon },
-  { name: "Analytics", href: "/admin/analytics", icon: ChartBarIcon },
-  { name: "Settings", href: "/admin/settings", icon: Cog6ToothIcon },
+  // { name: "Transactions", href: "/admin/transactions", icon: CreditCardIcon },
+  // { name: "Analytics", href: "/admin/analytics", icon: ChartBarIcon },
+  // { name: "Settings", href: "/admin/settings", icon: Cog6ToothIcon },
 ];
 
 export const AdminSidebar: React.FC = () => {

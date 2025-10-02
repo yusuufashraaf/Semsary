@@ -29,6 +29,7 @@ export interface Coordinates {
  * Host or property owner information.
  */
 export interface Host {
+  id?:number
   name: string;
   avatar: string;
   joinDate: string;
@@ -49,6 +50,7 @@ export type Amenities = string[];
 
 export interface BaseProperty {
   id: string|number;
+  owner_id:string|number;
   title?: string;
   address?: string;
   price: number;
@@ -75,7 +77,6 @@ export interface BaseProperty {
 
 export interface Listing extends BaseProperty {
   image: string | null;
-    property_state?: string;
   pending_buyer_id?: number;
   owner?: any | undefined; // Allow undefined
 
@@ -429,6 +430,8 @@ export interface AddToWishlistProps {
 export interface ErrorMessageProps {
   message?: string;
   visible?: boolean;
+  link?: string
+  linkMessage?:string
 }
 
 // ---------------- Error screen ----------------
@@ -579,6 +582,7 @@ export interface Chat {
     price: string;
     price_type: string;
     location: any;
+    owner:any;
   };
   owner: any;
   renter: any;
@@ -622,6 +626,7 @@ export interface Checkout {
   
   // Relationships
   rentRequest?: RentRequest;
+  rent_request?: RentRequestExtended;  
 }
 
 export interface AgentDecision {
@@ -732,7 +737,7 @@ export interface PropertyPurchase {
   buyer_id: number;
   seller_id: number;
   amount: string;
-  status: "pending" | "paid" | "cancelled" | "refunded";
+  status: "pending" | "paid" | "cancelled" | "refunded" | "failed";
   payment_gateway: string;
   transaction_ref: string;
   idempotency_key: string;
@@ -782,3 +787,61 @@ export interface PurchaseResponse {
     seller: any;
   };
 }
+//------------------------- Checkout Agent Decision -------------------------------
+export interface UserInfo {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  role: string;
+  status: string;
+  id_state: string;
+  id_image_url?: string | null;
+  email_verified_at?: string | null;
+  phone_verified_at?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PropertyWithOwner {
+  id: number;
+  owner_id: number;
+  title: string;
+  description: string;
+  type: string;
+  price: string;
+  price_type: string;
+  location: {
+    address: string;
+    lat?: string;
+    lng?: string;
+  };
+  size: number;
+  bedrooms: number;
+  bathrooms: number;
+  property_state: string;
+  status: string;
+  is_in_wishlist: boolean;
+  created_at: string;
+  updated_at: string;
+  owner?: UserInfo;
+}
+
+export interface RentRequestExtended {
+  id: number;
+  property_id: number;
+  user_id: number;
+  check_in: string;
+  check_out: string;
+  status: string;
+  payment_deadline?: string;
+  created_at: string;
+  updated_at: string;
+  property?: PropertyWithOwner;
+  user?: UserInfo;
+}
+
+export type AgentCheckoutsProps = {
+  userId: number;
+};

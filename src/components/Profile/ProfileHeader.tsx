@@ -4,6 +4,7 @@ import { Collapse } from 'react-bootstrap';
 import '../../styles/themes.css';
 import './ProfileHeader.css';
 import { TFullUser } from 'src/types/users/users.types';
+import { useAppSelector } from '@store/hook';
 
 type ProfileHeaderProps = {
   section: string;
@@ -12,6 +13,7 @@ type ProfileHeaderProps = {
 };
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({  unreadCount }) => {
+  const {user} = useAppSelector(state => state.Authslice)
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen] = useState(true);
@@ -29,6 +31,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({  unreadCount }) => {
   const SidebarContent = () => (
     <div className="sidebar-content">
       {/* Main Navigation Section */}
+      <h2>{user?.first_name}</h2>
       <div className="nav-section">
         <h4 className="section-heading">
           <i className="fas fa-compass section-icon"></i>
@@ -42,21 +45,32 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({  unreadCount }) => {
             <i className="fas fa-home nav-icon"></i>
             <span>Your Info</span>
           </button>         
-          {/* {role === 'owner' && ( */}
-            {/* <> */}
-            <button
+
+
+            { user?.status === "active" && 
+             <button
               onClick={() => handleNavigation('owner-dashboard')}
               className={`nav-link ${isActive('owner-dashboard') ? 'active' : ''}`}
             >
               <i className="fas fa-tachometer-alt nav-icon"></i>
               <span>Dashboard</span>
             </button>
+            
+            }
+           
           <button 
             onClick={() => handleNavigation('rentRequests')}
             className={`nav-link ${isActive('rentRequests') ? 'active' : ''}`}
           >
             <i className="fas fa-envelope-open-text nav-icon"></i>
             <span>Requests</span>
+          </button>
+          <button 
+            onClick={() => handleNavigation('purchases')}
+            className={`nav-link ${isActive('purchases') ? 'active' : ''}`}
+          >
+            <i className="fas fa-shopping-cart nav-icon"></i>
+            <span>Purchases</span>
           </button>
 
           <button 
@@ -66,12 +80,25 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({  unreadCount }) => {
             <i className="fas fa-bell nav-icon"></i>
             <span>Notifications</span>
             {unreadCount > 0 && (
-              <span className="notification-badge">{unreadCount}</span>
+              <span className="total-unread-badge">{unreadCount}</span>
             )}
           </button>
           {/* </> */}
           {/* )} */}
-          
+          <button 
+            onClick={() => handleNavigation('wishlist')}
+            className={`nav-link ${isActive('wishlist') ? 'active' : ''}`}
+          >
+            <i className="fas fa-heart nav-icon"></i>
+            <span>Wishlist</span>
+          </button>
+                    <button 
+                onClick={() => handleNavigation('messages')}
+                className={`nav-link ${isActive('messages') ? 'active' : ''}`}
+              >
+                <i className="fas fa-bell nav-icon"></i>
+                <span>Messages</span>
+              </button>
           <button 
             onClick={() => handleNavigation('reviews')}
             className={`nav-link ${isActive('reviews') ? 'active' : ''}`}
@@ -80,24 +107,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({  unreadCount }) => {
             <span>Reviews</span>
           </button>
           
-          <button 
-            onClick={() => handleNavigation('purchases')}
-            className={`nav-link ${isActive('purchases') ? 'active' : ''}`}
-          >
-            <i className="fas fa-shopping-cart nav-icon"></i>
-            <span>Purchases</span>
-          </button>
-          
-          <button 
-            onClick={() => handleNavigation('wishlist')}
-            className={`nav-link ${isActive('wishlist') ? 'active' : ''}`}
-          >
-            <i className="fas fa-heart nav-icon"></i>
-            <span>Wishlist</span>
-          </button>
+
         </div>
       </div>
-
+      <hr></hr>
       {/* Account Management Section */}
       <div className="nav-section">
         <h4 className="section-heading">
@@ -105,13 +118,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({  unreadCount }) => {
           Account Settings
         </h4>
         <div className="nav-links">
-              <button 
-                onClick={() => handleNavigation('messages')}
-                className={`nav-link ${isActive('messages') ? 'active' : ''}`}
-              >
-                <i className="fas fa-bell nav-icon"></i>
-                <span>Messages</span>
-              </button>
+              
 
           <button 
             onClick={() => handleNavigation('changePhone')}

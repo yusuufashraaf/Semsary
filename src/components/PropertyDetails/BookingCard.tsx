@@ -3,6 +3,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import styles from "./BookingCard.module.css";
 import { formatCurrency } from "@utils/HelperFunctions";
 import { Property, GuestOption } from "src/types";
+import { useState } from "react";
+import { useAppSelector } from "@store/hook";
 
 interface BookingCardProps {
   property: Property;
@@ -49,12 +51,15 @@ function BookingCard({
   const isSell = property.price_type === "FullPay";
   const isRentFormValid =
     booking.checkIn && booking.checkOut && booking.guests && booking.nights > 0;
+  const { user } = useAppSelector(state => state.Authslice);
 
   // Check if we should show the buy button
-  const shouldShowBuyButton = () => {
-    return isSell && !hasActivePurchase && property.status === "Valid";
-  };
-
+const shouldShowBuyButton = () => {
+  if (!isSell) return false;
+  if (activePurchase && ['paid'].includes(activePurchase.status) || user?.id === property.host.id) return false;
+  if (user?.status !== "active") return false;
+  return property.status === "Valid" ||  ['pending'].includes(activePurchase.status);
+};
   // Check if we should show cancel button (pending or paid status)
   const shouldShowCancelButton = () => {
     if (!hasActivePurchase || !activePurchase) return false;
@@ -72,7 +77,7 @@ function BookingCard({
     if (!hasActivePurchase || !activePurchase) return null;
     
     const statusMessages = {
-      'pending': 'Purchase Pending',
+      'paused': 'Purchase paused press buy now to continue',
       'paid': 'Purchase Paid',
       'confirmed': 'Purchase Confirmed',
       'completed': 'Purchase Completed',
@@ -81,7 +86,7 @@ function BookingCard({
       'cancelled': 'Purchase Cancelled'
     };
 
-    return statusMessages[activePurchase.status as keyof typeof statusMessages] || `Status: ${activePurchase.status}`;
+    return statusMessages[activePurchase.status as keyof typeof statusMessages] ;
   };
 
 
@@ -300,12 +305,12 @@ function BookingCard({
 
             <div className={styles.breakdownRow}>
               <span>Security deposit</span>
-              <span>{formatCurrency(booking.subtotal)}</span>
+              <span>{formatCurrency(property.price)}</span>
             </div>
 
             <div className={styles.breakdownRow}>
               <strong>Total</strong>
-              <strong>{formatCurrency(booking.total * 2)}</strong>
+              <strong>{formatCurrency(booking.total + property.price)}</strong>
             </div>
           </div>
         )}

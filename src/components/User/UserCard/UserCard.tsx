@@ -1,6 +1,8 @@
-import { Card, ListGroup, ListGroupItem, Badge, Button, } from "react-bootstrap";
+import { Card, ListGroup, ListGroupItem, Badge } from "react-bootstrap";
 import { Mail, Phone, User, CheckCircle, XCircle } from "lucide-react";
-
+import { useEffect, useState } from "react";
+import { getEcho } from "@services/echoManager";
+import { toast } from "react-toastify";
 
 type TUserCardProps = {
   firstName: string;
@@ -11,7 +13,9 @@ type TUserCardProps = {
   isPhoneVerified: boolean;
   role: "user" | "agent" | "owner" | "admin";
   status: "pending" | "active" | "suspended";
-  idUpladed:string | null
+  id_state: "valid" | "rejected" | "pending";
+  idUploaded: string | null; 
+  userId: number;
 };
 
 const UserCard = ({
@@ -19,19 +23,9 @@ const UserCard = ({
   onVerifyClick,
 }: {
   user: TUserCardProps;
-  onVerifyClick: (type: "email" | "phone"| "id") => void;
+  onVerifyClick: (type: "email" | "phone" | "id") => void;
 }) => {
-  const {
-    firstName,
-    lastName,
-    email,
-    phoneNumber,
-    isEmailVerified,
-    isPhoneVerified,
-    role,
-    status,
-    idUpladed
-  } = user;
+  const [userState, setUserState] = useState(user);
 
   const getStatusVariant = (status: TUserCardProps["status"]) => {
     switch (status) {
@@ -46,31 +40,55 @@ const UserCard = ({
     }
   };
 
+  useEffect(() => {
+    const echo = getEcho();
+    if (!echo) {
+      console.warn("Echo is not initialized yet");
+      return;
+    }
+
+    const channel = echo.private(`user.${user.userId}`);
+
+   channel.listen(".user.updated", (event: Partial<TUserCardProps>) => {
+    console.log("Realtime event received:", event);
+    setUserState((prev) => {
+      toast.info(`Your ID status has been updated to "${event.id_state}"`);
+      return { ...prev, ...event };
+    });
+  });
+
+    return () => {
+      echo.leave(`user.${user.userId}`);
+    };
+  }, [user.userId]);
+
   return (
     <Card className="shadow-sm">
       <Card.Header as="h5" className="d-flex align-items-center">
         <User size={24} className="me-2" />
-        User Profile
+        User #{userState.userId} Profile
       </Card.Header>
       <Card.Body>
         <ListGroup variant="flush">
+          {/* First Name */}
           <ListGroupItem className="d-flex align-items-center">
             <User size={18} className="me-2" />
-            <strong>First Name:</strong> {firstName}
+            <strong>First Name:</strong> {userState.firstName}
           </ListGroupItem>
 
+          {/* Last Name */}
           <ListGroupItem className="d-flex align-items-center">
             <User size={18} className="me-2" />
-            <strong>Last Name:</strong> {lastName}
+            <strong>Last Name:</strong> {userState.lastName}
           </ListGroupItem>
 
-          {/* Email Row */}
+          {/* Email */}
           <ListGroupItem className="d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
               <Mail size={18} className="me-2" />
-              <strong>Email: </strong> {email}
+              <strong>Email: </strong> {userState.email}
             </div>
-            {isEmailVerified ? (
+            {userState.isEmailVerified ? (
               <Badge bg="success" className="d-flex align-items-center">
                 <CheckCircle size={14} className="me-1" /> Verified
               </Badge>
@@ -87,13 +105,13 @@ const UserCard = ({
             )}
           </ListGroupItem>
 
-          {/* Phone Row */}
+          {/* Phone */}
           <ListGroupItem className="d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
               <Phone size={18} className="me-2" />
-              <strong>Phone: </strong> {phoneNumber}
+              <strong>Phone: </strong> {userState.phoneNumber}
             </div>
-            {isPhoneVerified ? (
+            {userState.isPhoneVerified ? (
               <Badge bg="success" className="d-flex align-items-center">
                 <CheckCircle size={14} className="me-1" /> Verified
               </Badge>
@@ -110,14 +128,46 @@ const UserCard = ({
             )}
           </ListGroupItem>
 
-
-          <ListGroupItem className="d-flex justify-content-between align-items-center">
+          {/* ID */}
+            <ListGroupItem className="d-flex justify-content-between align-items-center">
             <strong>ID Document:</strong>
-            {idUpladed ? (
-              <Badge bg="success" className="d-flex align-items-center">
-                Uploaded
-              </Badge>
-            ) : (
+            {userState.id_state === "rejected" ? (
+  <Badge
+    bg="danger"
+    className="d-flex align-items-center"
+    style={{ cursor: "pointer" }}
+    onClick={() => onVerifyClick("id")}
+    title="Click to upload"
+  >
+    <XCircle size={14} className="me-1" /> Upload Now
+  </Badge>
+) : userState.id_state === "valid" ? (
+  <Badge
+    bg="success"
+    className="d-flex align-items-center"
+  >
+    <CheckCircle size={14} className="me-1" /> Valid
+  </Badge>
+) : userState.id_state === "pending" ? (
+  <Badge
+    bg="warning"
+    className="d-flex align-items-center"
+  >
+    Pending Review
+  </Badge>
+) : (
+  <Badge
+    bg="secondary"
+    className="d-flex align-items-center"
+    style={{ cursor: "pointer" }}
+    onClick={() => onVerifyClick("id")}
+    title="Click to upload"
+  >
+    Upload Now
+  </Badge>
+)}
+            {/* {userState.id_state === "rejected" ? (
+              // Show upload button only if rejected
               <Badge
                 bg="danger"
                 className="d-flex align-items-center"
@@ -125,22 +175,55 @@ const UserCard = ({
                 onClick={() => onVerifyClick("id")}
                 title="Click to upload"
               >
+                <XCircle size={14} className="me-1" /> Upload Now
+              </Badge>
+            ) : userState.idUploaded ? (
+              // If uploaded and not rejected, show status
+              <Badge
+                bg={
+                  userState.id_state === "valid"
+                    ? "success"
+                    : userState.id_state === "pending"
+                    ? "warning"
+                    : "secondary"
+                }
+                className="d-flex align-items-center"
+              >
+                {userState.id_state === "valid" && (
+                  <>
+                    <CheckCircle size={14} className="me-1" /> Valid
+                  </>
+                )}
+                {userState.id_state === "pending" && "Pending Review"}
+              </Badge>
+            ) : (
+              // Not uploaded at all
+              <Badge
+                bg="secondary"
+                className="d-flex align-items-center"
+                style={{ cursor: "pointer" }}
+                onClick={() => onVerifyClick("id")}
+                title="Click to upload"
+              >
                 Upload Now
               </Badge>
-            )}
+            )} */}
           </ListGroupItem>
-                    {/* Role */}
+                  {/* Role */}
           <ListGroupItem>
             <strong>Role:</strong>{" "}
-            {role ? role.charAt(0).toUpperCase() + role.slice(1) : "N/A"}
+            {userState.role
+              ? userState.role.charAt(0).toUpperCase() + userState.role.slice(1)
+              : "N/A"}
           </ListGroupItem>
 
           {/* Status */}
           <ListGroupItem className="d-flex justify-content-between align-items-center">
             <strong>Status:</strong>
-            <Badge bg={getStatusVariant(status)}>{status}</Badge>
+            <Badge bg={getStatusVariant(userState.status)}>
+              {userState.status}
+            </Badge>
           </ListGroupItem>
-
         </ListGroup>
       </Card.Body>
     </Card>

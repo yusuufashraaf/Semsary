@@ -18,6 +18,7 @@ import { ResetPassword, ForgotPassword, OAuthCallback, Login, Register, VerifyEm
 import Logout from "@pages/Logout/Logout";
 import Chatbot from "@components/Chatbot/Chatbot";
 import ProtectedRoute from "@components/common/ProtectedRoute/ProtectedRoute";
+import CsAgentRentDecision from "@pages/cs-agent/CsAgentRentDecision"
 // import CheckoutWrapper from "@components/Checkout/CheckoutWrapper";
 
 // ADD ADMIN IMPORTS
@@ -40,6 +41,7 @@ import { PropertyTaskQueuePage } from "@pages/cs-agent/PropertyTaskQueuePage";
 import { PropertyVerificationPage } from "@pages/cs-agent/PropertyVerificationPage";
 import { CsAgentDashboardPage } from "@pages/cs-agent/CsAgentDashboardPage";
 import { AgentAssignmentModal } from "@components/admin/modals/AgentAssignmentModal";
+
 
 const router = createBrowserRouter([
   {
@@ -89,7 +91,11 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path:"payment/callback",
+        path:"payment/success",
+        element:<PaymentCallback />
+      },
+      {
+        path: "payment/failed",
         element:<PaymentCallback />
       },
       {
@@ -237,7 +243,7 @@ const router = createBrowserRouter([
       },
       {
         path: "assignments",
-        element: <AssignmentsPage />,
+        element: <AgentAssignmentModal />,
       },
     ],
   },
@@ -272,6 +278,10 @@ const router = createBrowserRouter([
         element: <PropertyVerificationPage />,
       },
       {
+        path: "decision",
+        element:<CsAgentRentDecision />
+      },
+      {
         path: "verifications",
         element: (
           <div className="p-6 text-center">
@@ -302,7 +312,7 @@ const router = createBrowserRouter([
 
 function AppRouter() {
   const dispatch = useAppDispatch();
-  const { isInitialized, loading } = useAppSelector((state) => state.Authslice);
+  const { isInitialized, loading,user } = useAppSelector((state) => state.Authslice);
   const hasRun = useRef(false);
 
   useEffect(() => {

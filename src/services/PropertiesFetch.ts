@@ -1,13 +1,11 @@
-// src/services/PropertiesFetch.ts
-import axios from "axios";
+import { isAxiosError } from "axios";
+import api from "./axios-global";
 
-const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-});
+
 
 // ---------------- Utility ----------------
 const handleError = (error: any): never => {
-  if (axios.isAxiosError(error)) {
+  if (isAxiosError(error)) {
     console.error("Axios Error:", error.response?.data || error.message);
   } else {
     console.error("Unexpected Error:", error);
@@ -18,24 +16,30 @@ const handleError = (error: any): never => {
 // ---------------- Types ----------------
 export interface Property {
   id: number;
-  owner_id: number | null;
   title: string;
   description: string;
+  property_details:{
+    price:number;
+    size: number;
+    price_type: "FullPay" | "Monthly" | "Daily";
+
+  };
   type: "Apartment" | "Villa" | "Duplex" | "Roof" | "Land";
-  price: number;
-  price_type: "FullPay" | "Monthly" | "Daily";
   location: Record<string, any>;
-  size: number;
-  property_state: "Valid" | "Invalid" | "Pending" | "Rented" | "Sold";
+  status: "Valid" | "Invalid" | "Pending" | "Rented" | "Sold" | "Rejected";
   created_at: string;
   updated_at: string;
   owner?: {
     id: number;
     name: string;
     email: string;
+    status: string
   };
   documents?: string[];
-  image?: string[];
+  images?: {
+    id:number,
+    url:string
+  }[];
 }
 
 export interface PropertiesResponse {
@@ -53,13 +57,16 @@ export interface ChangeStatusResponse {
 // ---------------- API Calls ----------------
 export const getProperties = async (
   jwt: string | null,
+  filters?: { property_state?: string },
   signal?: AbortSignal
 ): Promise<PropertiesResponse | undefined> => {
   try {
-    const response = await API.get<PropertiesResponse>(`/properties`, {
+    const response = await api.get<PropertiesResponse>(`cs-agent/properties`, {
       headers: { Authorization: `Bearer ${jwt}` },
+      params: filters,   // 👈 send filter(s) to backend
       signal,
     });
+    
     return response.data;
   } catch (error) {
     handleError(error);
@@ -67,17 +74,23 @@ export const getProperties = async (
   }
 };
 
-
-export const changePropertyStatus = async (
-  propertyId: number,
-  newStatus: Property["property_state"],
-  jwt: string | null,
-  signal?: AbortSignal
-): Promise<ChangeStatusResponse | undefined> => {
+export const changePropertyStatus = async ({
+  propertyId,
+  newState,
+  feedback,
+  jwt,
+  signal,
+}: {
+  propertyId: number;
+  newState: "Valid" | "Rejected";
+  feedback?: string;
+  jwt: string;
+  signal?: AbortSignal;
+}): Promise<ChangeStatusResponse | undefined> => {
   try {
-    const response = await API.post<ChangeStatusResponse>(
-      `/properties/${propertyId}/change-status`,
-      { status: newStatus },
+    const response = await api.patch<ChangeStatusResponse>(
+      `/cs-agent/properties/${propertyId}/state`,
+      { status: newState, feedback },
       {
         headers: { Authorization: `Bearer ${jwt}` },
         signal,

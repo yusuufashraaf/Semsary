@@ -10,17 +10,18 @@ export default function WalletCard() {
   if (loading) return <div className="text-center p-4"><Loader /></div>;
   if (error) return <div className="alert alert-danger">Error: {error}</div>;
   if (!wallet) return null;
-
   return (
     <div className={styles.walletCard}>
       {/* Header */}
-      <h5 className={styles.walletTitle}><div className="d-flex"><Wallet /> My Wallet</div></h5>
+      <h5 className={styles.walletTitle}>
+        <div className="d-flex"><Wallet /> My Wallet</div>
+      </h5>
 
       {/* Balance */}
       <div className={styles.walletBalance}>
         <span className={styles.balanceLabel}>Available Now</span>
         <h2 className={styles.balanceValue}>
-          {formatCurrency(wallet.data.available_now)}
+          {formatCurrency(wallet.data.wallet)}
         </h2>
       </div>
 
@@ -28,15 +29,15 @@ export default function WalletCard() {
       <div className={styles.walletBreakdown}>
         <div className={styles.breakdownRow}>
           <span>In Wallet</span>
-          <span>{formatCurrency(wallet.data.in_wallet)}</span>
+          <span>{formatCurrency(wallet.data.wallet)}</span>
         </div>
         <div className={styles.breakdownRow}>
           <span>Escrow Locked</span>
-          <span>{formatCurrency(wallet.data.in_escrow_locked)}</span>
+          <span>{formatCurrency(wallet.data.locked)}</span>
         </div>
         <div className={styles.breakdownRow}>
           <span>Escrow Refundable</span>
-          <span>{formatCurrency(wallet.data.in_escrow_refundable)}</span>
+          <span>{formatCurrency(wallet.data.claimable)}</span>
         </div>
       </div>
 
@@ -44,8 +45,8 @@ export default function WalletCard() {
 
       {/* Total */}
       <div className={styles.totalRow}>
-        <span>Total Money</span>
-        <strong>{formatCurrency(wallet.data.total_money)}</strong>
+        <span>Total Money in App</span>
+        <strong>{formatCurrency(wallet.data.wallet)}</strong>
       </div>
     </div>
   );

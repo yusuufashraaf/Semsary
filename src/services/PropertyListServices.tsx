@@ -31,7 +31,7 @@ export interface PropertyQuery {
   price_type?: string;
             sortBy?: string,
   sortOrder?: string,
-
+user_id?:Number
 }
 
 // Get properties with query filters

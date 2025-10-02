@@ -20,6 +20,7 @@ export function mapListingToProperty(listing: any): Property {
     reviewCount: listing.reviewCount ?? 0,
     price_type: listing.price_type ?? "Unknown",
     host: {
+      id:listing.host?.id || "null",
       name: listing.host?.name || "Unknown",
       avatar: listing.host?.avatar || "UH",
       joinDate: listing.host?.joinDate

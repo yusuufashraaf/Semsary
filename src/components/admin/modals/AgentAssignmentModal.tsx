@@ -5,10 +5,12 @@ import { Chat, ChatUser } from "src/types/chats";
 import { Button } from "@components/ui/Button";
 import { LoadingSpinner } from "@components/ui/LoadingSpinner";
 import Swal from "sweetalert2";
+import { getEcho } from "@services/echoManager";
 
 export const AgentAssignmentModal: React.FC = () => {
-  const { jwt } = useAppSelector((state) => state.Authslice);
-  const [chats, setChats] = useState<Chat[]>([]);
+  const { jwt, user } = useAppSelector((state) => state.Authslice);
+  //const [chats, setChats] = useState<Chat[]>([]);
+  const [chats, setChats] = useState<any[]>([]);
   const [agents, setAgents] = useState<ChatUser[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedAgents, setSelectedAgents] = useState<Record<number, number | null>>({});
@@ -34,6 +36,48 @@ export const AgentAssignmentModal: React.FC = () => {
 
     fetchData();
   }, [jwt]);
+
+  // Real-time chat assignment updates
+  useEffect(() => {
+    if (!jwt || !user?.id) return;
+
+    const echo = getEcho();
+    if (!echo) return;
+
+    const adminChannel = echo.private(`admin.chats.${user.id}`);
+    
+    adminChannel.listen('ChatAssigned', (event: any) => {
+      setChats(prev => 
+        prev.map(chat => 
+          chat.id === event.chat_id 
+            ? { ...chat, assignedAgent: event.agent }
+            : chat
+        )
+      );
+      setSelectedAgents(prev => ({
+        ...prev,
+        [event.chat_id]: event.agent.id
+      }));
+    });
+
+    adminChannel.listen('ChatUnassigned', (event: any) => {
+      setChats(prev => 
+        prev.map(chat => 
+          chat.id === event.chat_id 
+            ? { ...chat, assignedAgent: null } as Chat
+            : chat
+        )
+      );
+      setSelectedAgents(prev => ({
+        ...prev,
+        [event.chat_id]: null
+      }));
+    });
+
+    return () => {
+      echo.leave(`admin.chats.${user.id}`);
+    };
+  }, [jwt, user?.id]);
 
   // Assign agent
   const handleAssign = async (chatId: number) => {
@@ -90,6 +134,8 @@ export const AgentAssignmentModal: React.FC = () => {
         <thead className="bg-gray-50">
           <tr>
             <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Chat ID</th>
+            <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Renter</th>
+            <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Owner</th>
             <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Property</th>
             <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Assigned Agent</th>
             <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Action</th>
@@ -99,25 +145,27 @@ export const AgentAssignmentModal: React.FC = () => {
           {chats.map((chat) => (
             <tr key={chat.id}>
               <td className="px-4 py-2">{chat.id}</td>
-              <td className="px-4 py-2">{chat.property?.title || "N/A"}</td>
+              <td className="px-4 py-2">#{chat.owner_id} {chat.owner.email}</td>
+              <td className="px-4 py-2">#{chat.property.owner.id} {chat.property.owner.email}</td>
+              <td className="px-4 py-2">#{chat.property_id} {chat.property?.title || "N/A"}</td>
               <td className="px-4 py-2">
                 <select
-                  value={selectedAgents[chat.id] ?? chat.assignedAgent?.id ?? ""}
-                  onChange={(e) =>
-                    setSelectedAgents((prev) => ({
-                      ...prev,
-                      [chat.id]: Number(e.target.value),
-                    }))
-                  }
-                  className="border rounded px-2 py-1"
-                >
-                  <option value="">Select agent</option>
-                  {agents.map((agent) => (
-                    <option key={agent.id} value={agent.id}>
-                      {agent.first_name} {agent.last_name}
-                    </option>
-                  ))}
-                </select>
+  value={selectedAgents[chat.id] ?? chat.renter_id ?? ""}
+  onChange={(e) =>
+    setSelectedAgents((prev) => ({
+      ...prev,
+      [chat.id]: Number(e.target.value),
+    }))
+  }
+  className="border rounded px-2 py-1"
+>
+  <option value={chat.owner_id}>Not Assigned</option>
+  {agents.map((agent) => (
+    <option key={agent.id} value={agent.id}>
+      {agent.first_name} {agent.last_name}
+    </option>
+  ))}
+</select>
               </td>
               <td className="px-4 py-2 space-x-2">
                 <Button

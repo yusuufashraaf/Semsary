@@ -1,13 +1,21 @@
 .errorContainer {
   margin-top: 8px;
   background-color: #ffe5e5;
-  padding: 8px 12px;
+  padding: 8px 20px;
   border-radius: 6px;
   text-align: center;
+  margin-bottom: 4px;
 }
 
 .errorMessage {
-  color: #d32f2f;
+  color: #000000;
   font-weight: 500;
   font-size: 0.9rem;
+}
+
+.errorMessage a{
+    color: #d32f2f;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
 }

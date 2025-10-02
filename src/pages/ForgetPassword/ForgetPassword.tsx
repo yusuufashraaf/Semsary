@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -19,6 +19,7 @@ const ForgotPassword = () => {
   const { loading, error, jwt } = useAppSelector((state) => state.Authslice);
 
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState<number>(0);  
 
   const {
     register,
@@ -29,9 +30,9 @@ const ForgotPassword = () => {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  if (jwt) {
-    return <Navigate to="/" />;
-  }
+  // if (jwt) {
+  //   return <Navigate to="/" />;
+  // }
 
   const submitForm: SubmitHandler<ForgotPasswordType> = (data) => {
     setSuccessMessage(null);
@@ -40,9 +41,16 @@ const ForgotPassword = () => {
       .unwrap()
       .then((response) => {
         setSuccessMessage(response.message);
+        setCooldown(60);
       })
       .catch(() => {});
   };
+    useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
 
   return (
     <Row>
@@ -66,22 +74,23 @@ const ForgotPassword = () => {
             placeholder="you@example.com"
           />
 
-          <Button
+            <Button
             variant="info"
             type="submit"
-            className={`${styles.resetLinkBtn}  mt-3`}
-            disabled={loading === "pending"}
+            className={`${styles.resetLinkBtn} mt-3`}
+            disabled={loading === "pending" || cooldown > 0}
           >
             {loading === "pending" ? (
               <>
                 <Spinner animation="border" size="sm" />
                 Sending...
               </>
+            ) : cooldown > 0 ? (
+              `Resend in ${cooldown}s`
             ) : (
               "Send Reset Link"
             )}
           </Button>
-
           {/* 5. Display API errors, if any. */}
           {error && (
             <p style={{ color: "#DC3545", marginTop: "10px" }}>{error}</p>
